@@ -10,6 +10,11 @@ class SidebarDrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final name = 'Ayşe';
+    final email = '@a.zynep';
+    final urlImage =
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
+
     return Drawer(
       backgroundColor: const Color(0xFF1F1D36),
       width: MediaQuery.of(context).size.width * 0.5,
@@ -18,51 +23,14 @@ class SidebarDrawerWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           children: <Widget>[
             const SizedBox(height: 30),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              height: 70,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: NetworkImage(
-                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
-                                )
-                            )
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Ayşe',
-                          style: TextStyle(color: const Color(0xFFAC32F6).withOpacity(0.8), fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '@a.zynep',
-                          style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+            buildHeader(
+              urlImage: urlImage,
+              name: name,
+              email: email,
             ),
-            const SizedBox(height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
             buildMenuItem(
               text: 'Profile',
               icon: Icons.person,
@@ -88,7 +56,9 @@ class SidebarDrawerWidget extends StatelessWidget {
               icon: Icons.settings,
               onClicked: () => selectedItem(context, 4),
             ),
-            const SizedBox(height: 60,),
+            const SizedBox(
+              height: 60,
+            ),
             buildMenuItem(
               text: 'Sign out',
               icon: Icons.logout,
@@ -97,6 +67,60 @@ class SidebarDrawerWidget extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildHeader({
+    required String urlImage,
+    required String name,
+    required String email,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      height: 70,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                      urlImage,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                      color: const Color(0xFFAC32F6).withOpacity(0.8),
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  email,
+                  style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -123,7 +147,9 @@ class SidebarDrawerWidget extends StatelessWidget {
     );
   }
 
-  void selectedItem(BuildContext context, int index){
+  void selectedItem(BuildContext context, int index) {
+    Navigator.of(context).pop();
+
     switch (index) {
       case 0:
         Navigator.of(context).push(MaterialPageRoute(
@@ -151,6 +177,5 @@ class SidebarDrawerWidget extends StatelessWidget {
         ));
         break;
     }
-
   }
 }
