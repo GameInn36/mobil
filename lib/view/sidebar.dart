@@ -87,12 +87,14 @@ class SidebarDrawerWidget extends StatelessWidget {
               aspectRatio: 1,
               child: Container(
                 decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(
-                          urlImage,
-                        ))),
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                      urlImage,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
