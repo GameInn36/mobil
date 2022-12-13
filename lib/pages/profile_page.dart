@@ -60,7 +60,7 @@ class ProfilePage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 13),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
                       'Favorites',
@@ -81,7 +81,37 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
               ),
-
+              SizedBox(
+                height: 50,
+                child: Divider(
+                  color: Colors.white.withOpacity(0.19),
+                  thickness: 1.2,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 13),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Recently Played',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 15,),
+                    SizedBox(
+                      height: 110,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: recentlyPlayedGames,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -136,6 +166,72 @@ List<Widget> favoriteGames = <Widget>[
       borderRadius: BorderRadius.circular(5.0),
       child: Image.network(
         'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+        fit: BoxFit.fill,
+      ),
+    ),
+  ),
+];
+
+
+List<Widget> recentlyPlayedGames = <Widget>[
+  SizedBox(
+    width: 80.0,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(5.0),
+      child: Image.network(
+        'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+        fit: BoxFit.fill,
+      ),
+    ),
+  ),
+  const SizedBox(
+    width: 6.0,
+  ),
+  SizedBox(
+    width: 80.0,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(5.0),
+      child: Image.network(
+        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+        fit: BoxFit.fill,
+      ),
+    ),
+  ),
+  const SizedBox(
+    width: 6.0,
+  ),
+  SizedBox(
+    width: 80.0,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(5.0),
+      child: Image.network(
+        'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+        fit: BoxFit.fill,
+      ),
+    ),
+  ),
+  const SizedBox(
+    width: 6.0,
+  ),
+  SizedBox(
+    width: 80.0,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(5.0),
+      child: Image.network(
+        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+        fit: BoxFit.fill,
+      ),
+    ),
+  ),
+  const SizedBox(
+    width: 6.0,
+  ),
+  SizedBox(
+    width: 80.0,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(5.0),
+      child: Image.network(
+        'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
         fit: BoxFit.fill,
       ),
     ),
