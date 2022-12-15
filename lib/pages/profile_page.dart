@@ -112,6 +112,13 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 50,
+                child: Divider(
+                  color: Colors.white.withOpacity(0.19),
+                  thickness: 1.2,
+                ),
+              ),
             ],
           ),
         ),
