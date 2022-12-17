@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:gameinn/pages/auth_page.dart';
+import 'package:gameinn/service/api_service.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async{
+  final bool isLogged = await LoginService().isLogged();
+  final MyApp myApp = MyApp(
+    initialRoute: isLogged ? '/home' : '/',
+  );
+  runApp(myApp);
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  const MyApp({super.key, required this.initialRoute});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'GameInn',
+      initialRoute: initialRoute,
+      routes: {
+        '/': (context) => AuthPage(),
+        '/home': (context) => MyHomePage(title: title),
+      },
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF1F1D36),
         colorScheme: ColorScheme.fromSwatch().copyWith(

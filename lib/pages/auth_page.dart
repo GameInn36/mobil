@@ -1,5 +1,4 @@
 import 'package:gameinn/pages/login_page.dart';
-
 import 'sign_up_page.dart';
 import 'package:flutter/material.dart';
 

@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:gameinn/components/loading_popup.dart';
 
 import 'package:gameinn/service/api_service.dart';
 import 'package:gameinn/view/deneme.dart';
