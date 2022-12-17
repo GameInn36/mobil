@@ -27,7 +27,7 @@ class ToPlayListPage extends StatelessWidget {
                           child: Container(),
                         ),
                         const Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Text(
                             'To Play List',
                             style: TextStyle(
@@ -53,7 +53,7 @@ class ToPlayListPage extends StatelessWidget {
                 ],
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 40),
+                padding: const EdgeInsets.symmetric(horizontal: 40),
                 height: 60,
                 child: Divider(
                   color: Colors.white.withOpacity(0.19),
@@ -63,11 +63,12 @@ class ToPlayListPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 13),
                 child: GridView.count(
-                  primary: false,
-                  padding: const EdgeInsets.all(20),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  crossAxisCount: 4,
+                  crossAxisCount: 3,
+                  childAspectRatio: 0.6,
                   children: toPlayList,
                 ),
               ),
@@ -80,116 +81,652 @@ class ToPlayListPage extends StatelessWidget {
 }
 
 List<Widget> toPlayList = <Widget>[
-  SizedBox(
-    height: 100,
-    width: 95.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-        fit: BoxFit.fill,
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
       ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    width: 95.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-        fit: BoxFit.fill,
+      const Expanded(
+        flex: 1,
+          child: Center(
+            child: Text(
+              "Forgotton Anne",
+              style: TextStyle(
+                fontSize: 13.0,
+                color: Colors.white,
+              ),
+            ),
+          ),
       ),
-    ),
+    ],
   ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    width: 95.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
-        fit: BoxFit.fill,
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
       ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    width: 95.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-        fit: BoxFit.fill,
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
-    ),
+    ],
   ),
-  SizedBox(
-    width: 80.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-        fit: BoxFit.fill,
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
       ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    width: 80.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-        fit: BoxFit.fill,
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
-    ),
+    ],
   ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    width: 80.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
-        fit: BoxFit.fill,
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
       ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    width: 80.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-        fit: BoxFit.fill,
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Forgotton Anne",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
-    ),
+    ],
   ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    width: 80.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-        fit: BoxFit.fill,
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
       ),
-    ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Forgotton Anne",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Forgotton Anne",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Forgotton Anne",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Forgotton Anne",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Forgotton Anne",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Forgotton Anne",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "Valorant",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        flex: 7,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5.0),
+          child: Image.network(
+            'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
+      const Expanded(
+        flex: 1,
+        child: Center(
+          child: Text(
+            "CS GO",
+            style: TextStyle(
+              fontSize: 13.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    ],
   ),
 ];
