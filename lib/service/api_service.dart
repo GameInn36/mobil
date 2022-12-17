@@ -1,5 +1,11 @@
 import 'dart:developer';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:gameinn/model/error_model.dart';
+import 'package:gameinn/widgets/show_custom_loginerror_dialog.dart';
+
 import '../model/login_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +15,7 @@ class LoginService {
   final dio = Dio();
 
   Future<LoginModel?> loginCall({
+    required BuildContext ctx,
     required String email,
     required String password
   }) async {
@@ -20,11 +27,18 @@ class LoginService {
       var response = await dio.post(login_url, data: json);
       if (response != null && response.statusCode == 200) {
         var result = LoginModel.fromJson(response.data);
-        log("Gelen response => ${result.user!.id}");
+        log("Gelen response => ${response.data}");
         return result;
       }
     } on DioError catch (e){
-      log(e.message);
+        showCustomLoginError(ctx, 'Error', 'Invalid email or password.');
+       }
     }
+  }
+
+
+extension DioErrorX on DioError{
+  bool get emailPasswordWrongError {
+    return type == DioErrorType.response;
   }
 }

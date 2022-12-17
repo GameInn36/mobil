@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:gameinn/pages/auth_page.dart';
-import 'package:gameinn/service/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'components/navigator_key.dart';
 
-void main() async{
+void main() {
   runApp(const MyApp());
 }
 
@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
           primary: const Color(0xFFC4C4C4).withOpacity(0.35),
         ),
       ),
+      navigatorKey: navigatorKey,
     );
   }
 }
@@ -59,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        drawer: const SidebarDrawerWidget(username: _username,),
+        drawer: const SidebarDrawerWidget(username: "_username",),
         appBar: AppBar(
           centerTitle: true,
           title: Text(
