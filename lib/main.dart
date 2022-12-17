@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gameinn/view/sidebar.dart';
+import 'package:gameinn/pages/auth_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
           primary: const Color(0xFFC4C4C4).withOpacity(0.35),
         ),
       ),
-      home: const MyHomePage(title: 'GameInn'),
+      home: AuthPage(),
     );
   }
 }
