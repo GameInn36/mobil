@@ -35,10 +35,3 @@ class LoginService {
        }
     }
   }
-
-
-extension DioErrorX on DioError{
-  bool get emailPasswordWrongError {
-    return type == DioErrorType.response;
-  }
-}
