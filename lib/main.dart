@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gameinn/pages/game_model.dart';
 import 'package:gameinn/pages/search_page.dart';
+import 'package:gameinn/pages/search_service.dart';
 import 'package:gameinn/view/sidebar.dart';
 
 void main() {
@@ -67,8 +69,41 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class HomeGames extends StatelessWidget {
+class HomeGames extends StatefulWidget {
   const HomeGames({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _DisplayGamesState();
+}
+
+class _DisplayGamesState extends State<HomeGames> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    getList();
+  }
+
+  final searchservice = SearchService();
+
+
+  List<GameModel?> games = [];
+
+  void getList() {
+    setState(() {
+      searchservice.gameSearch(searched_name: "").then((value) {
+        if (value != null) {
+          games = value;
+        }
+        else {
+
+        }
+      });
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -94,11 +129,27 @@ class HomeGames extends StatelessWidget {
                 ),
                 SizedBox(
                   height: 170.0,
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 0.0),
-                    scrollDirection: Axis.horizontal,
-                    children: mostPopularGames,
+                  child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 0.0),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: games.length,
+                      itemBuilder: (context, index) {
+                        return SizedBox(
+                          height: 140.0,
+                          width: 100.0,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 6.0),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5.0),
+                                child: Image.network(
+                                  'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                          ),
+                          );
+                      }
                   ),
                 ),
               ],
@@ -164,6 +215,7 @@ class HomeGames extends StatelessWidget {
       ),
     ); // This trailing comma makes auto-formatting nicer for build methods.;
   }
+
 }
 
 class HomeReviews extends StatelessWidget {

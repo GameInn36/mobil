@@ -8,12 +8,10 @@ class SearchService {
 
   String search_url = 'https://game-service-ixdm6djuha-uc.a.run.app/game/?name=';
 
-
   final dio = Dio();
 
   Future<List<GameModel>?> gameSearch({
     required String searched_name,
-
   }) async {
     log("searched *> ${searched_name}");
     var search_url_updated = search_url + searched_name;
