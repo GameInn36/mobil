@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:gameinn/pages/search_page.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:gameinn/pages/auth_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
