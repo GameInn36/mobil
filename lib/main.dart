@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gameinn/pages/search_page.dart';
 import 'package:gameinn/view/sidebar.dart';
 
 void main() {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
           primary: const Color(0xFFC4C4C4).withOpacity(0.35),
         ),
       ),
-      home: const MyHomePage(title: 'GameInn'),
+      home: SearchPage(),
     );
   }
 }
