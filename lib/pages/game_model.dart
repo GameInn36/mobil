@@ -4,64 +4,60 @@
 class GameModel {
 /*
 {
-  "id": "639db2e13bd8a0151636843a",
-  "name": "Kingdom Hearts III",
-  "year": 0,
+  "id": "639f851add21996db197cb73",
+  "name": "World of Warcraft",
   "cover": null,
-  "summary": null,
-  "categories": [
-    "fear"
+  "summary": "Best MMORPG Game ever",
+  "genres": [
+    "MMORPG"
   ],
-  "studio": null,
+  "publisher": "Blizzard Entertainment",
   "platforms": [
-    "PC"
+    "ps3"
   ],
   "vote": 0,
   "voteCount": 0,
-  "releaseDate": 0
+  "first_release_date": 0
 }
 */
 
   String? id;
   String? name;
-  int? year;
   String? cover;
   String? summary;
-  List<String?>? categories;
-  String? studio;
+  List<String?>? genres;
+  String? publisher;
   List<String?>? platforms;
   int? vote;
   int? voteCount;
-  int? releaseDate;
+  int? firstReleaseDate;
 
   GameModel({
     this.id,
     this.name,
-    this.year,
     this.cover,
     this.summary,
-    this.categories,
-    this.studio,
+    this.genres,
+    this.publisher,
     this.platforms,
     this.vote,
     this.voteCount,
-    this.releaseDate,
+    this.firstReleaseDate,
   });
   GameModel.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
     name = json['name']?.toString();
-    year = json['year']?.toInt();
     cover = json['cover']?.toString();
     summary = json['summary']?.toString();
-    if (json['categories'] != null) {
-      final v = json['categories'];
+    if (json['genres'] != null) {
+      final v = json['genres'];
       final arr0 = <String>[];
       v.forEach((v) {
         arr0.add(v.toString());
       });
-      categories = arr0;
+      genres = arr0;
     }
-    studio = json['studio']?.toString();
+    publisher = json['publisher']?.toString();
     if (json['platforms'] != null) {
       final v = json['platforms'];
       final arr0 = <String>[];
@@ -72,24 +68,23 @@ class GameModel {
     }
     vote = json['vote']?.toInt();
     voteCount = json['voteCount']?.toInt();
-    releaseDate = json['releaseDate']?.toInt();
+    firstReleaseDate = json['first_release_date']?.toInt();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
-    data['year'] = year;
     data['cover'] = cover;
     data['summary'] = summary;
-    if (categories != null) {
-      final v = categories;
+    if (genres != null) {
+      final v = genres;
       final arr0 = [];
       v!.forEach((v) {
         arr0.add(v);
       });
-      data['categories'] = arr0;
+      data['genres'] = arr0;
     }
-    data['studio'] = studio;
+    data['publisher'] = publisher;
     if (platforms != null) {
       final v = platforms;
       final arr0 = [];
@@ -100,7 +95,7 @@ class GameModel {
     }
     data['vote'] = vote;
     data['voteCount'] = voteCount;
-    data['releaseDate'] = releaseDate;
+    data['first_release_date'] = firstReleaseDate;
     return data;
   }
 }
