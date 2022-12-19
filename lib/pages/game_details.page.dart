@@ -20,7 +20,7 @@ class GameDetailsPage extends StatelessWidget{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.memory(base64Decode((game?.cover)!)),
+            Image.memory(base64Decode((game.cover)!)),
             Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
