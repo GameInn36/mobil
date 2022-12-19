@@ -82,6 +82,7 @@ class SearchGames extends StatefulWidget {
                 height: 50.0,
               ),
               TextField(
+                style: TextStyle(color: Colors.white),
                 onChanged: (value) => updateList(value),
                 decoration: InputDecoration(
                   filled: true,
