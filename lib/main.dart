@@ -1,6 +1,7 @@
 import 'dart:developer';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gameinn/pages/game_details.page.dart';
 import 'package:gameinn/pages/game_model.dart';
 import 'package:gameinn/pages/search_page.dart';
 import 'package:gameinn/pages/search_service.dart';
@@ -108,6 +109,10 @@ class HomeGames extends StatefulWidget {
 
 class _DisplayGamesState extends State<HomeGames> {
 
+  final searchservice = SearchService();
+
+  List<GameModel?> games = [];
+
   @override
   void initState() {
     super.initState();
@@ -115,21 +120,14 @@ class _DisplayGamesState extends State<HomeGames> {
     getList();
   }
 
-  final searchservice = SearchService();
-
-
-  List<GameModel?> games = [];
-
   void getList() {
-    setState(() {
-      searchservice.gameSearch(searched_name: "").then((value) {
-        if (value != null) {
-          games = value;
-        }
-        else {
+    List<GameModel> tempList = [];
+    searchservice.gameSearch(searched_name: "d").then((value) {
+      if (value != null) {
+        tempList = value;
+      }
 
-        }
-      });
+      setState(() { games = tempList; });
     });
   }
 
@@ -163,21 +161,29 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: mostPopularGames.length, //buradan games gelmeli
+                      itemCount: games.length, //buradan games gelmeli
                       itemBuilder: (context, index) {
-                        return SizedBox(
-                          height: 140.0,
-                          width: 100.0,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 6.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5.0),
-                              child: Image.network(
-                                'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+                        GameModel? game = games[index];
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(
+                                    builder: (context) => GameDetailsPage(game!)));
+                          },
+                          child: SizedBox(
+                            height: 140.0,
+                            width: 100.0,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5.0),
+                                child: Image.memory(
+                                    base64Decode((game?.cover)!),
                                 fit: BoxFit.fill,
+                                ),
+                                ),
                               ),
                             ),
-                          ),
                         );
                       }
                   ),
