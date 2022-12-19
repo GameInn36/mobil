@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        drawer: const SidebarDrawerWidget(username: "_username",),
+        drawer: SidebarDrawerWidget(username: _username,),
         appBar: AppBar(
           centerTitle: true,
           title: Text(
