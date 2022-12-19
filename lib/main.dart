@@ -1,29 +1,26 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:gameinn/pages/auth_page.dart';
 import 'package:gameinn/service/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async{
-  final bool isLogged = await LoginService().isLogged();
-  final MyApp myApp = MyApp(
-    initialRoute: isLogged ? '/home' : '/',
-  );
-  runApp(myApp);
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final String initialRoute;
-  const MyApp({super.key, required this.initialRoute});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'GameInn',
-      initialRoute: initialRoute,
       routes: {
         '/': (context) => AuthPage(),
-        '/home': (context) => MyHomePage(title: title),
+        '/home': (context) => MyHomePage(title: 'GameInn'),
       },
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF1F1D36),
@@ -31,7 +28,6 @@ class MyApp extends StatelessWidget {
           primary: const Color(0xFFC4C4C4).withOpacity(0.35),
         ),
       ),
-      home: AuthPage(),
     );
   }
 }
@@ -45,12 +41,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String _username = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+  }
+
+  _loadUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _username = (prefs.getString('username') ?? "");
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        drawer: SidebarDrawerWidget(),
+        drawer: const SidebarDrawerWidget(username: _username,),
         appBar: AppBar(
           centerTitle: true,
           title: Text(

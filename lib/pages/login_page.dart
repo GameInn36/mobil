@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gameinn/service/api_service.dart';
 import 'package:gameinn/view/deneme.dart';
 import 'package:grock/grock.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -21,17 +22,11 @@ class LoginPage extends StatefulWidget {
 
   final loginservice = LoginService();
   void fetch() {
-    loginservice
-        .loginCall(email: _email.text, password: _password.text)
-        .then((value) {
-      if (value != null) {
-        Grock.back();
-        Grock.toRemove(Deneme());
-      } else {
-        Grock.back();
-        Grock.snackBar(
-            title: "Hata",
-            description: "Bir sorun oluştu, tekrar deneyin.");
+    loginservice.loginCall(email: _email.text, password: _password.text).then((value) async {
+      if(value != null){
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('username', '${value.user!.username}');
+        Navigator.pushNamedAndRemoveUntil(context, '/home', ModalRoute.withName('/home'));
       }
     }
     );

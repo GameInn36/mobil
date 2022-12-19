@@ -1,16 +1,12 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import '../model/login_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginService {
 
   final String login_url = 'https://authentication-service-ixdm6djuha-uc.a.run.app/auth/authenticate';
   final dio = Dio();
-  bool authenticated = false;
-
-  Future<bool> isLogged() async {
-    return authenticated;
-  }
 
   Future<LoginModel?> loginCall({
     required String email,
@@ -24,8 +20,7 @@ class LoginService {
       var response = await dio.post(login_url, data: json);
       if (response != null && response.statusCode == 200) {
         var result = LoginModel.fromJson(response.data);
-        log("Gelen response => ${response.data}");
-        authenticated = true;
+        log("Gelen response => ${result.user!.id}");
         return result;
       }
     } on DioError catch (e){

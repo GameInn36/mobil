@@ -6,11 +6,11 @@ import 'package:gameinn/pages/settings_page.dart';
 import 'package:gameinn/pages/to_play_list_page.dart';
 
 class SidebarDrawerWidget extends StatelessWidget {
-  const SidebarDrawerWidget({Key? key}) : super(key: key);
+  final String username;
+  const SidebarDrawerWidget({Key? key, required this.username}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final name = 'Ayşe';
     final email = '@a.zynep';
     final urlImage =
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
@@ -25,7 +25,7 @@ class SidebarDrawerWidget extends StatelessWidget {
             const SizedBox(height: 30),
             buildHeader(
               urlImage: urlImage,
-              name: name,
+              name: username,
               email: email,
             ),
             const SizedBox(
