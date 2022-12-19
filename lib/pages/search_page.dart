@@ -53,7 +53,6 @@ class SearchGames extends StatefulWidget {
 
     final searchservice = SearchService();
 
-
     List<GameModel?> games = [];
 
     void updateList(String searched) {
