@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
           primary: const Color(0xFFC4C4C4).withOpacity(0.35),
         ),
       ),
-      home: SearchPage(),
+      home: const MyHomePage(title: 'GameInn',),
     );
   }
 }
@@ -60,6 +60,14 @@ class _MyHomePageState extends State<MyHomePage> {
               fontWeight: FontWeight.w500,
             ),
           ),
+          actions: [
+            // Navigate to the Search Screen
+            IconButton(
+              padding: EdgeInsets.only(right: 10.0),
+                onPressed: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const SearchPage())),
+                icon: const Icon(Icons.search))
+          ],
         ),
         body: const TabBarView(
           children: [HomeGames(), HomeReviews()],
@@ -133,7 +141,7 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: games.length,
+                      itemCount: mostPopularGames.length, //buradan games gelmeli
                       itemBuilder: (context, index) {
                         return SizedBox(
                           height: 140.0,
@@ -141,14 +149,14 @@ class _DisplayGamesState extends State<HomeGames> {
                           child: Padding(
                             padding: const EdgeInsets.only(right: 6.0),
                             child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5.0),
-                                child: Image.network(
-                                  'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-                                  fit: BoxFit.fill,
-                                ),
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: Image.network(
+                                'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
+                                fit: BoxFit.fill,
                               ),
+                            ),
                           ),
-                          );
+                        );
                       }
                   ),
                 ),
@@ -453,20 +461,20 @@ List<Widget> mostPopularReviews = <Widget>[
                         ),
                       ),
                       Expanded(
-                        flex: 2,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children:[
-                            Text(
-                              "Review by ",
-                              style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13.0),
-                            ),
-                            const Text(
-                              "Faruk",
-                              style: TextStyle(color: Color(0xFFE9A6A6), fontSize: 13.0),
-                            )
-                          ]
-                        )
+                          flex: 2,
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children:[
+                                Text(
+                                  "Review by ",
+                                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13.0),
+                                ),
+                                const Text(
+                                  "Faruk",
+                                  style: TextStyle(color: Color(0xFFE9A6A6), fontSize: 13.0),
+                                )
+                              ]
+                          )
                       ),
                       Expanded(
                         flex: 3,
@@ -481,20 +489,20 @@ List<Widget> mostPopularReviews = <Widget>[
                         ),
                       ),
                       Expanded(
-                        flex: 3,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.favorite_border,
-                              color: Colors.white.withOpacity(0.5),
-                            ),
-                            Text(
-                              " 2",
-                              style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                            )
-                          ],
-                        )
+                          flex: 3,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.favorite_border,
+                                color: Colors.white.withOpacity(0.5),
+                              ),
+                              Text(
+                                " 2",
+                                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                              )
+                            ],
+                          )
                       ),
                     ],
                   ),
@@ -663,13 +671,13 @@ List<Widget> mostPopularReviews = <Widget>[
                   aspectRatio: 1,
                   child: Container(
                     decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.fill,
-                          image: NetworkImage(
-                            "https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg",
-                          )
-                      )
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: NetworkImage(
+                              "https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg",
+                            )
+                        )
                     ),
                   ),
                 ),
