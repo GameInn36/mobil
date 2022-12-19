@@ -1,12 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:gameinn/components/loading_popup.dart';
 import 'package:gameinn/components/navigator_key.dart';
-
 import 'package:gameinn/service/api_service.dart';
-import 'package:gameinn/view/deneme.dart';
-import 'package:grock/grock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -24,7 +18,7 @@ class LoginPage extends StatefulWidget {
 
   final loginservice = LoginService();
   void fetch() {
-    loginservice.loginCall(email: _email.text, password: _password.text).then((value) async {
+    loginservice.loginCall(ctx: navigatorKey.currentContext!, email: _email.text, password: _password.text).then((value) async {
       if(value != null){
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('username', '${value.user!.username}');
