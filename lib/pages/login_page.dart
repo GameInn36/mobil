@@ -16,7 +16,7 @@ class LoginPage extends StatefulWidget {
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
 
-  final loginservice = LoginService();
+  final loginservice = AutherizationService();
   void fetch() {
     loginservice.loginCall(ctx: navigatorKey.currentContext!, email: _email.text, password: _password.text).then((value) async {
       if(value != null){
@@ -153,7 +153,7 @@ class LoginPage extends StatefulWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0 , horizontal: 135.0),
                     child: GestureDetector(
-                      onTap: () => fetch() ,
+                      onTap: () => fetch(),
                       child: Container(
                         padding: EdgeInsets.all(10.0),
                         decoration: const BoxDecoration(

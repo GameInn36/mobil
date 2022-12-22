@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+import '../components/navigator_key.dart';
+import '../service/api_service.dart';
+
 class SignUpPage extends StatefulWidget {
   final VoidCallback showLoginPage;
   const SignUpPage({Key? key, required this.showLoginPage}) : super(key: key);
@@ -9,7 +12,6 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _RegisterPageState();
 }
 
-
 class _RegisterPageState extends State<SignUpPage> {
 
   //text controller
@@ -17,7 +19,19 @@ class _RegisterPageState extends State<SignUpPage> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
 
-
+  final signUpService = AutherizationService();
+  void fetch() {
+    signUpService.signUpCall(ctx: navigatorKey.currentContext!,
+        email: _emailController.text,
+        password: _passwordController.text,
+        name: _usernameController.text).then((value) async {
+      if (value != null) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/', ModalRoute.withName('/'));
+      }
+    }
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,7 +177,7 @@ class _RegisterPageState extends State<SignUpPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0 , horizontal: 135.0),
                   child: GestureDetector(
-                    //onTap:
+                    onTap: () => fetch(),
                     child: Container(
                       padding: EdgeInsets.all(10.0),
                       decoration: const BoxDecoration(
