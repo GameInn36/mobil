@@ -139,7 +139,6 @@ class SearchGames extends StatefulWidget {
   }
 
 class SearchStudio extends StatefulWidget {
-
   SearchStudio({Key? key}) : super(key: key);
 
   @override
