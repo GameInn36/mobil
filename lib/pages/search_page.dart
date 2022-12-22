@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:gameinn/pages/game_details.page.dart';
-import 'package:gameinn/pages/search_service.dart';
+import 'package:gameinn/service/search_service.dart';
 
-import 'game_model.dart';
+import '../model/game_model.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({Key? key}) : super(key: key);

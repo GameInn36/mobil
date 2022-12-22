@@ -1,8 +1,6 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
-
-import 'game_model.dart';
+import '../model/game_model.dart';
 
 class SearchService {
 

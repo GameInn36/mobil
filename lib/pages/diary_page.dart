@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import 'game_details.page.dart';
-import 'game_model.dart';
-import 'package:gameinn/pages/search_service.dart';
+import '../model/game_model.dart';
+import 'package:gameinn/service/search_service.dart';
 
 
 class DiaryPage extends StatelessWidget {

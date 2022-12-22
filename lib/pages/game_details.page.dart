@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'game_model.dart';
+import '../model/game_model.dart';
 
 class GameDetailsPage extends StatelessWidget{
 
