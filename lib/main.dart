@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _loadUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _username = (prefs.getString('username') ?? "");
+    _username = (prefs.getString('userName') ?? "");
   }
 
   @override
@@ -116,7 +116,6 @@ class _DisplayGamesState extends State<HomeGames> {
   @override
   void initState() {
     super.initState();
-
     getList();
   }
 

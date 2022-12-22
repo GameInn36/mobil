@@ -21,7 +21,11 @@ class LoginPage extends StatefulWidget {
     loginservice.loginCall(ctx: navigatorKey.currentContext!, email: _email.text, password: _password.text).then((value) async {
       if(value != null){
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('username', '${value.user!.username}');
+        prefs.setString('userName', '${value.user!.username}');
+        prefs.setString('userId', '${value.user!.id}');
+        prefs.setString('userEmail', '${value.user!.email}');
+        prefs.setString('userProfileImage', '${value.user!.profileImage}');
+        prefs.setString('token', '${value.jwtToken}');
         Navigator.pushNamedAndRemoveUntil(context, '/home', ModalRoute.withName('/home'));
       }
     }
