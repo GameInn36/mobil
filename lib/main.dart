@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gameinn/pages/followers_page.dart';
 import 'package:gameinn/pages/game_details.page.dart';
 import 'package:gameinn/model/game_model.dart';
 import 'package:gameinn/pages/search_page.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'GameInn',
       routes: {
         '/': (context) => AuthPage(),
-        '/home': (context) => MyHomePage(title: 'GameInn'),
+        '/home': (context) => FollowersPage(),
       },
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF1F1D36),
