@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../model/game_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:gameinn/pages/log_page.dart';
 
 class GameDetailsPage extends StatelessWidget {
   late final GameModel game;
@@ -127,7 +128,12 @@ class GameDetailsPage extends StatelessWidget {
                       children: [
                         ClipRRect(
                           child: GestureDetector(
-                            onTap: () => {},
+                            onTap: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LogPage(game, "")))
+                            },
                             child: Container(
                               height: 35,
                               width: 150,
@@ -206,7 +212,7 @@ class GameDetailsPage extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          /* (game.vote.toString()) */ '4.4',
+                          (game.vote.toString()),
                           style: const TextStyle(
                             fontSize: 35,
                             color: Color(0xFFE9A6A6),
@@ -220,13 +226,14 @@ class GameDetailsPage extends StatelessWidget {
                           onRatingUpdate: (rating) {},
                           direction: Axis.horizontal,
                           minRating: 0,
-                          initialRating: /* (game.vote.toDouble()) */ 4.4,
+                          initialRating: (game.vote!.toDouble()),
                           itemCount: 5,
                           allowHalfRating: true,
                           itemPadding:
                               const EdgeInsets.symmetric(horizontal: 0),
                           itemSize: 20,
                           ignoreGestures: true,
+                          unratedColor: Colors.grey.shade800,
                         ),
                       ],
                     ),
