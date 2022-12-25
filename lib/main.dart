@@ -64,7 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        drawer: SidebarDrawerWidget(username: _username,),
+        drawer: SidebarDrawerWidget(
+          username: _username,
+        ),
         appBar: AppBar(
           centerTitle: true,
           title: Text(
@@ -86,9 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: [
             // Navigate to the Search Screen
             IconButton(
-              padding: EdgeInsets.only(right: 10.0),
-                onPressed: () => Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (_) => const SearchPage())),
+                padding: EdgeInsets.only(right: 10.0),
+                onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SearchPage())),
                 icon: const Icon(Icons.search))
           ],
         ),
@@ -108,7 +110,6 @@ class HomeGames extends StatefulWidget {
 }
 
 class _DisplayGamesState extends State<HomeGames> {
-
   final searchservice = SearchService();
 
   List<GameModel?> games = [];
@@ -126,11 +127,11 @@ class _DisplayGamesState extends State<HomeGames> {
         tempList = value;
       }
 
-      setState(() { games = tempList; });
+      setState(() {
+        games = tempList;
+      });
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -165,9 +166,11 @@ class _DisplayGamesState extends State<HomeGames> {
                         GameModel? game = games[index];
                         return InkWell(
                           onTap: () {
-                            Navigator.push(context,
+                            Navigator.push(
+                                context,
                                 MaterialPageRoute(
-                                    builder: (context) => GameDetailsPage(game!)));
+                                    builder: (context) =>
+                                        GameDetailsPage(game!)));
                           },
                           child: SizedBox(
                             height: 140.0,
@@ -177,15 +180,14 @@ class _DisplayGamesState extends State<HomeGames> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
                                 child: Image.memory(
-                                    base64Decode((game?.cover)!),
-                                fit: BoxFit.fill,
-                                ),
+                                  base64Decode((game?.cover)!),
+                                  fit: BoxFit.fill,
                                 ),
                               ),
                             ),
+                          ),
                         );
-                      }
-                  ),
+                      }),
                 ),
               ],
             ),
@@ -250,7 +252,6 @@ class _DisplayGamesState extends State<HomeGames> {
       ),
     ); // This trailing comma makes auto-formatting nicer for build methods.;
   }
-
 }
 
 class HomeReviews extends StatelessWidget {
@@ -440,7 +441,11 @@ List<Widget> mostPopularReviews = <Widget>[
       right: 13,
     ),
     child: ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(29.0), topRight: Radius.circular(10.0), bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
+      borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(29.0),
+          topRight: Radius.circular(10.0),
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0)),
       child: Container(
         height: 140.0,
         color: const Color(0xFFE9A6A6).withOpacity(0.05),
@@ -459,9 +464,7 @@ List<Widget> mostPopularReviews = <Widget>[
                             fit: BoxFit.fill,
                             image: NetworkImage(
                               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAePHGk4zQacrlExygB4QUQlmSmCR9Qxd1Sw&usqp=CAU",
-                            )
-                        )
-                    ),
+                            ))),
                   ),
                 ),
               ),
@@ -482,7 +485,8 @@ List<Widget> mostPopularReviews = <Widget>[
                           children: const [
                             Text(
                               "Forgotton Anne",
-                              style: TextStyle(color: Colors.white, fontSize: 12.0),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 12.0),
                             ),
                           ],
                         ),
@@ -491,18 +495,19 @@ List<Widget> mostPopularReviews = <Widget>[
                           flex: 2,
                           child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              children:[
+                              children: [
                                 Text(
                                   "Review by ",
-                                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13.0),
+                                  style: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
+                                      fontSize: 13.0),
                                 ),
                                 const Text(
                                   "Faruk",
-                                  style: TextStyle(color: Color(0xFFE9A6A6), fontSize: 13.0),
+                                  style: TextStyle(
+                                      color: Color(0xFFE9A6A6), fontSize: 13.0),
                                 )
-                              ]
-                          )
-                      ),
+                              ])),
                       Expanded(
                         flex: 3,
                         child: Column(
@@ -510,7 +515,8 @@ List<Widget> mostPopularReviews = <Widget>[
                           children: const [
                             Text(
                               "Amazing. Best game ever.",
-                              style: TextStyle(color: Colors.white, fontSize: 13.5),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 13.5),
                             ),
                           ],
                         ),
@@ -526,11 +532,11 @@ List<Widget> mostPopularReviews = <Widget>[
                               ),
                               Text(
                                 " 2",
-                                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.5)),
                               )
                             ],
-                          )
-                      ),
+                          )),
                     ],
                   ),
                 ),
@@ -562,7 +568,11 @@ List<Widget> mostPopularReviews = <Widget>[
       right: 13,
     ),
     child: ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(29.0), topRight: Radius.circular(10.0), bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
+      borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(29.0),
+          topRight: Radius.circular(10.0),
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0)),
       child: Container(
         height: 140.0,
         color: const Color(0xFFE9A6A6).withOpacity(0.05),
@@ -581,9 +591,7 @@ List<Widget> mostPopularReviews = <Widget>[
                             fit: BoxFit.fill,
                             image: NetworkImage(
                               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
-                            )
-                        )
-                    ),
+                            ))),
                   ),
                 ),
               ),
@@ -604,7 +612,8 @@ List<Widget> mostPopularReviews = <Widget>[
                           children: const [
                             Text(
                               "Valorant",
-                              style: TextStyle(color: Colors.white, fontSize: 12.0),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 12.0),
                             ),
                           ],
                         ),
@@ -613,18 +622,19 @@ List<Widget> mostPopularReviews = <Widget>[
                           flex: 2,
                           child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              children:[
+                              children: [
                                 Text(
                                   "Review by ",
-                                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13.0),
+                                  style: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
+                                      fontSize: 13.0),
                                 ),
                                 const Text(
                                   "Ayşe",
-                                  style: TextStyle(color: Color(0xFFE9A6A6), fontSize: 13.0),
+                                  style: TextStyle(
+                                      color: Color(0xFFE9A6A6), fontSize: 13.0),
                                 )
-                              ]
-                          )
-                      ),
+                              ])),
                       Expanded(
                         flex: 3,
                         child: Column(
@@ -632,7 +642,8 @@ List<Widget> mostPopularReviews = <Widget>[
                           children: const [
                             Text(
                               "Catchy!",
-                              style: TextStyle(color: Colors.white, fontSize: 13.5),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 13.5),
                             ),
                           ],
                         ),
@@ -648,11 +659,11 @@ List<Widget> mostPopularReviews = <Widget>[
                               ),
                               Text(
                                 " 2",
-                                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.5)),
                               )
                             ],
-                          )
-                      ),
+                          )),
                     ],
                   ),
                 ),
@@ -684,7 +695,11 @@ List<Widget> mostPopularReviews = <Widget>[
       right: 13,
     ),
     child: ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(29.0), topRight: Radius.circular(10.0), bottomLeft: Radius.circular(10.0), bottomRight: Radius.circular(10.0)),
+      borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(29.0),
+          topRight: Radius.circular(10.0),
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0)),
       child: Container(
         height: 140.0,
         color: const Color(0xFFE9A6A6).withOpacity(0.05),
@@ -703,9 +718,7 @@ List<Widget> mostPopularReviews = <Widget>[
                             fit: BoxFit.fill,
                             image: NetworkImage(
                               "https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg",
-                            )
-                        )
-                    ),
+                            ))),
                   ),
                 ),
               ),
@@ -726,7 +739,8 @@ List<Widget> mostPopularReviews = <Widget>[
                           children: const [
                             Text(
                               "CS GO",
-                              style: TextStyle(color: Colors.white, fontSize: 12.0),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 12.0),
                             ),
                           ],
                         ),
@@ -735,18 +749,19 @@ List<Widget> mostPopularReviews = <Widget>[
                           flex: 2,
                           child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              children:[
+                              children: [
                                 Text(
                                   "Review by ",
-                                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13.0),
+                                  style: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
+                                      fontSize: 13.0),
                                 ),
                                 const Text(
                                   "Doğa",
-                                  style: TextStyle(color: Color(0xFFE9A6A6), fontSize: 13.0),
+                                  style: TextStyle(
+                                      color: Color(0xFFE9A6A6), fontSize: 13.0),
                                 )
-                              ]
-                          )
-                      ),
+                              ])),
                       Expanded(
                         flex: 3,
                         child: Column(
@@ -754,7 +769,8 @@ List<Widget> mostPopularReviews = <Widget>[
                           children: const [
                             Text(
                               "Hard to play...",
-                              style: TextStyle(color: Colors.white, fontSize: 13.5),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 13.5),
                             ),
                           ],
                         ),
@@ -770,11 +786,11 @@ List<Widget> mostPopularReviews = <Widget>[
                               ),
                               Text(
                                 " 2",
-                                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.5)),
                               )
                             ],
-                          )
-                      ),
+                          )),
                     ],
                   ),
                 ),
