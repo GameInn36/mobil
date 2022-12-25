@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gameinn/components/navigator_key.dart';
 import 'package:gameinn/service/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:gameinn/model/user_model.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showSignUpPage;
@@ -16,6 +21,10 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _password = TextEditingController();
 
   final loginservice = AutherizationService();
+  List<String> followers = [];
+  List<String> following = [];
+  List<String> to = [];
+
   void fetch() {
     loginservice
         .loginCall(
@@ -25,11 +34,10 @@ class _LoginPageState extends State<LoginPage> {
         .then((value) async {
       if (value != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('userName', '${value.user!.username}');
-        prefs.setString('userId', '${value.user!.id}');
-        prefs.setString('userEmail', '${value.user!.email}');
-        prefs.setString('userProfileImage', '${value.user!.profileImage}');
         prefs.setString('token', '${value.jwtToken}');
+        String a = jsonEncode((value.user)!.toJson());
+        prefs.setString('user', a);
+
         Navigator.pushNamedAndRemoveUntil(
             context, '/home', ModalRoute.withName('/home'));
       }

@@ -10,6 +10,7 @@ import 'package:gameinn/view/sidebar.dart';
 import 'package:gameinn/pages/auth_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/navigator_key.dart';
+import 'model/user_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       title: 'GameInn',
       routes: {
         '/': (context) => AuthPage(),
-        '/home': (context) => FollowersPage(),
+        '/home': (context) => MyHomePage(title: "GameInn"),
       },
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF1F1D36),
@@ -57,7 +58,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _loadUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _username = (prefs.getString('userName') ?? "");
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    setState(() {
+      _username = user.username.toString();
+    });
   }
 
   @override
