@@ -1,12 +1,42 @@
-import 'package:flutter/material.dart';
-import 'package:gameinn/view/sidebar.dart';
+import 'dart:convert';
 
-class ProfilePage extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:gameinn/model/user_model.dart';
+import 'package:gameinn/view/sidebar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../service/user_service.dart';
+
+class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
-  final name = 'Ayşe';
+  @override
+  State<StatefulWidget> createState() => _ShowProfileState();
+}
+
+class _ShowProfileState extends State<ProfilePage> {
+  final userservice = UserService();
+  late UserModel user;
+
+  String name = " ";
   final urlImage =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
+
+  @override
+  void initState() {
+    getUser();
+
+    super.initState();
+  }
+
+  void getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    setState(() {
+      name = user.username.toString();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +48,9 @@ class ProfilePage extends StatelessWidget {
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
-              const SizedBox(height: 35,),
+              const SizedBox(
+                height: 35,
+              ),
               Container(
                 alignment: Alignment.center,
                 height: 90,
@@ -35,7 +67,9 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Text(
                 name,
                 style: const TextStyle(
@@ -45,7 +79,9 @@ class ProfilePage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 13),
                 child: ClipRRect(
@@ -56,7 +92,9 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 35,),
+              const SizedBox(
+                height: 35,
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 13),
                 child: Column(
@@ -70,7 +108,9 @@ class ProfilePage extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 15,),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     SizedBox(
                       height: 130,
                       child: ListView(
@@ -101,7 +141,9 @@ class ProfilePage extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 15,),
+                    const SizedBox(
+                      height: 15,
+                    ),
                     SizedBox(
                       height: 110,
                       child: ListView(
@@ -178,7 +220,6 @@ List<Widget> favoriteGames = <Widget>[
     ),
   ),
 ];
-
 
 List<Widget> recentlyPlayedGames = <Widget>[
   SizedBox(
