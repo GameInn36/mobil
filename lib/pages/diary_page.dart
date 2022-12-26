@@ -12,25 +12,22 @@ import 'game_details.page.dart';
 import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
 
-
 class DiaryPage extends StatelessWidget {
   const DiaryPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
-       appBar: AppBar(
-         centerTitle: true,
-         title: Text(
-           'Diary',
-           style: const TextStyle(
-               fontWeight: FontWeight.bold,
-               color: Colors.white,
-               fontSize: 23.0),
-         ),
-       ),
-       body: ShowDiaryPage(),
-     );
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Diary',
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 23.0),
+        ),
+      ),
+      body: ShowDiaryPage(),
+    );
   }
 }
 
@@ -40,7 +37,6 @@ class ShowDiaryPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ShowDiaryState();
 }
-
 
 class _ShowDiaryState extends State<ShowDiaryPage> {
   final searchservice = SearchService();
@@ -72,8 +68,10 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
         tempList = value;
       }
 
-      setState(() { games = tempList; });
-  });
+      setState(() {
+        games = tempList;
+      });
+    });
   }
 
   @override
@@ -91,7 +89,7 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                   itemBuilder: (context, index) {
                     GameModel? game = games[index];
                     return Card(
-                      color:const Color(0xFFC4C4C4).withOpacity(0.35),
+                      color: const Color(0xFFC4C4C4).withOpacity(0.35),
                       child: ListTile(
                         title: Text(
                           (game?.name)!,
@@ -100,7 +98,11 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                           ),
                         ),
                         subtitle: Text(
-                          DateTime.fromMillisecondsSinceEpoch((game?.firstReleaseDate)! * 1000).toString().split(' ').first,
+                          DateTime.fromMillisecondsSinceEpoch(
+                                  (game?.firstReleaseDate)! * 1000)
+                              .toString()
+                              .split(' ')
+                              .first,
                         ),
                         leading: Image.memory(base64Decode((game?.cover)!)),
                         trailing: Icon(Icons.arrow_forward_rounded),
@@ -130,14 +132,11 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                         },
                       ),
                     );
-                  }
-              ),
+                  }),
             ),
           ],
         ),
-
       ),
     ); // This trailing comma makes auto-formatting nicer for build methods.;
   }
 }
-
