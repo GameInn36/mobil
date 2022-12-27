@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -9,8 +8,8 @@ import 'game_details.page.dart';
 import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
 
-class FollowersPage extends StatelessWidget {
-  const FollowersPage({Key? key}) : super(key: key);
+class FollowingPage extends StatelessWidget {
+  const FollowingPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,19 +22,19 @@ class FollowersPage extends StatelessWidget {
               fontWeight: FontWeight.bold, color: Colors.white, fontSize: 23.0),
         ),
       ),
-      body: ShowFollowersPage(),
+      body: ShowFollowingPage(),
     );
   }
 }
 
-class ShowFollowersPage extends StatefulWidget {
-  ShowFollowersPage({Key? key}) : super(key: key);
+class ShowFollowingPage extends StatefulWidget {
+  ShowFollowingPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ShowFollowersState();
+  State<StatefulWidget> createState() => _ShowFollowingState();
 }
 
-class _ShowFollowersState extends State<ShowFollowersPage> {
+class _ShowFollowingState extends State<ShowFollowingPage> {
   final searchservice = SearchService();
 
   List<GameModel?> games = [];
