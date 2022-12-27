@@ -107,6 +107,10 @@ class UserService {
         var result = UserModel.fromJson(response.data);
         log(search_url_updated);
         log("Gelen response => ${response.data}");
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String a = jsonEncode((result).toJson());
+        prefs.setString('user', a);
         return result;
       }
     } on DioError catch (e) {
