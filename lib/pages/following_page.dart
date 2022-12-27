@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:gameinn/service/user_service.dart';
 
+import '../model/user_model.dart';
 import 'game_details.page.dart';
 import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
@@ -35,10 +38,10 @@ class ShowFollowingPage extends StatefulWidget {
 }
 
 class _ShowFollowingState extends State<ShowFollowingPage> {
-  final searchservice = SearchService();
+  final userservice = UserService();
 
-  List<GameModel?> games = [];
-  List<bool?> selected = [];
+  List<UserModel?> followings = [];
+  late UserModel user;
 
   @override
   void initState() {
@@ -47,20 +50,14 @@ class _ShowFollowingState extends State<ShowFollowingPage> {
     getList();
   }
 
-  void getList() {
-    List<GameModel> tempList = [];
-    searchservice.gameSearch(searched_name: "d").then((value) {
-      if (value != null) {
-        tempList = value;
+  void getList() async {
+    user = (await userservice.getAuthorizedUser())!;
 
-        for (var i = 0; i < value.length; i++) {
-          selected.add(false);
-        }
+    followings = (await userservice.getFollowings(user_id: user.id))!;
 
-        setState(() {
-          games = tempList;
-        });
-      }
+    setState(() {
+      this.user = user;
+      this.followings = followings;
     });
   }
 
@@ -75,14 +72,14 @@ class _ShowFollowingState extends State<ShowFollowingPage> {
           children: [
             Expanded(
               child: ListView.builder(
-                  itemCount: games.length,
+                  itemCount: followings.length,
                   itemBuilder: (context, index) {
-                    GameModel? game = games[index];
+                    UserModel? following = followings[index];
                     return Card(
                       color: const Color(0xFF1F1D36),
                       child: ListTile(
                         title: Text(
-                          (game?.name)!,
+                          (following?.username)!,
                           style: TextStyle(
                             color: Colors.grey,
                           ),
@@ -94,25 +91,15 @@ class _ShowFollowingState extends State<ShowFollowingPage> {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               fit: BoxFit.fill,
-                              image: Image.memory(base64Decode((game?.cover)!))
-                                  .image,
+                              image: (following?.profileImage) != null
+                                  ? Image.memory(base64Decode(
+                                          (following?.profileImage)!))
+                                      .image
+                                  : NetworkImage(
+                                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                    ),
                             ),
                           ),
-                        ),
-                        trailing: IconButton(
-                          icon: (selected.elementAt(index))!
-                              ? Icon(
-                                  Icons.add_circle,
-                                  size: 30.0,
-                                  color: Colors.grey,
-                                )
-                              : Icon(Icons.check_circle_outline_outlined,
-                                  size: 30.0, color: Colors.green),
-                          onPressed: () {
-                            setState(() {
-                              selected[index] = !(selected.elementAt(index))!;
-                            });
-                          },
                         ),
                       ),
                     );

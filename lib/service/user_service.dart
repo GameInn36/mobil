@@ -157,4 +157,35 @@ class UserService {
     UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
     return user;
   }
+
+  Future<List<UserModel?>?> getFollowings({
+    required user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+    log("searched *> ${get_followers_url}");
+    var search_url_updated = get_followers_url + user_id + "/following";
+    log("url -> ${search_url_updated}");
+    try {
+      var response = await dio.get(
+        search_url_updated,
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      search_url_updated = get_followers_url;
+      if (response != null && response.statusCode == 200) {
+        var result =
+            (response.data as List).map((x) => UserModel.fromJson(x)).toList();
+        log(search_url_updated);
+        log("Gelen response => ${response.data}");
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
+    }
+  }
 }

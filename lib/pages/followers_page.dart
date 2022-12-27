@@ -76,6 +76,13 @@ class _ShowFollowersState extends State<ShowFollowersPage> {
         followed[(followers[i]?.id)!] = false;
       }
     }
+
+    setState(() {
+      this.user = user;
+      this.followers = followers;
+      this.user_followings = user_followings;
+      this.followed = followed;
+    });
   }
 
   void follow(String user_id) async {
