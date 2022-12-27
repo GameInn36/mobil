@@ -17,7 +17,7 @@ class FollowingPage extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Followers',
+          'Followings',
           style: const TextStyle(
               fontWeight: FontWeight.bold, color: Colors.white, fontSize: 23.0),
         ),
