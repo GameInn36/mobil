@@ -151,4 +151,10 @@ class UserService {
       log(e.message);
     }
   }
+
+  Future<UserModel?> getAuthorizedUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    return user;
+  }
 }

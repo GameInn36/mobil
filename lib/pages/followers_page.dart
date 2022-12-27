@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:gameinn/service/user_service.dart';
 
+import '../model/user_model.dart';
 import 'game_details.page.dart';
 import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
@@ -36,9 +39,14 @@ class ShowFollowersPage extends StatefulWidget {
 
 class _ShowFollowersState extends State<ShowFollowersPage> {
   final searchservice = SearchService();
+  final userservice = UserService();
 
-  List<GameModel?> games = [];
-  List<bool?> selected = [];
+  bool _isLoading = false;
+
+  List<UserModel?> followers = [];
+  late UserModel user;
+  Map<String, bool> followed = {};
+  List<String> user_followings = [];
 
   @override
   void initState() {
@@ -47,20 +55,38 @@ class _ShowFollowersState extends State<ShowFollowersPage> {
     getList();
   }
 
-  void getList() {
-    List<GameModel> tempList = [];
-    searchservice.gameSearch(searched_name: "d").then((value) {
-      if (value != null) {
-        tempList = value;
+  void getList() async {
+    user = (await userservice.getAuthorizedUser())!;
 
-        for (var i = 0; i < value.length; i++) {
-          selected.add(false);
+    if (user.following != null) {
+      for (int i = 0; i < (user.following)!.length; i++) {
+        String user_id = user.following![i]!;
+        if (!user_followings.contains(user_id)) {
+          user_followings.add(user_id); //if not already exist, add
         }
-
-        setState(() {
-          games = tempList;
-        });
       }
+    }
+
+    followers = (await userservice.getFollowers(user_id: user.id))!;
+
+    for (var i = 0; i < followers.length; i++) {
+      if (user_followings.contains(followers[i]?.id)) {
+        followed[(followers[i]?.id)!] = true;
+      } else {
+        followed[(followers[i]?.id)!] = false;
+      }
+    }
+  }
+
+  void follow(String user_id) async {
+    setState(() {
+      userservice.followMember(user_id_to_follow: user_id);
+    });
+  }
+
+  void unfollow(String user_id) async {
+    setState(() {
+      userservice.unfollowMember(user_id_to_unfollow: user_id);
     });
   }
 
@@ -75,46 +101,56 @@ class _ShowFollowersState extends State<ShowFollowersPage> {
           children: [
             Expanded(
               child: ListView.builder(
-                  itemCount: games.length,
+                  itemCount: followers.length,
                   itemBuilder: (context, index) {
-                    GameModel? game = games[index];
+                    UserModel? follower = followers[index];
                     return Card(
                       color: const Color(0xFF1F1D36),
                       child: ListTile(
-                        title: Text(
-                          (game?.name)!,
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        leading: Container(
-                          height: 50.0,
-                          width: 50.0,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.fill,
-                              image: Image.memory(base64Decode((game?.cover)!))
-                                  .image,
+                          title: Text(
+                            (follower?.username)!,
+                            style: TextStyle(
+                              color: Colors.grey,
                             ),
                           ),
-                        ),
-                        trailing: IconButton(
-                          icon: (selected.elementAt(index))!
-                              ? Icon(Icons.check_circle_outline_outlined,
-                                  size: 30.0, color: Colors.green)
-                              : Icon(
-                                  Icons.add_circle,
-                                  size: 30.0,
-                                  color: Colors.grey,
-                                ),
-                          onPressed: () {
-                            setState(() {
-                              selected[index] = !(selected.elementAt(index))!;
-                            });
-                          },
-                        ),
-                      ),
+                          leading: Container(
+                            height: 50.0,
+                            width: 50.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                fit: BoxFit.fill,
+                                image: (follower?.profileImage) != null
+                                    ? Image.memory(base64Decode(
+                                            (follower?.profileImage)!))
+                                        .image
+                                    : NetworkImage(
+                                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                      ),
+                              ),
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: ((followed[follower?.id])!)
+                                ? Icon(Icons.check_circle_outline_outlined,
+                                    size: 30.0, color: Colors.green)
+                                : Icon(
+                                    Icons.add_circle,
+                                    size: 30.0,
+                                    color: Colors.grey,
+                                  ),
+                            onPressed: () {
+                              setState(() {
+                                if ((followed[follower?.id]) == false) {
+                                  follow((follower?.id)!);
+                                  followed[(follower?.id)!] = true;
+                                } else {
+                                  unfollow((follower?.id)!);
+                                  followed[(follower?.id)!] = false;
+                                }
+                              });
+                            },
+                          )),
                     );
                   }),
             ),
