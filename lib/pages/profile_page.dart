@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/user_model.dart';
+import 'package:gameinn/pages/diary_page.dart';
+import 'package:gameinn/pages/followers_page.dart';
+import 'package:gameinn/pages/following_page.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -159,6 +162,72 @@ class _ShowProfileState extends State<ProfilePage> {
                 child: Divider(
                   color: Colors.white.withOpacity(0.19),
                   thickness: 1.2,
+                ),
+              ),
+              ListTile(
+                leading: Text(
+                  "Played Games",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15.0,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Text(
+                  "Diary",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15.0,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => DiaryPage()));
+                },
+              ),
+              ListTile(
+                leading: Text(
+                  "Followers",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15.0,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FollowersPage()));
+                },
+              ),
+              ListTile(
+                leading: Text(
+                  "Following",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15.0,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FollowingPage()));
+                },
+              ),
+              ListTile(
+                leading: Text(
+                  "Reviews",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15.0,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Text(
+                  "To Play List",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15.0,
+                  ),
                 ),
               ),
             ],
