@@ -132,7 +132,7 @@ class GameDetailsPage extends StatelessWidget {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => LogPage(game, "")))
+                                      builder: (context) => LogPage(game: game)))
                             },
                             child: Container(
                               height: 35,

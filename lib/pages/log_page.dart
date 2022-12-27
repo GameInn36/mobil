@@ -1,20 +1,48 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../service/review_vote_service.dart';
 
-class LogPage extends StatelessWidget {
+class LogPage extends StatefulWidget {
+  final GameModel game;
+  const LogPage({super.key, required this.game});
+
+  @override
+  State<StatefulWidget> createState() => _LogPageState(game);
+}
+
+class _LogPageState extends State<LogPage> {
   late final GameModel game;
-  late final String _userid;
+  String _userid = "";
+  String token = "";
 
   TextEditingController _stratdate = TextEditingController();
   TextEditingController _enddate = TextEditingController();
   TextEditingController _context = TextEditingController();
   double _rating = 1;
 
-  LogPage(this.game, this._userid);
+  _LogPageState(this.game);
+
+  @override
+  void initState() {
+    getUser();
+
+    super.initState();
+  }
+
+  void getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    token = (prefs.getString('token') ?? "");
+
+    setState(() {
+      _userid = user.id!;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +307,8 @@ class LogPage extends StatelessWidget {
                       userId: _userid,
                       gameId: game.id!,
                       context: _context.text,
-                      vote: _rating.toInt())
+                      vote: _rating.toInt(),
+                      token: token)
                 },
                 child: Container(
                   height: 40,

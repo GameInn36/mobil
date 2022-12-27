@@ -13,27 +13,37 @@ class ReviewVoteService {
 
   final dio = Dio();
 
-  Future<LoginModel?> reviewVoteCall({
-    required BuildContext ctx,
-    required String userId,
-    required String gameId,
-    required String context,
-    required int vote,
-  }) async {
+  Future<LoginModel?> reviewVoteCall(
+      {required BuildContext ctx,
+      required String userId,
+      required String gameId,
+      required String context,
+      required int vote,
+      required String token}) async {
     Map<String, dynamic> json = {
       "userId": userId,
       "gameId": gameId,
       "context": context,
-      "vote": vote
+      "vote": vote,
     };
     try {
       log(userId);
       log(gameId);
       log(context);
       log(vote.toString());
-      var response = await dio.post(review_vote_url, data: json);
+      var response = await dio.post(
+        review_vote_url,
+        data: json,
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
       if (response != null && response.statusCode == 200) {
         log("Worked!");
+        log(response.data.toString());
       }
     } on DioError catch (e) {
       showCustomLoginError(ctx, 'Error', 'Cannot write review.');
