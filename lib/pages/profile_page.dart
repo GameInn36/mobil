@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/user_model.dart';
@@ -8,7 +9,9 @@ import 'package:gameinn/pages/following_page.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../model/game_model.dart';
 import '../service/user_service.dart';
+import 'game_details.page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -22,32 +25,36 @@ class _ShowProfileState extends State<ProfilePage> {
   late UserModel user;
 
   String name = " ";
+  List<GameModel?> favoriteGames = [];
+
   final urlImage =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
 
   @override
   void initState() {
-    getUser();
+    getUserDetails();
 
     super.initState();
   }
 
-  void getUser() async {
+  void getUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
 
+    favoriteGames = (await userservice.getFavoriteGames(user_id: user.id))!;
+    log(favoriteGames.length.toString());
     setState(() {
       name = user.username.toString();
+      this.favoriteGames = favoriteGames;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: const Color(0xFF1F1D36),
-        alignment: Alignment.center,
-        child: SafeArea(
+      body: SafeArea(
+        child: Container(
+          alignment: Alignment.center,
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
@@ -115,11 +122,39 @@ class _ShowProfileState extends State<ProfilePage> {
                       height: 15,
                     ),
                     SizedBox(
-                      height: 130,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: favoriteGames,
-                      ),
+                      height: 170.0,
+                      child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 0.0),
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              favoriteGames.length, //buradan games gelmeli
+                          itemBuilder: (context, index) {
+                            GameModel? game = favoriteGames[index];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            GameDetailsPage(game!)));
+                              },
+                              child: SizedBox(
+                                height: 140.0,
+                                width: 100.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 6.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    child: Image.memory(
+                                      base64Decode((game?.cover)!),
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
                     ),
                   ],
                 ),
@@ -238,7 +273,7 @@ class _ShowProfileState extends State<ProfilePage> {
   }
 }
 
-List<Widget> favoriteGames = <Widget>[
+List<Widget> favoriteGames2 = <Widget>[
   SizedBox(
     width: 95.0,
     child: ClipRRect(

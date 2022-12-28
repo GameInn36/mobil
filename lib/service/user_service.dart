@@ -6,6 +6,7 @@ import 'package:gameinn/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
+import '../model/game_model.dart';
 import '../model/user_model.dart';
 
 class UserService {
@@ -17,8 +18,7 @@ class UserService {
   String unfollow_member_url =
       "https://api-gateway-ixdm6djuha-uc.a.run.app/user/unfollow/";
 
-  String get_followers_url =
-      "https://api-gateway-ixdm6djuha-uc.a.run.app/user/";
+  String get_details_url = "https://api-gateway-ixdm6djuha-uc.a.run.app/user/";
 
   final dio = Dio();
   String token = "";
@@ -126,8 +126,8 @@ class UserService {
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = (prefs.getString('token') ?? "");
-    log("searched *> ${get_followers_url}");
-    var search_url_updated = get_followers_url + user_id + "/followers";
+    log("searched *> ${get_details_url}");
+    var search_url_updated = get_details_url + user_id + "/followers";
     log("url -> ${search_url_updated}");
     try {
       var response = await dio.get(
@@ -139,7 +139,7 @@ class UserService {
               return status! <= 500;
             }),
       );
-      search_url_updated = get_followers_url;
+      search_url_updated = get_details_url;
       if (response != null && response.statusCode == 200) {
         var result =
             (response.data as List).map((x) => UserModel.fromJson(x)).toList();
@@ -163,8 +163,8 @@ class UserService {
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = (prefs.getString('token') ?? "");
-    log("searched *> ${get_followers_url}");
-    var search_url_updated = get_followers_url + user_id + "/following";
+    log("searched *> ${get_details_url}");
+    var search_url_updated = get_details_url + user_id + "/following";
     log("url -> ${search_url_updated}");
     try {
       var response = await dio.get(
@@ -176,10 +176,41 @@ class UserService {
               return status! <= 500;
             }),
       );
-      search_url_updated = get_followers_url;
+      search_url_updated = get_details_url;
       if (response != null && response.statusCode == 200) {
         var result =
             (response.data as List).map((x) => UserModel.fromJson(x)).toList();
+        log(search_url_updated);
+        log("Gelen response => ${response.data}");
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
+    }
+  }
+
+  Future<List<GameModel?>?> getFavoriteGames({
+    required user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+    log("searched *> ${get_details_url}");
+    var search_url_updated = get_details_url + user_id + "/favoriteGames";
+    log("url -> ${search_url_updated}");
+    try {
+      var response = await dio.get(
+        search_url_updated,
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      search_url_updated = get_details_url;
+      if (response != null && response.statusCode == 200) {
+        var result =
+            (response.data as List).map((x) => GameModel.fromJson(x)).toList();
         log(search_url_updated);
         log("Gelen response => ${response.data}");
         return result;
