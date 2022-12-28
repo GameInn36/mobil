@@ -120,7 +120,12 @@ class _LogPageState extends State<LogPage> {
                                 Expanded(
                                   flex: 5,
                                   child: DateTimeField(
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                      ),
                                       format: format,
+                                      resetIcon:
+                                          Icon(Icons.close, color: Colors.grey),
                                       decoration: const InputDecoration(
                                         enabled: false,
                                         prefixIcon: const Icon(
@@ -184,7 +189,12 @@ class _LogPageState extends State<LogPage> {
                                 Expanded(
                                   flex: 5,
                                   child: DateTimeField(
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                      ),
                                       format: format,
+                                      resetIcon:
+                                          Icon(Icons.close, color: Colors.grey),
                                       decoration: const InputDecoration(
                                         enabled: false,
                                         prefixIcon: const Icon(
@@ -207,7 +217,6 @@ class _LogPageState extends State<LogPage> {
                                                 currentValue ?? DateTime.now(),
                                             firstDate: DateTime(1900),
                                             lastDate: DateTime(2100));
-
                                         if (date != null) {
                                           startDate = date;
                                           return date;
