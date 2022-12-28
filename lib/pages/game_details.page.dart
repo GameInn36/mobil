@@ -1,12 +1,53 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/review_log_model.dart';
+import 'package:gameinn/model/user_model.dart';
+import 'package:gameinn/service/review_vote_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:gameinn/pages/log_page.dart';
 
-class GameDetailsPage extends StatelessWidget {
+class GameDetailsPage extends StatefulWidget {
+  final GameModel game;
+  final List<ReviewModel> reviews;
+  final ReviewModel review;
+  final bool review_found;
+  GameDetailsPage(
+      {super.key,
+      required this.game,
+      required this.reviews,
+      required this.review_found,
+      required this.review});
+
+  @override
+  State<StatefulWidget> createState() =>
+      _GameDetailsPageState(game, reviews, review_found, review);
+}
+
+class _GameDetailsPageState extends State<GameDetailsPage> {
   late final GameModel game;
-  GameDetailsPage(this.game);
+  late final List<ReviewModel> reviews;
+  late final bool review_found;
+  late final ReviewModel review;
+  _GameDetailsPageState(this.game, this.reviews, this.review_found, this.review);
+  String _userid = "";
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
+  void getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    setState(() {
+      _userid = user.id!;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,43 +168,47 @@ class GameDetailsPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
-                          child: GestureDetector(
-                            onTap: () => {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LogPage(game: game)))
-                            },
-                            child: Container(
-                              height: 35,
-                              width: 150,
-                              decoration: const BoxDecoration(
-                                color: Color(0xffE9A6A6),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(
-                                    Icons.library_add_outlined,
-                                    color: Color(0xFF1F1D36),
-                                    size: 20,
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Log or Review',
-                                    style: TextStyle(
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF1F1D36)),
-                                  ),
-                                ],
-                              ),
+                            child: GestureDetector(
+                          onTap: () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LogPage(
+                                        game: game,
+                                        review_logged: review_found,
+                                        review: review)))
+                          },
+                          child: Container(
+                            height: 35,
+                            width: 150,
+                            decoration: const BoxDecoration(
+                              color: Color(0xffE9A6A6),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.library_add_outlined,
+                                  color: Color(0xFF1F1D36),
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  review_found
+                                      ? 'Edit Log or Review'
+                                      : 'Log or Review',
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF1F1D36)),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
+                        )),
                         const SizedBox(
                           height: 10,
                         ),

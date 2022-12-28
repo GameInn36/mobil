@@ -28,7 +28,6 @@ class AutherizationService {
       var response = await dio.post(login_url, data: json);
       if (response != null && response.statusCode == 200) {
         var result = LoginModel.fromJson(response.data);
-        log("Gelen response => ${response.data}");
         return result;
       }
     } on DioError catch (e) {
@@ -51,7 +50,6 @@ class AutherizationService {
       var response = await dio.post(sign_up_url, data: json);
       if (response != null && response.statusCode == 200) {
         var result = SignUpModel.fromJson(response.data);
-        log("Gelen response => ${response.data}");
         return result;
       }
     } on DioError catch (e) {

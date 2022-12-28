@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
@@ -9,23 +10,26 @@ import '../service/review_vote_service.dart';
 
 class LogPage extends StatefulWidget {
   final GameModel game;
-  const LogPage({super.key, required this.game});
+  final bool review_logged;
+  final ReviewModel review;
+  const LogPage({super.key, required this.game, required this.review_logged, required this.review});
 
   @override
-  State<StatefulWidget> createState() => _LogPageState(game);
+  State<StatefulWidget> createState() => _LogPageState(game, review_logged, review);
 }
 
 class _LogPageState extends State<LogPage> {
   late final GameModel game;
+  late final bool review_logged;
+  late final ReviewModel review;
   String _userid = "";
-  String token = "";
 
   TextEditingController _stratdate = TextEditingController();
   TextEditingController _enddate = TextEditingController();
   TextEditingController _context = TextEditingController();
   double _rating = 1;
 
-  _LogPageState(this.game);
+  _LogPageState(this.game, this.review_logged, this.review);
 
   @override
   void initState() {
@@ -37,7 +41,6 @@ class _LogPageState extends State<LogPage> {
   void getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
-    token = (prefs.getString('token') ?? "");
 
     setState(() {
       _userid = user.id!;
@@ -245,8 +248,8 @@ class _LogPageState extends State<LogPage> {
                   ],
                 ),
               ),
-              const Text(
-                'Give your rating',
+              Text(
+                !review_logged ? 'Give your rating' : 'Edit your rating',
                 style: TextStyle(color: Colors.white, fontSize: 15),
               ),
               const SizedBox(
@@ -262,7 +265,7 @@ class _LogPageState extends State<LogPage> {
                 },
                 direction: Axis.horizontal,
                 minRating: 1,
-                initialRating: 1,
+                initialRating: review_logged ? review.vote!.toDouble() : 1,
                 itemCount: 5,
                 itemPadding: const EdgeInsets.symmetric(horizontal: 0),
                 itemSize: 22,
@@ -272,7 +275,7 @@ class _LogPageState extends State<LogPage> {
                 height: 35,
               ),
               Container(
-                height: 400,
+                height: 325,
                 decoration: const BoxDecoration(
                   color: Color(0xFF3D3B54),
                   borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -286,10 +289,12 @@ class _LogPageState extends State<LogPage> {
                       fontSize: 15,
                     ),
                     controller: _context,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'Write down your review...',
-                      hintStyle: TextStyle(
+                      hintText: !review_logged
+                          ? 'Write down your review...'
+                          : 'Write down your new review...',
+                      hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 15.0,
                       ),
@@ -307,8 +312,7 @@ class _LogPageState extends State<LogPage> {
                       userId: _userid,
                       gameId: game.id!,
                       context: _context.text,
-                      vote: _rating.toInt(),
-                      token: token)
+                      vote: _rating.toInt())
                 },
                 child: Container(
                   height: 40,
