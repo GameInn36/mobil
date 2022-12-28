@@ -4,7 +4,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gameinn/model/review_log_model.dart';
+import 'package:gameinn/model/review_with_game_model.dart';
+import 'package:gameinn/pages/profile_page.dart';
+import 'package:gameinn/service/review_vote_service.dart';
+import 'package:gameinn/service/user_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../model/user_model.dart';
 import 'game_details.page.dart';
 import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
@@ -36,9 +42,12 @@ class ShowUserReviewsPage extends StatefulWidget {
 }
 
 class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
-  final searchservice = SearchService();
+  final reviewVoteService = ReviewVoteService();
+  final userservice = UserService();
 
-  List<GameModel?> games = [];
+  List<ReviewWithGame?> userReviews = [];
+  String user_id = "";
+  String username = "";
 
   @override
   void initState() {
@@ -47,16 +56,16 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
     getList();
   }
 
-  void getList() {
-    List<GameModel> tempList = [];
-    searchservice.gameSearch(searched_name: "d").then((value) {
-      if (value != null) {
-        tempList = value;
-      }
+  void getList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
 
-      setState(() {
-        games = tempList;
-      });
+    userReviews = (await reviewVoteService.getUserReviews(user_id: user.id!))!;
+
+    setState(() {
+      this.user_id = user.id!;
+      this.userReviews = userReviews;
+      this.username = user.username!;
     });
   }
 
@@ -71,8 +80,9 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
             children: [
               Expanded(
                 child: ListView.builder(
-                  itemCount: games.length,
+                  itemCount: userReviews.length,
                   itemBuilder: (context, index) {
+                    ReviewWithGame? review = userReviews[index];
                     return Column(
                       children: [
                         Container(
@@ -92,24 +102,6 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    flex: 6,
-                                    child: Container(
-                                      alignment: Alignment.topLeft,
-                                      child: AspectRatio(
-                                        aspectRatio: 1,
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              image: DecorationImage(
-                                                  fit: BoxFit.fill,
-                                                  image: NetworkImage(
-                                                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAePHGk4zQacrlExygB4QUQlmSmCR9Qxd1Sw&usqp=CAU",
-                                                  ))),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
                                     flex: 25,
                                     child: Container(
                                       padding: const EdgeInsets.only(left: 5),
@@ -125,9 +117,9 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                               child: Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
-                                                children: const [
+                                                children: [
                                                   Text(
-                                                    "Forgotton Anne",
+                                                    (review?.game?.name)!,
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 12.0),
@@ -150,12 +142,22 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                                     0.5),
                                                             fontSize: 13.0),
                                                       ),
-                                                      const Text(
-                                                        "Faruk",
-                                                        style: TextStyle(
-                                                            color: Color(
-                                                                0xFFE9A6A6),
-                                                            fontSize: 13.0),
+                                                      InkWell(
+                                                        child: Text(
+                                                          username,
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  0xFFE9A6A6),
+                                                              fontSize: 13.0),
+                                                        ),
+                                                        onTap: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          ProfilePage()));
+                                                        },
                                                       )
                                                     ])),
                                             Expanded(
@@ -163,9 +165,9 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                               child: Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
-                                                children: const [
+                                                children: [
                                                   Text(
-                                                    "Amazing. Best game ever.",
+                                                    (review?.review?.context)!,
                                                     style: TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 13.5),
@@ -185,7 +187,9 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                           .withOpacity(0.5),
                                                     ),
                                                     Text(
-                                                      " 2",
+                                                      (review?.review
+                                                              ?.likeCount)
+                                                          .toString(),
                                                       style: TextStyle(
                                                           color: Colors.white
                                                               .withOpacity(
@@ -205,10 +209,9 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                       child: ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(10.0),
-                                        child: Image.network(
-                                          'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-                                          fit: BoxFit.fill,
-                                        ),
+                                        child: Image.memory(base64Decode((review
+                                            ?.game
+                                            ?.cover)!)), //check adding navigation
                                       ),
                                     ),
                                   ),

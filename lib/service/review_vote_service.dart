@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/review_model.dart';
+import 'package:gameinn/model/review_with_game_model.dart';
 import 'package:gameinn/widgets/show_custom_loginerror_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +18,9 @@ class ReviewVoteService {
       "https://api-gateway-ixdm6djuha-uc.a.run.app/game/";
   final String review_update_delete_url =
       'https://api-gateway-ixdm6djuha-uc.a.run.app/review/';
+
+  final String get_review_with_games_url =
+      "https://api-gateway-ixdm6djuha-uc.a.run.app/review/reviewsPage?userId=";
 
   final dio = Dio();
 
@@ -134,6 +138,37 @@ class ReviewVoteService {
       }
     } on DioError catch (e) {
       showCustomLoginError(ctx, 'Error', 'Cannot write review.');
+    }
+  }
+
+  Future<List<ReviewWithGame?>?> getUserReviews({
+    required String user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = (prefs.getString('token') ?? "");
+    var url_updated = get_review_with_games_url + user_id;
+
+    try {
+      var response = await dio.get(
+        url_updated,
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      url_updated = get_review_with_games_url;
+      if (response != null && response.statusCode == 200) {
+        var result = (response.data as List)
+            .map((x) => ReviewWithGame.fromJson(x))
+            .toList();
+
+        log("Gelen response => ${response.data}");
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
     }
   }
 }

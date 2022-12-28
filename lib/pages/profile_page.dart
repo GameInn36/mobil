@@ -47,7 +47,8 @@ class _ShowProfileState extends State<ProfilePage> {
     favoriteGames = (await userservice.getFavoriteGames(user_id: user.id))!;
     log(favoriteGames.length.toString());
     setState(() {
-      name = user.username.toString();
+      this.user = user;
+      this.name = user.username.toString();
       this.favoriteGames = favoriteGames;
     });
   }
