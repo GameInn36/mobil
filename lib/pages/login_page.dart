@@ -54,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'GameInn',
                   style: TextStyle(
                     fontSize: 40.0,
@@ -62,24 +62,24 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 250.0,
                   child: Divider(
                     thickness: 1.0,
                     color: Colors.grey,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 35.0,
                 ),
-                Text(
+                const Text(
                   'Login',
                   style: TextStyle(
                     fontSize: 35.0,
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5.0,
                 ),
                 const Text(
@@ -89,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20.0,
                 ),
                 Padding(
@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10.0,
                 ),
                 Padding(
@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                   'Forgot Password?',
                   style: TextStyle(fontSize: 10, color: Color(0xffE9A6A6)),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30.0,
                 ),
                 Padding(
@@ -168,12 +168,12 @@ class _LoginPageState extends State<LoginPage> {
                   child: GestureDetector(
                     onTap: () => fetch(),
                     child: Container(
-                      padding: EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(10.0),
                       decoration: const BoxDecoration(
                         color: Color(0xffE9A6A6),
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           'Login',
                           style: TextStyle(
@@ -188,10 +188,10 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
-                    Text(
+                    const Text(
                       'Don\'t have an account? Please ',
                       style: TextStyle(
                         fontSize: 10.0,
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     GestureDetector(
                       onTap: widget.showSignUpPage,
-                      child: Text(
+                      child: const Text(
                         'Sign up',
                         style: TextStyle(
                           fontSize: 10.0,
@@ -209,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    Text(
+                    const Text(
                       ' first.',
                       style: TextStyle(
                         fontSize: 10.0,

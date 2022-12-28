@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/game_details.page.dart';
+import 'package:gameinn/service/review_vote_service.dart';
 import 'package:gameinn/service/search_service.dart';
 import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,15 +63,30 @@ class _SearchGameState extends State<SearchGames> {
   final searchservice = SearchService();
 
   List<GameModel?> games = [];
+  String _userid = "";
 
   void updateList(String searched) {
-    log(searched);
     setState(() {
       searchservice.gameSearch(searched_name: searched).then((value) {
         if (value != null) {
           games = value;
         } else {}
       });
+    });
+  }
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
+  void getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    setState(() {
+      _userid = user.id!;
     });
   }
 
@@ -129,12 +146,27 @@ class _SearchGameState extends State<SearchGames> {
                         ),
                         leading: Image.memory(base64Decode((game?.cover)!)),
                         trailing: Icon(Icons.arrow_forward_rounded),
-                        onTap: () {
+                        onTap: () async {
+                          bool review_found = false;
+                          ReviewModel review = ReviewModel(id: "");
+                          List<ReviewModel>? reviews = await ReviewVoteService()
+                              .reviewLogGet(ctx: context, gameId: game!.id!);
+                          if (reviews != null) {
+                            review = reviews.firstWhere(
+                              (element) => element.user!.id! == _userid,
+                              orElse: () => ReviewModel(id: ""),
+                            );
+                            review_found = review.id == "" ? false : true;
+                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      GameDetailsPage(game!)));
+                                  builder: (context) => GameDetailsPage(
+                                        game: game,
+                                        reviews: reviews != null ? reviews : [],
+                                        review_found: review_found,
+                                        review: review,
+                                      )));
                         },
                       ),
                     );
@@ -158,15 +190,30 @@ class _SearchStudioState extends State<SearchStudio> {
   final searchservice = SearchService();
 
   List<GameModel?> games = [];
+  String _userid = "";
 
   void updateList(String searched) {
-    log(searched);
     setState(() {
       searchservice.studioSearch(searched_name: searched).then((value) {
         if (value != null) {
           games = value;
         } else {}
       });
+    });
+  }
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
+  void getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    setState(() {
+      _userid = user.id!;
     });
   }
 
@@ -223,12 +270,27 @@ class _SearchStudioState extends State<SearchStudio> {
                         ),
                         leading: Image.memory(base64Decode((game?.cover)!)),
                         trailing: Icon(Icons.arrow_forward_rounded),
-                        onTap: () {
+                        onTap: () async {
+                          bool review_found = false;
+                          ReviewModel review = ReviewModel(id: "");
+                          List<ReviewModel>? reviews = await ReviewVoteService()
+                              .reviewLogGet(ctx: context, gameId: game!.id!);
+                          if (reviews != null) {
+                            review = reviews.firstWhere(
+                              (element) => element.user!.id! == _userid,
+                              orElse: () => ReviewModel(id: ""),
+                            );
+                            review_found = review.id == "" ? false : true;
+                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      GameDetailsPage(game!)));
+                                  builder: (context) => GameDetailsPage(
+                                        game: game,
+                                        reviews: reviews != null ? reviews : [],
+                                        review_found: review_found,
+                                        review: review,
+                                      )));
                         },
                       ),
                     );

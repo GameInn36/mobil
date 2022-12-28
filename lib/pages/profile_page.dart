@@ -11,6 +11,8 @@ import 'package:gameinn/view/sidebar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/game_model.dart';
+import '../model/review_log_model.dart';
+import '../service/review_vote_service.dart';
 import '../service/user_service.dart';
 import 'game_details.page.dart';
 
@@ -133,12 +135,30 @@ class _ShowProfileState extends State<ProfilePage> {
                           itemBuilder: (context, index) {
                             GameModel? game = favoriteGames[index];
                             return InkWell(
-                              onTap: () {
+                              onTap: () async {
+                                bool review_found = false;
+                                ReviewModel review = ReviewModel(id: "");
+                                List<ReviewModel>? reviews =
+                                    await ReviewVoteService().reviewLogGet(
+                                        ctx: context, gameId: game!.id!);
+                                if (reviews != null) {
+                                  review = reviews.firstWhere(
+                                    (element) => element.user!.id! == user.id,
+                                    orElse: () => ReviewModel(id: ""),
+                                  );
+                                  review_found = review.id == "" ? false : true;
+                                }
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            GameDetailsPage(game!)));
+                                        builder: (context) => GameDetailsPage(
+                                              game: game,
+                                              reviews: reviews != null
+                                                  ? reviews
+                                                  : [],
+                                              review_found: review_found,
+                                              review: review,
+                                            )));
                               },
                               child: SizedBox(
                                 height: 140.0,

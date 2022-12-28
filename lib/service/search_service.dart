@@ -21,7 +21,6 @@ class SearchService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = (prefs.getString('token') ?? "");
 
-    log("searched *> ${searched_name}");
     var search_url_updated = searchgame_url + searched_name;
     try {
       var response = await dio.get(
@@ -41,9 +40,7 @@ class SearchService {
         log("Gelen response => ${response.data}");
         return result;
       }
-    } on DioError catch (e) {
-      log(e.message);
-    }
+    } on DioError catch (e) {}
   }
 
   Future<List<GameModel>?> studioSearch({
@@ -51,7 +48,6 @@ class SearchService {
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = (prefs.getString('token') ?? "");
-    log("searched *> ${searched_name}");
     var search_url_updated = searchstudio_url + searched_name;
     try {
       var response = await dio.get(
@@ -102,8 +98,6 @@ class SearchService {
         log("Gelen response => ${response.data}");
         return result;
       }
-    } on DioError catch (e) {
-      log(e.message);
-    }
+    } on DioError catch (e) {}
   }
 }

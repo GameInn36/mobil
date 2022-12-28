@@ -5,11 +5,13 @@ import 'package:gameinn/pages/followers_page.dart';
 import 'package:gameinn/pages/game_details.page.dart';
 import 'package:gameinn/model/game_model.dart';
 import 'package:gameinn/pages/search_page.dart';
+import 'package:gameinn/service/review_vote_service.dart';
 import 'package:gameinn/service/search_service.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:gameinn/pages/auth_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/navigator_key.dart';
+import 'model/review_log_model.dart';
 import 'model/user_model.dart';
 
 void main() {
@@ -119,11 +121,22 @@ class _DisplayGamesState extends State<HomeGames> {
   final searchservice = SearchService();
 
   List<GameModel?> games = [];
+  String _userid = "";
 
   @override
   void initState() {
+    getUser();
     super.initState();
     getList();
+  }
+
+  void getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    setState(() {
+      _userid = user.id!;
+    });
   }
 
   void getList() {
@@ -171,12 +184,29 @@ class _DisplayGamesState extends State<HomeGames> {
                       itemBuilder: (context, index) {
                         GameModel? game = games[index];
                         return InkWell(
-                          onTap: () {
+                          onTap: () async {
+                            bool review_found = false;
+                            ReviewModel review = ReviewModel(id: "");
+                            List<ReviewModel>? reviews =
+                                await ReviewVoteService().reviewLogGet(
+                                    ctx: context, gameId: game!.id!);
+                            if (reviews != null) {
+                              review = reviews.firstWhere(
+                                (element) => element.user!.id! == _userid,
+                                orElse: () => ReviewModel(id: ""),
+                              );
+                              review_found = review.id == "" ? false : true;
+                            }
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        GameDetailsPage(game!)));
+                                    builder: (context) => GameDetailsPage(
+                                          game: game,
+                                          reviews:
+                                              reviews != null ? reviews : [],
+                                          review_found: review_found,
+                                          review: review,
+                                        )));
                           },
                           child: SizedBox(
                             height: 140.0,
