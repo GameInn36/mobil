@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/review_log_model.dart';
+import 'package:gameinn/model/review_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,7 +75,7 @@ class _LogPageState extends State<LogPage> {
             children: [
               Container(
                 margin: const EdgeInsets.only(top: 35, bottom: 20),
-                height: 285,
+                height: 275,
                 width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -282,9 +283,39 @@ class _LogPageState extends State<LogPage> {
                   ],
                 ),
               ),
+              GestureDetector(
+                onTap: () => {},
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Color(0xffE9A6A6),
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          !review_logged ? 'Log' : 'Edit Log',
+                          style: const TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1F1D36)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 30,
+              ),
               Text(
-                !review_logged ? 'Give your rating' : 'Edit your rating',
-                style: TextStyle(color: Colors.white, fontSize: 15),
+                !review_logged
+                    ? 'Give your rating'
+                    : 'Edit your rating', //DÜZELT
+                style: const TextStyle(color: Colors.white, fontSize: 15),
               ),
               const SizedBox(
                 height: 5,
@@ -306,10 +337,10 @@ class _LogPageState extends State<LogPage> {
                 unratedColor: Colors.grey.shade800,
               ),
               const SizedBox(
-                height: 35,
+                height: 25,
               ),
               Container(
-                height: 325,
+                height: 280,
                 decoration: const BoxDecoration(
                   color: Color(0xFF3D3B54),
                   borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -339,31 +370,85 @@ class _LogPageState extends State<LogPage> {
               const SizedBox(
                 height: 20,
               ),
-              GestureDetector(
-                onTap: () => {
-                  ReviewVoteService().reviewVoteCall(
-                      ctx: context,
-                      userId: _userid,
-                      gameId: game.id!,
-                      context: _context.text,
-                      vote: _rating.toInt())
-                },
-                child: Container(
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color(0xffE9A6A6),
-                    borderRadius: BorderRadius.all(Radius.circular(15)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  review_logged
+                      ? GestureDetector(
+                          onTap: () => {
+                            if (review_logged)
+                              {
+                                ReviewVoteService().reviewDelete(
+                                    ctx: context, review_id: review.id!)
+                              }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFEC2626),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Delete Review',
+                                style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1F1D36)),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  const SizedBox(
+                    width: 10,
                   ),
-                  child: const Center(
-                    child: Text(
-                      'Log',
-                      style: TextStyle(
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F1D36)),
+                  GestureDetector(
+                    onTap: () async {
+                      ReviewModel added_review = ReviewModel(id: "");
+                      if (!review_logged) {
+                        added_review = (await ReviewVoteService().reviewVoteCall(
+                            ctx: context,
+                            userId: _userid,
+                            gameId: game.id!,
+                            context: _context.text,
+                            vote: _rating.toInt()))!;
+                        if (added_review.id != "") {
+                          game.vote = (game.vote! * game.voteCount!.toDouble() +
+                                  added_review.vote!.toDouble()) /
+                              (game.voteCount! + 1);
+                        }
+                      } else {
+                        ReviewVoteService().reviewVoteUpdate(
+                            ctx: context,
+                            userId: _userid,
+                            gameId: game.id!,
+                            context: _context.text,
+                            vote: _rating.toInt(),
+                            review_id: review.id!);
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Color(0xffE9A6A6),
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: Center(
+                        child: Text(
+                          !review_logged ? 'Add Review' : 'Edit Review',
+                          style: const TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1F1D36)),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(
                 height: 25,

@@ -272,7 +272,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                           onRatingUpdate: (rating) {},
                           direction: Axis.horizontal,
                           minRating: 0,
-                          initialRating: (game.vote!.toDouble()),
+                          initialRating: (game.vote!),
                           itemCount: 5,
                           allowHalfRating: true,
                           itemPadding:

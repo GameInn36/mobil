@@ -28,7 +28,7 @@ class GameModel {
   List<String?>? genres;
   String? publisher;
   List<String?>? platforms;
-  int? vote;
+  double? vote;
   int? voteCount;
   int? firstReleaseDate;
 
@@ -66,7 +66,7 @@ class GameModel {
       });
       platforms = arr0;
     }
-    vote = json['vote']?.toInt();
+    vote = json['vote']?.toDouble();
     voteCount = json['voteCount']?.toInt();
     firstReleaseDate = json['first_release_date']?.toInt();
   }
