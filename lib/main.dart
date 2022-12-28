@@ -51,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _username = "";
+  String user_id = "";
 
   @override
   void initState() {
@@ -64,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _username = user.username.toString();
+      user_id = user.id.toString();
     });
   }
 
@@ -74,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         drawer: SidebarDrawerWidget(
           username: _username,
+          user_id: user_id,
         ),
         appBar: AppBar(
           centerTitle: true,

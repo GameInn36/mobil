@@ -154,9 +154,10 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                           Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          ProfilePage()));
+                                                                  builder: (context) =>
+                                                                      ProfilePage(
+                                                                          user_id:
+                                                                              user_id)));
                                                         },
                                                       )
                                                     ])),

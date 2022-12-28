@@ -17,13 +17,16 @@ import '../service/user_service.dart';
 import 'game_details.page.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final String user_id;
+  ProfilePage({super.key, required this.user_id});
 
   @override
-  State<StatefulWidget> createState() => _ShowProfileState();
+  State<StatefulWidget> createState() => _ShowProfileState(user_id);
 }
 
 class _ShowProfileState extends State<ProfilePage> {
+  late String user_id;
+  _ShowProfileState(this.user_id);
   final userservice = UserService();
   late UserModel user;
 
@@ -41,8 +44,7 @@ class _ShowProfileState extends State<ProfilePage> {
   }
 
   void getUserDetails() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    user = (await userservice.getUser(user_id: user_id))!;
 
     favoriteGames = (await userservice.getFavoriteGames(user_id: user.id))!;
     log(favoriteGames.length.toString());

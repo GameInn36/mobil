@@ -7,7 +7,10 @@ import 'package:gameinn/pages/to_play_list_page.dart';
 
 class SidebarDrawerWidget extends StatelessWidget {
   final String username;
-  const SidebarDrawerWidget({Key? key, required this.username}) : super(key: key);
+  final String user_id;
+  const SidebarDrawerWidget(
+      {Key? key, required this.username, required this.user_id})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +156,7 @@ class SidebarDrawerWidget extends StatelessWidget {
     switch (index) {
       case 0:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ProfilePage(),
+          builder: (context) => ProfilePage(user_id: user_id),
         ));
         break;
       case 1:
