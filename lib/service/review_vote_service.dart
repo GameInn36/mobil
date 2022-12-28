@@ -49,7 +49,7 @@ class ReviewVoteService {
     }
   }
 
-  Future<List<ReviewModel>?> reviewLogGet(
+  Future<List<ReviewLogModel>?> reviewLogGet(
       {required BuildContext ctx, required String gameId}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = (prefs.getString('token') ?? "");
@@ -65,7 +65,7 @@ class ReviewVoteService {
       );
       if (response != null && response.statusCode == 200) {
         var result = (response.data['reviews'] as List)
-            .map((x) => ReviewModel.fromJson(x))
+            .map((x) => ReviewLogModel.fromJson(x))
             .toList();
         return result;
       }

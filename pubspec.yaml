@@ -40,6 +40,8 @@ dependencies:
   dio: ^4.0.6
   shared_preferences:
   flutter_rating_bar: ^4.0.1
+  datetime_picker_formfield: ^2.0.1
+  intl: ^0.17.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

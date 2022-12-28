@@ -11,8 +11,8 @@ import 'package:gameinn/pages/log_page.dart';
 
 class GameDetailsPage extends StatefulWidget {
   final GameModel game;
-  final List<ReviewModel> reviews;
-  final ReviewModel review;
+  final List<ReviewLogModel> reviews;
+  final ReviewLogModel review;
   final bool review_found;
   GameDetailsPage(
       {super.key,
@@ -28,10 +28,11 @@ class GameDetailsPage extends StatefulWidget {
 
 class _GameDetailsPageState extends State<GameDetailsPage> {
   late final GameModel game;
-  late final List<ReviewModel> reviews;
+  late final List<ReviewLogModel> reviews;
   late final bool review_found;
-  late final ReviewModel review;
-  _GameDetailsPageState(this.game, this.reviews, this.review_found, this.review);
+  late final ReviewLogModel review;
+  _GameDetailsPageState(
+      this.game, this.reviews, this.review_found, this.review);
   String _userid = "";
 
   @override

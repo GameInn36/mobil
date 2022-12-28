@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:gameinn/model/review_log_model.dart';
 
 import 'game_details.page.dart';
 import '../model/game_model.dart';

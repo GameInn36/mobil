@@ -108,13 +108,14 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                         trailing: Icon(Icons.arrow_forward_rounded),
                         onTap: () async {
                           bool review_found = false;
-                          ReviewModel review = ReviewModel(id: "");
-                          List<ReviewModel>? reviews = await ReviewVoteService()
-                              .reviewLogGet(ctx: context, gameId: game!.id!);
+                          ReviewLogModel review = ReviewLogModel(id: "");
+                          List<ReviewLogModel>? reviews =
+                              await ReviewVoteService().reviewLogGet(
+                                  ctx: context, gameId: game!.id!);
                           if (reviews != null) {
                             review = reviews.firstWhere(
                               (element) => element.user!.id! == _userid,
-                              orElse: () => ReviewModel(id: ""),
+                              orElse: () => ReviewLogModel(id: ""),
                             );
                             review_found = review.id == "" ? false : true;
                           }

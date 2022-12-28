@@ -65,8 +65,8 @@ class GameWithReviews {
 */
 
   GameModel? game;
-  List<ReviewModel?>? reviews;
-  List<ReviewModel?>? followedFriendsReviews;
+  List<ReviewLogModel?>? reviews;
+  List<ReviewLogModel?>? followedFriendsReviews;
 
   GameWithReviews({
     this.game,
@@ -75,21 +75,21 @@ class GameWithReviews {
   });
   GameWithReviews.fromJson(Map<String, dynamic> json) {
     game = (json['game'] != null) ? GameModel.fromJson(json['game']) : null;
-  if (json['reviews'] != null) {
-  final v = json['reviews'];
-  final arr0 = <ReviewModel>[];
-  v.forEach((v) {
-  arr0.add(ReviewModel.fromJson(v));
-  });
-    reviews = arr0;
+    if (json['reviews'] != null) {
+      final v = json['reviews'];
+      final arr0 = <ReviewLogModel>[];
+      v.forEach((v) {
+        arr0.add(ReviewLogModel.fromJson(v));
+      });
+      reviews = arr0;
     }
-  if (json['followedFriendsReviews'] != null) {
-  final v = json['followedFriendsReviews'];
-  final arr0 = <ReviewModel>[];
-  v.forEach((v) {
-  arr0.add(ReviewModel.fromJson(v));
-  });
-    followedFriendsReviews = arr0;
+    if (json['followedFriendsReviews'] != null) {
+      final v = json['followedFriendsReviews'];
+      final arr0 = <ReviewLogModel>[];
+      v.forEach((v) {
+        arr0.add(ReviewLogModel.fromJson(v));
+      });
+      followedFriendsReviews = arr0;
     }
   }
   Map<String, dynamic> toJson() {
@@ -100,17 +100,17 @@ class GameWithReviews {
     if (reviews != null) {
       final v = reviews;
       final arr0 = [];
-  v!.forEach((v) {
-  arr0.add(v!.toJson());
-  });
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
       data['reviews'] = arr0;
     }
     if (followedFriendsReviews != null) {
       final v = followedFriendsReviews;
       final arr0 = [];
-  v!.forEach((v) {
-  arr0.add(v!.toJson());
-  });
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
       data['followedFriendsReviews'] = arr0;
     }
     return data;

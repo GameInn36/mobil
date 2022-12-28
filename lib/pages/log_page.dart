@@ -3,33 +3,49 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/user_model.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../service/review_vote_service.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class LogPage extends StatefulWidget {
   final GameModel game;
   final bool review_logged;
-  final ReviewModel review;
-  const LogPage({super.key, required this.game, required this.review_logged, required this.review});
+  final ReviewLogModel review;
+
+  LogPage(
+      {super.key,
+      required this.game,
+      required this.review_logged,
+      required this.review});
 
   @override
-  State<StatefulWidget> createState() => _LogPageState(game, review_logged, review);
+  State<StatefulWidget> createState() =>
+      _LogPageState(game, review_logged, review);
 }
 
 class _LogPageState extends State<LogPage> {
   late final GameModel game;
   late final bool review_logged;
-  late final ReviewModel review;
+  late final ReviewLogModel review;
   String _userid = "";
 
-  TextEditingController _stratdate = TextEditingController();
+  TextEditingController _startdate = TextEditingController();
   TextEditingController _enddate = TextEditingController();
   TextEditingController _context = TextEditingController();
   double _rating = 1;
 
   _LogPageState(this.game, this.review_logged, this.review);
+
+  DateTime? startDate;
+  DateTime? endDate;
+
+  List<String> items = ['Unfinished', 'Finised', 'Still Playing'];
+  String selectedItem = 'Unfinished';
+
+  final format = DateFormat('yyyy-MM-dd');
 
   @override
   void initState() {
@@ -103,40 +119,40 @@ class _LogPageState extends State<LogPage> {
                               children: [
                                 Expanded(
                                   flex: 5,
-                                  child: TextFormField(
-                                    controller: _stratdate,
-                                    decoration: InputDecoration(
-                                      enabled: false,
-                                      prefixIcon: const Icon(
-                                        Icons.calendar_today,
-                                        size: 15.0,
-                                        color: Colors.white,
+                                  child: DateTimeField(
+                                      format: format,
+                                      decoration: const InputDecoration(
+                                        enabled: false,
+                                        prefixIcon: const Icon(
+                                          Icons.calendar_today,
+                                          size: 15.0,
+                                          color: Colors.white,
+                                        ),
+                                        border: InputBorder.none,
+                                        hintText: 'YY/MM/DD',
+                                        hintStyle: const TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 15.0,
+                                        ),
                                       ),
-                                      border: InputBorder.none,
-                                      hintText: DateTime.now()
-                                          .toString()
-                                          .split(' ')
-                                          .first,
-                                      hintStyle: const TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 15.0,
-                                      ),
-                                    ),
-                                  ),
+                                      onShowPicker:
+                                          (context, currentValue) async {
+                                        final date = await showDatePicker(
+                                            context: context,
+                                            initialDate:
+                                                currentValue ?? DateTime.now(),
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime(2100));
+
+                                        if (date != null) {
+                                          startDate = date;
+                                          return date;
+                                        } else {
+                                          startDate = currentValue;
+                                          return currentValue;
+                                        }
+                                      }),
                                 ),
-                                Expanded(
-                                  flex: 2,
-                                  child: GestureDetector(
-                                    onTap: () => {},
-                                    child: const Text(
-                                      'Change',
-                                      style: TextStyle(
-                                        color: Color(0xFFE9A6A6),
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                                )
                               ],
                             ),
                           ),
@@ -167,40 +183,40 @@ class _LogPageState extends State<LogPage> {
                               children: [
                                 Expanded(
                                   flex: 5,
-                                  child: TextFormField(
-                                    controller: _enddate,
-                                    decoration: InputDecoration(
-                                      enabled: false,
-                                      prefixIcon: const Icon(
-                                        Icons.calendar_today,
-                                        size: 15.0,
-                                        color: Colors.white,
+                                  child: DateTimeField(
+                                      format: format,
+                                      decoration: const InputDecoration(
+                                        enabled: false,
+                                        prefixIcon: const Icon(
+                                          Icons.calendar_today,
+                                          size: 15.0,
+                                          color: Colors.white,
+                                        ),
+                                        border: InputBorder.none,
+                                        hintText: 'YY/MM/DD',
+                                        hintStyle: const TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 15.0,
+                                        ),
                                       ),
-                                      border: InputBorder.none,
-                                      hintText: DateTime.now()
-                                          .toString()
-                                          .split(' ')
-                                          .first,
-                                      hintStyle: const TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 15.0,
-                                      ),
-                                    ),
-                                  ),
+                                      onShowPicker:
+                                          (context, currentValue) async {
+                                        final date = await showDatePicker(
+                                            context: context,
+                                            initialDate:
+                                                currentValue ?? DateTime.now(),
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime(2100));
+
+                                        if (date != null) {
+                                          startDate = date;
+                                          return date;
+                                        } else {
+                                          startDate = currentValue;
+                                          return currentValue;
+                                        }
+                                      }),
                                 ),
-                                Expanded(
-                                  flex: 2,
-                                  child: GestureDetector(
-                                    onTap: () => {},
-                                    child: const Text(
-                                      'Change',
-                                      style: TextStyle(
-                                        color: Color(0xFFE9A6A6),
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                                )
                               ],
                             ),
                           ),
@@ -215,13 +231,22 @@ class _LogPageState extends State<LogPage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15)),
                             ),
-                            child: const Center(
-                              child: Text(
-                                'Finished',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                ),
+                            child: Center(
+                              child: DropdownButton<String>(
+                                value: selectedItem,
+                                items: items
+                                    .map((item) => DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Text(item,
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 17.0,
+                                              )),
+                                        ))
+                                    .toList(),
+                                onChanged: (item) => setState(() {
+                                  selectedItem = item!;
+                                }),
                               ),
                             ),
                           ),
