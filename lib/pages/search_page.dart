@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/game_details.page.dart';
+import 'package:gameinn/pages/profile_page.dart';
 import 'package:gameinn/service/review_vote_service.dart';
 import 'package:gameinn/service/search_service.dart';
 import 'package:gameinn/service/user_service.dart';
@@ -435,6 +436,14 @@ class _SearchMemberState extends State<SearchMember> {
                     return Card(
                       color: const Color(0xFF1F1D36),
                       child: ListTile(
+                          onTap: (() {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfilePage(
+                                          user_id: (member?.id)!,
+                                        )));
+                          }),
                           title: Text(
                             (member?.username)!,
                             style: TextStyle(

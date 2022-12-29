@@ -16,7 +16,8 @@ import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
 
 class UserReviewsPage extends StatelessWidget {
-  const UserReviewsPage({Key? key}) : super(key: key);
+  final String user_id;
+  UserReviewsPage({super.key, required this.user_id});
 
   @override
   Widget build(BuildContext context) {
@@ -29,24 +30,29 @@ class UserReviewsPage extends StatelessWidget {
               fontWeight: FontWeight.bold, color: Colors.white, fontSize: 23.0),
         ),
       ),
-      body: ShowUserReviewsPage(),
+      body: ShowUserReviewsPage(user_id: user_id),
     );
   }
 }
 
 class ShowUserReviewsPage extends StatefulWidget {
-  ShowUserReviewsPage({Key? key}) : super(key: key);
+  final String user_id;
+  ShowUserReviewsPage({super.key, required this.user_id});
 
   @override
-  State<StatefulWidget> createState() => _ShowUserReviewsState();
+  State<StatefulWidget> createState() => _ShowUserReviewsState(user_id);
 }
 
 class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
+  late String user_id;
+  _ShowUserReviewsState(this.user_id);
+  late UserModel user;
+  late UserModel authorizedUser;
   final reviewVoteService = ReviewVoteService();
   final userservice = UserService();
 
   List<ReviewWithGame?> userReviews = [];
-  String user_id = "";
+
   String username = "";
 
   @override
@@ -57,12 +63,15 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
   }
 
   void getList() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    user = (await userservice.getUser(user_id: user_id))!;
+
+    authorizedUser = (await userservice.getAuthorizedUser())!;
 
     userReviews = (await reviewVoteService.getUserReviews(user_id: user.id!))!;
 
     setState(() {
+      this.authorizedUser = authorizedUser;
+      this.user = user;
       this.user_id = user.id!;
       this.userReviews = userReviews;
       this.username = user.username!;
@@ -227,7 +236,7 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                               review_log = reviews.firstWhere(
                                                 (element) =>
                                                     element.user!.id! ==
-                                                    user_id,
+                                                    authorizedUser.id,
                                                 orElse: () =>
                                                     ReviewLogModel(id: ""),
                                               );

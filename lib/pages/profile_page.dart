@@ -283,7 +283,9 @@ class _ShowProfileState extends State<ProfilePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => UserReviewsPage()));
+                          builder: (context) => UserReviewsPage(
+                                user_id: user_id,
+                              )));
                 },
               ),
               ListTile(
