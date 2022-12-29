@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -21,6 +22,9 @@ class ReviewVoteService {
 
   final String get_review_with_games_url =
       "https://api-gateway-ixdm6djuha-uc.a.run.app/review/reviewsPage?userId=";
+
+  final String like_dislike_review_url =
+      'https://api-gateway-ixdm6djuha-uc.a.run.app/review/';
 
   final dio = Dio();
 
@@ -169,6 +173,53 @@ class ReviewVoteService {
       }
     } on DioError catch (e) {
       log(e.message);
+    }
+  }
+
+  Future<ReviewModel?> likeReview({required String review_id}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = (prefs.getString('token') ?? "");
+    var url_updated = like_dislike_review_url + review_id + "/like";
+    try {
+      var response = await dio.post(
+        review_vote_url,
+        data: jsonEncode({}),
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      url_updated = like_dislike_review_url;
+      if (response != null && response.statusCode == 200) {
+        log("LIKED!!!");
+      }
+    } on DioError catch (e) {
+      log("***PROBLEM***");
+    }
+  }
+
+  Future<ReviewModel?> dislikeReview({required String review_id}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = (prefs.getString('token') ?? "");
+    var url_updated = like_dislike_review_url + review_id + "/unlike";
+    try {
+      var response = await dio.post(
+        review_vote_url,
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      url_updated = like_dislike_review_url;
+      if (response != null && response.statusCode == 200) {
+        log("LIKED!!!");
+      }
+    } on DioError catch (e) {
+      log("***PROBLEM***");
     }
   }
 }

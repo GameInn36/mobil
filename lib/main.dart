@@ -249,12 +249,54 @@ class _DisplayGamesState extends State<HomeGames> {
                 ),
                 SizedBox(
                   height: 170.0,
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 0.0),
-                    scrollDirection: Axis.horizontal,
-                    children: mostPopularGames,
-                  ),
+                  child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 0.0),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: games.length, //buradan games gelmeli
+                      itemBuilder: (context, index) {
+                        GameModel? game = games[index];
+                        return InkWell(
+                          onTap: () async {
+                            bool review_found = false;
+                            ReviewLogModel review = ReviewLogModel(id: "");
+                            List<ReviewLogModel>? reviews =
+                                await ReviewVoteService().reviewLogGet(
+                                    ctx: context, gameId: game!.id!);
+                            if (reviews != null) {
+                              review = reviews.firstWhere(
+                                (element) => element.user!.id! == _userid,
+                                orElse: () => ReviewLogModel(id: ""),
+                              );
+                              review_found = review.id == "" ? false : true;
+                            }
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GameDetailsPage(
+                                          game: game,
+                                          reviews:
+                                              reviews != null ? reviews : [],
+                                          review_found: review_found,
+                                          review: review,
+                                        )));
+                          },
+                          child: SizedBox(
+                            height: 140.0,
+                            width: 100.0,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5.0),
+                                child: Image.memory(
+                                  base64Decode((game?.cover)!),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
                 ),
               ],
             ),
@@ -275,14 +317,56 @@ class _DisplayGamesState extends State<HomeGames> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 170.0,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 0.0),
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: mostPopularGames,
-                  ),
+                  child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 0.0),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: games.length, //buradan games gelmeli
+                      itemBuilder: (context, index) {
+                        GameModel? game = games[index];
+                        return InkWell(
+                          onTap: () async {
+                            bool review_found = false;
+                            ReviewLogModel review = ReviewLogModel(id: "");
+                            List<ReviewLogModel>? reviews =
+                                await ReviewVoteService().reviewLogGet(
+                                    ctx: context, gameId: game!.id!);
+                            if (reviews != null) {
+                              review = reviews.firstWhere(
+                                (element) => element.user!.id! == _userid,
+                                orElse: () => ReviewLogModel(id: ""),
+                              );
+                              review_found = review.id == "" ? false : true;
+                            }
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GameDetailsPage(
+                                          game: game,
+                                          reviews:
+                                              reviews != null ? reviews : [],
+                                          review_found: review_found,
+                                          review: review,
+                                        )));
+                          },
+                          child: SizedBox(
+                            height: 140.0,
+                            width: 100.0,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5.0),
+                                child: Image.memory(
+                                  base64Decode((game?.cover)!),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
                 ),
               ],
             ),

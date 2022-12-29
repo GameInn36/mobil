@@ -53,6 +53,8 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
 
   List<ReviewWithGame?> userReviews = [];
 
+  Map<String, bool> liked = {};
+
   String username = "";
 
   @override
@@ -69,12 +71,42 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
 
     userReviews = (await reviewVoteService.getUserReviews(user_id: user.id!))!;
 
+    if (userReviews != null) {
+      for (int i = 0; i < userReviews.length; i++) {
+        if ((userReviews[i]?.review?.likedUsers)!.contains(authorizedUser.id)) {
+          liked[(userReviews[i]?.review?.id)!] =
+              true; //if not already exist, add
+        } else {
+          liked[(userReviews[i]?.review?.id)!] = false;
+        }
+      }
+    }
+
     setState(() {
       this.authorizedUser = authorizedUser;
       this.user = user;
       this.user_id = user.id!;
       this.userReviews = userReviews;
       this.username = user.username!;
+      this.liked = liked;
+    });
+  }
+
+  void like(String review_id) async {
+    setState(() {
+      reviewVoteService.likeReview(review_id: review_id).then((value) {
+        //userReviews = (await reviewVoteService.getUserReviews(user_id: user.id!))!;
+      });
+    });
+  }
+
+  void dislike(String review_id) {
+    setState(() {
+      reviewVoteService.dislikeReview(review_id: review_id).then((value) {
+        if (value != null) {
+          //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
+        } else {}
+      });
     });
   }
 
@@ -92,6 +124,7 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                   itemCount: userReviews.length,
                   itemBuilder: (context, index) {
                     ReviewWithGame? review = userReviews[index];
+                    int likeCount = (review?.review?.likeCount)!;
                     return Column(
                       children: [
                         Container(
@@ -191,15 +224,46 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    Icon(
-                                                      Icons.favorite_border,
-                                                      color: Colors.white
-                                                          .withOpacity(0.5),
+                                                    IconButton(
+                                                      icon: (liked[(review
+                                                              ?.review?.id)])!
+                                                          ? Icon(Icons.favorite,
+                                                              size: 30.0,
+                                                              color: Colors.red)
+                                                          : Icon(
+                                                              Icons
+                                                                  .favorite_outline_outlined,
+                                                              size: 30.0,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          if ((liked[(review
+                                                                  ?.review
+                                                                  ?.id)]) ==
+                                                              false) {
+                                                            like((review
+                                                                ?.review?.id)!);
+                                                            liked[(review
+                                                                ?.review
+                                                                ?.id)!] = true;
+                                                            likeCount =
+                                                                likeCount + 1;
+                                                          } else {
+                                                            dislike((review
+                                                                ?.review?.id)!);
+                                                            liked[(review
+                                                                ?.review
+                                                                ?.id)!] = false;
+                                                            likeCount =
+                                                                likeCount - 1;
+                                                          }
+                                                        });
+                                                      },
                                                     ),
                                                     Text(
-                                                      (review?.review
-                                                              ?.likeCount)
-                                                          .toString(),
+                                                      likeCount.toString(),
                                                       style: TextStyle(
                                                           color: Colors.white
                                                               .withOpacity(
