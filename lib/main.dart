@@ -197,6 +197,7 @@ class _DisplayGamesState extends State<HomeGames> {
                               );
                               review_found = review.id == "" ? false : true;
                             }
+                            log(game.id!);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

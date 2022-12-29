@@ -34,6 +34,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
   _GameDetailsPageState(
       this.game, this.reviews, this.review_found, this.review);
   String _userid = "";
+  UserModel user = UserModel(id: "");
 
   @override
   void initState() {
@@ -43,7 +44,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
 
   void getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
 
     setState(() {
       _userid = user.id!;
@@ -170,14 +171,18 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                       children: [
                         ClipRRect(
                             child: GestureDetector(
-                          onTap: () => {
+                          onTap: () {
+                            UserModelLogs found_log = user.logs!.firstWhere((element) => element!.gameId == game.id, orElse: () => UserModelLogs(gameId: ""))!;
+                            bool log_found = user.logs!=null ? (user.logs != [] ? (found_log.gameId == "" ? false : true) : false) : false;
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => LogPage(
                                         game: game,
                                         review_logged: review_found,
-                                        review: review)))
+                                        review: review,
+                                        log_found: log_found,
+                                        found_log: found_log,)));
                           },
                           child: Container(
                             height: 35,
@@ -198,7 +203,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  review_found
+                                  (review_found || (user.logs!=null ? (user.logs != [] ? (user.logs!.firstWhere((element) => element!.gameId == game.id, orElse: () => UserModelLogs(gameId: ""))!.gameId == "" ? false : true) : false) : false))
                                       ? 'Edit Log or Review'
                                       : 'Log or Review',
                                   style: const TextStyle(
