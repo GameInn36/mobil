@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/service/review_vote_service.dart';
+import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -14,16 +15,18 @@ class GameDetailsPage extends StatefulWidget {
   final List<ReviewLogModel> reviews;
   final ReviewLogModel review;
   final bool review_found;
+  final int game_index;
   GameDetailsPage(
       {super.key,
       required this.game,
       required this.reviews,
       required this.review_found,
-      required this.review});
+      required this.review,
+      required this.game_index});
 
   @override
   State<StatefulWidget> createState() =>
-      _GameDetailsPageState(game, reviews, review_found, review);
+      _GameDetailsPageState(game, reviews, review_found, review, game_index);
 }
 
 class _GameDetailsPageState extends State<GameDetailsPage> {
@@ -31,8 +34,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
   late final List<ReviewLogModel> reviews;
   late final bool review_found;
   late final ReviewLogModel review;
+  late final int game_index;
   _GameDetailsPageState(
-      this.game, this.reviews, this.review_found, this.review);
+      this.game, this.reviews, this.review_found, this.review, this.game_index);
   String _userid = "";
   UserModel user = UserModel(id: "");
 
@@ -172,21 +176,28 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                         ClipRRect(
                             child: GestureDetector(
                           onTap: () {
-                            UserModelLogs found_log = user.logs!.firstWhere((element) => element!.gameId == game.id, orElse: () => UserModelLogs(gameId: ""))!;
-                            bool log_found = user.logs!=null ? (user.logs != [] ? (found_log.gameId == "" ? false : true) : false) : false;
+                            UserModelLogs found_log = user.logs!.firstWhere(
+                                (element) => element!.gameId == game.id,
+                                orElse: () => UserModelLogs(gameId: ""))!;
+                            bool log_found = user.logs != null
+                                ? (user.logs != []
+                                    ? (found_log.gameId == "" ? false : true)
+                                    : false)
+                                : false;
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => LogPage(
-                                        game: game,
-                                        review_logged: review_found,
-                                        review: review,
-                                        log_found: log_found,
-                                        found_log: found_log,)));
+                                          game: game,
+                                          review_logged: review_found,
+                                          review: review,
+                                          log_found: log_found,
+                                          found_log: found_log,
+                                        )));
                           },
                           child: Container(
                             height: 35,
-                            width: 150,
+                            width: 210,
                             decoration: const BoxDecoration(
                               color: Color(0xffE9A6A6),
                               borderRadius:
@@ -196,14 +207,52 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(
-                                  Icons.library_add_outlined,
+                                Icon(
+                                  (review_found ||
+                                          (user.logs != null
+                                              ? (user.logs != []
+                                                  ? (user.logs!
+                                                              .firstWhere(
+                                                                  (element) =>
+                                                                      element!
+                                                                          .gameId ==
+                                                                      game.id,
+                                                                  orElse: () =>
+                                                                      UserModelLogs(
+                                                                          gameId:
+                                                                              ""))!
+                                                              .gameId ==
+                                                          ""
+                                                      ? false
+                                                      : true)
+                                                  : false)
+                                              : false))
+                                      ? Icons.edit_outlined
+                                      : Icons.library_add_outlined,
                                   color: Color(0xFF1F1D36),
                                   size: 20,
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  (review_found || (user.logs!=null ? (user.logs != [] ? (user.logs!.firstWhere((element) => element!.gameId == game.id, orElse: () => UserModelLogs(gameId: ""))!.gameId == "" ? false : true) : false) : false))
+                                  (review_found ||
+                                          (user.logs != null
+                                              ? (user.logs != []
+                                                  ? (user.logs!
+                                                              .firstWhere(
+                                                                  (element) =>
+                                                                      element!
+                                                                          .gameId ==
+                                                                      game.id,
+                                                                  orElse: () =>
+                                                                      UserModelLogs(
+                                                                          gameId:
+                                                                              ""))!
+                                                              .gameId ==
+                                                          ""
+                                                      ? false
+                                                      : true)
+                                                  : false)
+                                              : false))
                                       ? 'Edit Log or Review'
                                       : 'Log or Review',
                                   style: const TextStyle(
@@ -220,10 +269,21 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                         ),
                         ClipRRect(
                           child: GestureDetector(
-                            onTap: () => {},
+                            onTap: () async {
+                              if (game_index == -1) {
+                                if (user.toPlayList != null) {
+                                  user.toPlayList!.add(game.id);
+                                } else {
+                                  user.toPlayList = [game.id];
+                                }
+                              } else {
+                                user.toPlayList!.remove(game.id);
+                              }
+                              UserService().updateUser(user_to_update: user);
+                            },
                             child: Container(
                               height: 35,
-                              width: 150,
+                              width: 210,
                               decoration: const BoxDecoration(
                                 color: Color(0xffE9A6A6),
                                 borderRadius:
@@ -232,16 +292,20 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Icon(
-                                    Icons.playlist_add,
+                                    game_index == -1
+                                        ? Icons.playlist_add
+                                        : Icons.playlist_remove,
                                     color: Color(0xFF1F1D36),
                                     size: 20,
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
-                                    'Add To Play List',
-                                    style: TextStyle(
+                                    game_index == -1
+                                        ? 'Add To Play List'
+                                        : 'Remove From Play List',
+                                    style: const TextStyle(
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.bold,
                                         color: Color(0xFF1F1D36)),

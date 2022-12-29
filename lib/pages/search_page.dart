@@ -64,6 +64,7 @@ class _SearchGameState extends State<SearchGames> {
 
   List<GameModel?> games = [];
   String _userid = "";
+  UserModel _user = UserModel(id: "");
 
   void updateList(String searched) {
     setState(() {
@@ -87,6 +88,7 @@ class _SearchGameState extends State<SearchGames> {
 
     setState(() {
       _userid = user.id!;
+      _user = user;
     });
   }
 
@@ -159,15 +161,21 @@ class _SearchGameState extends State<SearchGames> {
                             );
                             review_found = review.id == "" ? false : true;
                           }
+
+                          int game_index = -1;
+                          if (_user.toPlayList != null) {
+                            int game_index = _user.toPlayList!
+                                .indexWhere((element) => element == game.id);
+                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => GameDetailsPage(
-                                        game: game,
-                                        reviews: reviews != null ? reviews : [],
-                                        review_found: review_found,
-                                        review: review,
-                                      )));
+                                      game: game,
+                                      reviews: reviews != null ? reviews : [],
+                                      review_found: review_found,
+                                      review: review,
+                                      game_index: game_index)));
                         },
                       ),
                     );
@@ -192,6 +200,7 @@ class _SearchStudioState extends State<SearchStudio> {
 
   List<GameModel?> games = [];
   String _userid = "";
+  UserModel _user = UserModel(id: "");
 
   void updateList(String searched) {
     setState(() {
@@ -215,6 +224,7 @@ class _SearchStudioState extends State<SearchStudio> {
 
     setState(() {
       _userid = user.id!;
+      _user = user;
     });
   }
 
@@ -284,15 +294,21 @@ class _SearchStudioState extends State<SearchStudio> {
                             );
                             review_found = review.id == "" ? false : true;
                           }
+
+                          int game_index = -1;
+                          if (_user.toPlayList != null) {
+                            int game_index = _user.toPlayList!
+                                .indexWhere((element) => element == game.id);
+                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => GameDetailsPage(
-                                        game: game,
-                                        reviews: reviews != null ? reviews : [],
-                                        review_found: review_found,
-                                        review: review,
-                                      )));
+                                      game: game,
+                                      reviews: reviews != null ? reviews : [],
+                                      review_found: review_found,
+                                      review: review,
+                                      game_index: game_index)));
                         },
                       ),
                     );

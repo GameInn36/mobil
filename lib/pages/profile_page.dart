@@ -148,17 +148,22 @@ class _ShowProfileState extends State<ProfilePage> {
                                   );
                                   review_found = review.id == "" ? false : true;
                                 }
+
+                                int game_index = -1;
+                                if (user.toPlayList != null) {
+                                  game_index = user.toPlayList!.indexWhere(
+                                      (element) => element == game.id);
+                                }
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => GameDetailsPage(
-                                              game: game,
-                                              reviews: reviews != null
-                                                  ? reviews
-                                                  : [],
-                                              review_found: review_found,
-                                              review: review,
-                                            )));
+                                            game: game,
+                                            reviews:
+                                                reviews != null ? reviews : [],
+                                            review_found: review_found,
+                                            review: review,
+                                            game_index: game_index)));
                               },
                               child: SizedBox(
                                 height: 140.0,

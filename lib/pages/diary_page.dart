@@ -43,6 +43,7 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
 
   List<GameModel?> games = [];
   String _userid = "";
+  UserModel _user = UserModel(id: "");
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
 
     setState(() {
       _userid = user.id!;
+      _user = user;
     });
   }
 
@@ -119,15 +121,21 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                             );
                             review_found = review.id == "" ? false : true;
                           }
+
+                          int game_index = -1;
+                          if (_user.toPlayList != null) {
+                            game_index = _user.toPlayList!
+                                .indexWhere((element) => element == game.id);
+                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => GameDetailsPage(
-                                        game: game,
-                                        reviews: reviews != null ? reviews : [],
-                                        review_found: review_found,
-                                        review: review,
-                                      )));
+                                      game: game,
+                                      reviews: reviews != null ? reviews : [],
+                                      review_found: review_found,
+                                      review: review,
+                                      game_index: game_index)));
                         },
                       ),
                     );
