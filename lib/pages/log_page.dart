@@ -5,6 +5,7 @@ import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/review_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/service/log_service.dart';
+import 'package:gameinn/service/user_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
@@ -345,7 +346,6 @@ class _LogPageState extends State<LogPage> {
                   if (!log_found) {
                     if (startDate != null) {
                       if (selectedItem == 'Still Playing' || endDate != null) {
-
                         LogService().LogCall(
                             ctx: context,
                             createDate: DateTime.now().millisecondsSinceEpoch,
@@ -357,7 +357,6 @@ class _LogPageState extends State<LogPage> {
                             gameId: game.id!,
                             finished: selectedItem == 'Finished',
                             userId: _userid);
-
                       } else {
                         log("Error");
                       }
@@ -365,13 +364,11 @@ class _LogPageState extends State<LogPage> {
                       log("Error");
                     }
                   } else {
-                    
                     if (startDate != null || found_log.startDate != null) {
                       if (selectedItem == 'Still Playing' ||
                           endDate != null ||
                           found_log.stopDate != null &&
                               found_log.stopDate != 0) {
-
                         int log_index = _user.logs!.indexWhere(
                             (element) => element!.gameId == game.id);
 
@@ -391,8 +388,7 @@ class _LogPageState extends State<LogPage> {
                         );
 
                         _user.logs![log_index] = new_log;
-                        log(_user.logs.toString());
-
+                        UserService().updateUser(user_to_update: _user);
                       } else {
                         log('Error');
                       }
