@@ -295,42 +295,12 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                           child: Image.memory(base64Decode(
                                               (review.game?.cover)!)),
                                           onTap: () async {
-                                            bool review_found = false;
-                                            ReviewLogModel review_log =
-                                                ReviewLogModel(id: "");
-                                            List<ReviewLogModel>? reviews =
-                                                await ReviewVoteService()
-                                                    .reviewLogGet(
-                                                        ctx: context,
-                                                        gameId:
-                                                            (review.game?.id)!);
-                                            if (reviews != null) {
-                                              review_log = reviews.firstWhere(
-                                                (element) =>
-                                                    element.user!.id! ==
-                                                    authorizedUser.id,
-                                                orElse: () =>
-                                                    ReviewLogModel(id: ""),
-                                              );
-                                              review_found = review_log.id == ""
-                                                  ? false
-                                                  : true;
-                                            }
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        GameDetailsPage(
-                                                          game: (review.game)!,
-                                                          reviews:
-                                                              reviews != null
-                                                                  ? reviews
-                                                                  : [],
-                                                          review_found:
-                                                              review_found,
-                                                          review: review_log,
-                                                        )));
-                                          },
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => GameDetailsPage(
+                                      game_id: review.game!.id!,)));
+                        },
                                         ), //check adding navigation
                                       ),
                                     ),

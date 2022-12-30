@@ -244,29 +244,12 @@ class _DisplayGamesState extends State<HomeGames> {
                         GameModel? game = games[index];
                         return InkWell(
                           onTap: () async {
-                            bool review_found = false;
-                            ReviewLogModel review = ReviewLogModel(id: "");
-                            List<ReviewLogModel>? reviews =
-                                await ReviewVoteService().reviewLogGet(
-                                    ctx: context, gameId: game!.id!);
-                            if (reviews != null) {
-                              review = reviews.firstWhere(
-                                (element) => element.user!.id! == _userid,
-                                orElse: () => ReviewLogModel(id: ""),
-                              );
-                              review_found = review.id == "" ? false : true;
-                            }
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => GameDetailsPage(
-                                          game: game,
-                                          reviews:
-                                              reviews != null ? reviews : [],
-                                          review_found: review_found,
-                                          review: review,
-                                        )));
-                          },
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => GameDetailsPage(
+                                      game_id: game!.id!,)));
+                        },
                           child: SizedBox(
                             height: 140.0,
                             width: 100.0,
@@ -314,29 +297,12 @@ class _DisplayGamesState extends State<HomeGames> {
                         GameModel? game = games[index];
                         return InkWell(
                           onTap: () async {
-                            bool review_found = false;
-                            ReviewLogModel review = ReviewLogModel(id: "");
-                            List<ReviewLogModel>? reviews =
-                                await ReviewVoteService().reviewLogGet(
-                                    ctx: context, gameId: game!.id!);
-                            if (reviews != null) {
-                              review = reviews.firstWhere(
-                                (element) => element.user!.id! == _userid,
-                                orElse: () => ReviewLogModel(id: ""),
-                              );
-                              review_found = review.id == "" ? false : true;
-                            }
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => GameDetailsPage(
-                                          game: game,
-                                          reviews:
-                                              reviews != null ? reviews : [],
-                                          review_found: review_found,
-                                          review: review,
-                                        )));
-                          },
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => GameDetailsPage(
+                                      game_id: game!.id!,)));
+                        },
                           child: SizedBox(
                             height: 140.0,
                             width: 100.0,
