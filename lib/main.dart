@@ -1,10 +1,11 @@
-import 'dart:developer';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/display_games_model.dart';
 import 'package:gameinn/pages/followers_page.dart';
 import 'package:gameinn/pages/game_details.page.dart';
 import 'package:gameinn/model/game_model.dart';
 import 'package:gameinn/pages/search_page.dart';
+import 'package:gameinn/service/game_service.dart';
 import 'package:gameinn/service/review_vote_service.dart';
 import 'package:gameinn/service/search_service.dart';
 import 'package:gameinn/view/sidebar.dart';
@@ -122,10 +123,12 @@ class HomeGames extends StatefulWidget {
 
 class _DisplayGamesState extends State<HomeGames> {
   final searchservice = SearchService();
+  final gameservice = GameService();
 
   List<GameModel?> games = [];
   String _userid = "";
   UserModel _user = UserModel(id: "");
+  DisplayGamesModel? displayGames = DisplayGamesModel();
 
   @override
   void initState() {
@@ -144,16 +147,17 @@ class _DisplayGamesState extends State<HomeGames> {
     });
   }
 
-  void getList() {
-    List<GameModel> tempList = [];
-    searchservice.gameSearch(searched_name: "d").then((value) {
-      if (value != null) {
-        tempList = value;
-      }
+  void getList() async {
+    //List<GameModel> tempList = [];
+    displayGames = await gameservice.displayGamesPage();
 
-      setState(() {
-        games = tempList;
-      });
+    //searchservice.gameSearch(searched_name: "d").then((value) {
+    //if (value != null) {
+    //tempList = value;
+    //}
+
+    setState(() {
+      this.displayGames = displayGames;
     });
   }
 
@@ -185,16 +189,17 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: games.length, //buradan games gelmeli
+                      itemCount: displayGames?.newsFromFriends?.length,
                       itemBuilder: (context, index) {
-                        GameModel? game = games[index];
+                        GameModel? game =
+                            displayGames?.newsFromFriends?[index]!.game;
                         return InkWell(
                           onTap: () async {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => GameDetailsPage(
-                                          game_id: game!.id!,
+                                          game_id: (game?.id)!,
                                         )));
                           },
                           child: SizedBox(
@@ -204,10 +209,12 @@ class _DisplayGamesState extends State<HomeGames> {
                               padding: const EdgeInsets.only(right: 6.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
-                                child: Image.memory(
-                                  base64Decode((game?.cover)!),
-                                  fit: BoxFit.fill,
-                                ),
+                                child: game?.cover != null
+                                    ? Image.memory(
+                                        base64Decode((game?.cover)!),
+                                        fit: BoxFit.fill,
+                                      )
+                                    : SizedBox(),
                               ),
                             ),
                           ),
@@ -239,17 +246,20 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: games.length, //buradan games gelmeli
+                      itemCount: displayGames
+                          ?.mostPopularGames?.length, //buradan games gelmeli
                       itemBuilder: (context, index) {
-                        GameModel? game = games[index];
+                        GameModel? game =
+                            displayGames?.mostPopularGames?[index];
                         return InkWell(
                           onTap: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => GameDetailsPage(
-                                      game_id: game!.id!,)));
-                        },
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GameDetailsPage(
+                                          game_id: (game?.id)!,
+                                        )));
+                          },
                           child: SizedBox(
                             height: 140.0,
                             width: 100.0,
@@ -257,10 +267,12 @@ class _DisplayGamesState extends State<HomeGames> {
                               padding: const EdgeInsets.only(right: 6.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
-                                child: Image.memory(
-                                  base64Decode((game?.cover)!),
-                                  fit: BoxFit.fill,
-                                ),
+                                child: game?.cover != null
+                                    ? Image.memory(
+                                        base64Decode((game?.cover)!),
+                                        fit: BoxFit.fill,
+                                      )
+                                    : SizedBox(),
                               ),
                             ),
                           ),
@@ -292,17 +304,19 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: games.length, //buradan games gelmeli
+                      itemCount: displayGames
+                          ?.newGames?.length, //buradan games gelmeli
                       itemBuilder: (context, index) {
-                        GameModel? game = games[index];
+                        GameModel? game = displayGames?.newGames?[index];
                         return InkWell(
                           onTap: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => GameDetailsPage(
-                                      game_id: game!.id!,)));
-                        },
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GameDetailsPage(
+                                          game_id: (game?.id)!,
+                                        )));
+                          },
                           child: SizedBox(
                             height: 140.0,
                             width: 100.0,
@@ -310,10 +324,12 @@ class _DisplayGamesState extends State<HomeGames> {
                               padding: const EdgeInsets.only(right: 6.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
-                                child: Image.memory(
-                                  base64Decode((game?.cover)!),
-                                  fit: BoxFit.fill,
-                                ),
+                                child: game?.cover != null
+                                    ? Image.memory(
+                                        base64Decode((game?.cover)!),
+                                        fit: BoxFit.fill,
+                                      )
+                                    : SizedBox(),
                               ),
                             ),
                           ),
