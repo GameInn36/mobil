@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gameinn/model/display_reviews_model.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/review_model.dart';
 import 'package:gameinn/model/review_with_game_model.dart';
@@ -25,6 +26,9 @@ class ReviewVoteService {
 
   final String like_dislike_review_url =
       'https://api-gateway-ixdm6djuha-uc.a.run.app/review/';
+
+  final String display_reviews_url =
+      "https://api-gateway-ixdm6djuha-uc.a.run.app/review/displayReviews";
 
   final dio = Dio();
 
@@ -221,5 +225,27 @@ class ReviewVoteService {
     } on DioError catch (e) {
       log("***PROBLEM***");
     }
+  }
+
+  Future<DisplayReviewsModel?> displayReviewsTab() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = (prefs.getString('token') ?? "");
+
+    try {
+      var response = await dio.get(
+        display_reviews_url,
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+
+      if (response != null && response.statusCode == 200) {
+        var result = DisplayReviewsModel.fromJson(response.data);
+        return result;
+      }
+    } on DioError catch (e) {}
   }
 }
