@@ -43,6 +43,7 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
 
   List<GameModel?> games = [];
   String _userid = "";
+  UserModel _user = UserModel(id: "");
 
   @override
   void initState() {
@@ -58,6 +59,7 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
 
     setState(() {
       _userid = user.id!;
+      _user = user;
     });
   }
 
@@ -107,27 +109,11 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                         leading: Image.memory(base64Decode((game?.cover)!)),
                         trailing: Icon(Icons.arrow_forward_rounded),
                         onTap: () async {
-                          bool review_found = false;
-                          ReviewLogModel review = ReviewLogModel(id: "");
-                          List<ReviewLogModel>? reviews =
-                              await ReviewVoteService().reviewLogGet(
-                                  ctx: context, gameId: game!.id!);
-                          if (reviews != null) {
-                            review = reviews.firstWhere(
-                              (element) => element.user!.id! == _userid,
-                              orElse: () => ReviewLogModel(id: ""),
-                            );
-                            review_found = review.id == "" ? false : true;
-                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => GameDetailsPage(
-                                        game: game,
-                                        reviews: reviews != null ? reviews : [],
-                                        review_found: review_found,
-                                        review: review,
-                                      )));
+                                      game_id: game!.id!,)));
                         },
                       ),
                     );

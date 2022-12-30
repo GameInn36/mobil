@@ -13,10 +13,10 @@ class UserModelLogs {
 } 
 */
 
-  String? createDate;
-  String? updateDate;
-  String? startDate;
-  String? stopDate;
+  int? createDate;
+  int? updateDate;
+  int? startDate;
+  int? stopDate;
   String? gameId;
   bool? finished;
 
@@ -29,10 +29,10 @@ class UserModelLogs {
     this.finished,
   });
   UserModelLogs.fromJson(Map<String, dynamic> json) {
-    createDate = json['createDate']?.toString();
-    updateDate = json['updateDate']?.toString();
-    startDate = json['startDate']?.toString();
-    stopDate = json['stopDate']?.toString();
+    createDate = json['createDate']?.toInt();
+    updateDate = json['updateDate']?.toInt();
+    startDate = json['startDate']?.toInt();
+    stopDate = json['stopDate']?.toInt();
     gameId = json['gameId']?.toString();
     finished = json['finished'];
   }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/review_model.dart';
 import 'package:gameinn/model/user_model.dart';
+import 'package:gameinn/service/log_service.dart';
+import 'package:gameinn/service/user_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
@@ -15,36 +17,43 @@ class LogPage extends StatefulWidget {
   final GameModel game;
   final bool review_logged;
   final ReviewLogModel review;
+  final bool log_found;
+  final UserModelLogs found_log;
 
   LogPage(
       {super.key,
       required this.game,
       required this.review_logged,
-      required this.review});
+      required this.review,
+      required this.log_found,
+      required this.found_log});
 
   @override
   State<StatefulWidget> createState() =>
-      _LogPageState(game, review_logged, review);
+      _LogPageState(game, review_logged, review, log_found, found_log);
 }
 
 class _LogPageState extends State<LogPage> {
   late final GameModel game;
   late final bool review_logged;
   late final ReviewLogModel review;
+  late final log_found;
+  late final UserModelLogs found_log;
   String _userid = "";
+  UserModel _user = UserModel(id: "");
 
-  TextEditingController _startdate = TextEditingController();
-  TextEditingController _enddate = TextEditingController();
   TextEditingController _context = TextEditingController();
   double _rating = 1;
 
-  _LogPageState(this.game, this.review_logged, this.review);
+  _LogPageState(this.game, this.review_logged, this.review, this.log_found,
+      this.found_log);
 
   DateTime? startDate;
   DateTime? endDate;
 
-  List<String> items = ['Unfinished', 'Finised', 'Still Playing'];
-  String selectedItem = 'Unfinished';
+  List<String> items = ['Unfinished', 'Finished', 'Still Playing'];
+  String? selectedItem;
+  bool ifStillPlaying = false;
 
   final format = DateFormat('yyyy-MM-dd');
 
@@ -61,6 +70,7 @@ class _LogPageState extends State<LogPage> {
 
     setState(() {
       _userid = user.id!;
+      _user = user;
     });
   }
 
@@ -121,7 +131,11 @@ class _LogPageState extends State<LogPage> {
                                 Expanded(
                                   flex: 5,
                                   child: DateTimeField(
-                                      style: TextStyle(
+                                      initialValue: log_found
+                                          ? DateTime.fromMillisecondsSinceEpoch(
+                                              found_log.startDate!)
+                                          : null,
+                                      style: const TextStyle(
                                         color: Colors.grey,
                                       ),
                                       format: format,
@@ -135,7 +149,7 @@ class _LogPageState extends State<LogPage> {
                                           color: Colors.white,
                                         ),
                                         border: InputBorder.none,
-                                        hintText: 'YY/MM/DD',
+                                        hintText: 'YYYY-MM-DD',
                                         hintStyle: const TextStyle(
                                           color: Colors.grey,
                                           fontSize: 15.0,
@@ -162,74 +176,105 @@ class _LogPageState extends State<LogPage> {
                               ],
                             ),
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                            child: Text(
-                              'End Date',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF3D3B54),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 5,
-                                  child: DateTimeField(
-                                      style: TextStyle(
-                                        color: Colors.grey,
+                          (selectedItem != null
+                                  ? !ifStillPlaying
+                                  : (log_found
+                                      ? (found_log.stopDate != 0 ? true : false)
+                                      : true))
+                              ? const SizedBox(
+                                  height: 20,
+                                )
+                              : const SizedBox(),
+                          (selectedItem != null
+                                  ? !ifStillPlaying
+                                  : (log_found
+                                      ? (found_log.stopDate != 0 ? true : false)
+                                      : true))
+                              ? const SizedBox(
+                                  height: 20,
+                                  child: Text(
+                                    'End Date',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox(),
+                          (selectedItem != null
+                                  ? !ifStillPlaying
+                                  : (log_found
+                                      ? (found_log.stopDate != 0 ? true : false)
+                                      : true))
+                              ? const SizedBox(
+                                  height: 10,
+                                )
+                              : const SizedBox(),
+                          (selectedItem != null
+                                  ? !ifStillPlaying
+                                  : (log_found
+                                      ? (found_log.stopDate != 0 ? true : false)
+                                      : true))
+                              ? Container(
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF3D3B54),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 5,
+                                        child: DateTimeField(
+                                            initialValue: log_found
+                                                ? (found_log.stopDate != 0
+                                                    ? DateTime
+                                                        .fromMillisecondsSinceEpoch(
+                                                            found_log.stopDate!)
+                                                    : null)
+                                                : null,
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            format: format,
+                                            resetIcon: Icon(Icons.close,
+                                                color: Colors.grey),
+                                            decoration: const InputDecoration(
+                                              enabled: false,
+                                              prefixIcon: const Icon(
+                                                Icons.calendar_today,
+                                                size: 15.0,
+                                                color: Colors.white,
+                                              ),
+                                              border: InputBorder.none,
+                                              hintText: 'YYYY-MM-DD',
+                                              hintStyle: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 15.0,
+                                              ),
+                                            ),
+                                            onShowPicker:
+                                                (context, currentValue) async {
+                                              final date = await showDatePicker(
+                                                  context: context,
+                                                  initialDate: currentValue ??
+                                                      DateTime.now(),
+                                                  firstDate: DateTime(1900),
+                                                  lastDate: DateTime(2100));
+                                              if (date != null) {
+                                                endDate = date;
+                                                return date;
+                                              } else {
+                                                endDate = currentValue;
+                                                return currentValue;
+                                              }
+                                            }),
                                       ),
-                                      format: format,
-                                      resetIcon:
-                                          Icon(Icons.close, color: Colors.grey),
-                                      decoration: const InputDecoration(
-                                        enabled: false,
-                                        prefixIcon: const Icon(
-                                          Icons.calendar_today,
-                                          size: 15.0,
-                                          color: Colors.white,
-                                        ),
-                                        border: InputBorder.none,
-                                        hintText: 'YY/MM/DD',
-                                        hintStyle: const TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 15.0,
-                                        ),
-                                      ),
-                                      onShowPicker:
-                                          (context, currentValue) async {
-                                        final date = await showDatePicker(
-                                            context: context,
-                                            initialDate:
-                                                currentValue ?? DateTime.now(),
-                                            firstDate: DateTime(1900),
-                                            lastDate: DateTime(2100));
-                                        if (date != null) {
-                                          startDate = date;
-                                          return date;
-                                        } else {
-                                          startDate = currentValue;
-                                          return currentValue;
-                                        }
-                                      }),
-                                ),
-                              ],
-                            ),
-                          ),
+                                    ],
+                                  ),
+                                )
+                              : const SizedBox(),
                           const SizedBox(
                             height: 25,
                           ),
@@ -243,18 +288,31 @@ class _LogPageState extends State<LogPage> {
                             ),
                             child: Center(
                               child: DropdownButton<String>(
-                                value: selectedItem,
+                                value: selectedItem != null
+                                    ? selectedItem
+                                    : (log_found
+                                        ? (found_log.stopDate != 0
+                                            ? (found_log.finished!
+                                                ? 'Finished'
+                                                : 'Unfinished')
+                                            : 'Still Playing')
+                                        : 'Unfinished'),
                                 items: items
                                     .map((item) => DropdownMenuItem<String>(
                                           value: item,
                                           child: Text(item,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 17.0,
                                               )),
                                         ))
                                     .toList(),
                                 onChanged: (item) => setState(() {
+                                  if (item == 'Still Playing') {
+                                    ifStillPlaying = true;
+                                  } else {
+                                    ifStillPlaying = false;
+                                  }
                                   selectedItem = item!;
                                 }),
                               ),
@@ -284,7 +342,65 @@ class _LogPageState extends State<LogPage> {
                 ),
               ),
               GestureDetector(
-                onTap: () => {},
+                onTap: () async {
+                  if (!log_found) {
+                    if (startDate != null) {
+                      if (selectedItem == 'Still Playing' || endDate != null) {
+                        LogService().LogCall(
+                            ctx: context,
+                            createDate: DateTime.now().millisecondsSinceEpoch,
+                            updateDate: 0,
+                            startDate: startDate!.millisecondsSinceEpoch,
+                            stopDate: selectedItem != 'Still Playing'
+                                ? endDate!.millisecondsSinceEpoch
+                                : 0,
+                            gameId: game.id!,
+                            finished: selectedItem == 'Finished',
+                            userId: _userid);
+
+                        Navigator.pop(context);
+                      } else {
+                        log("Error");
+                      }
+                    } else {
+                      log("Error");
+                    }
+                  } else {
+                    if (startDate != null || found_log.startDate != null) {
+                      if (selectedItem == 'Still Playing' ||
+                          endDate != null ||
+                          found_log.stopDate != null &&
+                              found_log.stopDate != 0) {
+                        int log_index = _user.logs!.indexWhere(
+                            (element) => element!.gameId == game.id);
+
+                        UserModelLogs new_log = UserModelLogs(
+                          createDate: found_log.createDate,
+                          updateDate: DateTime.now().millisecondsSinceEpoch,
+                          startDate: startDate != null
+                              ? startDate!.millisecondsSinceEpoch
+                              : found_log.startDate,
+                          stopDate: selectedItem != 'Still Playing'
+                              ? (endDate != null
+                                  ? endDate!.millisecondsSinceEpoch
+                                  : found_log.stopDate)
+                              : 0,
+                          gameId: game.id!,
+                          finished: selectedItem == 'Finished',
+                        );
+
+                        _user.logs![log_index] = new_log;
+                        UserService().updateUser(user_to_update: _user);
+
+                        Navigator.pop(context);
+                      } else {
+                        log('Error');
+                      }
+                    } else {
+                      log('Error');
+                    }
+                  }
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -297,7 +413,7 @@ class _LogPageState extends State<LogPage> {
                       ),
                       child: Center(
                         child: Text(
-                          !review_logged ? 'Log' : 'Edit Log',
+                          !log_found ? 'Log' : 'Edit Log',
                           style: const TextStyle(
                               fontSize: 15.0,
                               fontWeight: FontWeight.bold,
@@ -358,7 +474,7 @@ class _LogPageState extends State<LogPage> {
                       border: InputBorder.none,
                       hintText: !review_logged
                           ? 'Write down your review...'
-                          : 'Write down your new review...',
+                          : review.context,
                       hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 15.0,
@@ -379,7 +495,8 @@ class _LogPageState extends State<LogPage> {
                             if (review_logged)
                               {
                                 ReviewVoteService().reviewDelete(
-                                    ctx: context, review_id: review.id!)
+                                    ctx: context, review_id: review.id!),
+                                Navigator.pop(context)
                               }
                           },
                           child: Container(
@@ -407,27 +524,28 @@ class _LogPageState extends State<LogPage> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      ReviewModel added_review = ReviewModel(id: "");
-                      if (!review_logged) {
-                        added_review = (await ReviewVoteService().reviewVoteCall(
-                            ctx: context,
-                            userId: _userid,
-                            gameId: game.id!,
-                            context: _context.text,
-                            vote: _rating.toInt()))!;
-                        if (added_review.id != "") {
-                          game.vote = (game.vote! * game.voteCount!.toDouble() +
-                                  added_review.vote!.toDouble()) /
-                              (game.voteCount! + 1);
+                      if (_context.text != null && _context.text != "") {
+                        ReviewModel added_review = ReviewModel(id: "");
+                        if (!review_logged) {
+                          added_review = (await ReviewVoteService()
+                              .reviewVoteCall(
+                                  ctx: context,
+                                  userId: _userid,
+                                  gameId: game.id!,
+                                  context: _context.text,
+                                  vote: _rating.toInt()))!;
+                        } else {
+                          ReviewVoteService().reviewVoteUpdate(
+                              ctx: context,
+                              userId: _userid,
+                              gameId: game.id!,
+                              context: _context.text,
+                              vote: _rating.toInt(),
+                              review_id: review.id!);
                         }
+                        Navigator.pop(context);
                       } else {
-                        ReviewVoteService().reviewVoteUpdate(
-                            ctx: context,
-                            userId: _userid,
-                            gameId: game.id!,
-                            context: _context.text,
-                            vote: _rating.toInt(),
-                            review_id: review.id!);
+                        log("Review empty error.");
                       }
                     },
                     child: Container(

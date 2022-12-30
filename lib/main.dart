@@ -125,6 +125,7 @@ class _DisplayGamesState extends State<HomeGames> {
 
   List<GameModel?> games = [];
   String _userid = "";
+  UserModel _user = UserModel(id: "");
 
   @override
   void initState() {
@@ -139,6 +140,7 @@ class _DisplayGamesState extends State<HomeGames> {
 
     setState(() {
       _userid = user.id!;
+      _user = user;
     });
   }
 
@@ -188,27 +190,11 @@ class _DisplayGamesState extends State<HomeGames> {
                         GameModel? game = games[index];
                         return InkWell(
                           onTap: () async {
-                            bool review_found = false;
-                            ReviewLogModel review = ReviewLogModel(id: "");
-                            List<ReviewLogModel>? reviews =
-                                await ReviewVoteService().reviewLogGet(
-                                    ctx: context, gameId: game!.id!);
-                            if (reviews != null) {
-                              review = reviews.firstWhere(
-                                (element) => element.user!.id! == _userid,
-                                orElse: () => ReviewLogModel(id: ""),
-                              );
-                              review_found = review.id == "" ? false : true;
-                            }
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => GameDetailsPage(
-                                          game: game,
-                                          reviews:
-                                              reviews != null ? reviews : [],
-                                          review_found: review_found,
-                                          review: review,
+                                          game_id: game!.id!,
                                         )));
                           },
                           child: SizedBox(

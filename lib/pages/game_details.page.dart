@@ -1,52 +1,105 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/game_with_reviews.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/service/review_vote_service.dart';
+import 'package:gameinn/service/search_service.dart';
+import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:gameinn/pages/log_page.dart';
 
 class GameDetailsPage extends StatefulWidget {
-  final GameModel game;
-  final List<ReviewLogModel> reviews;
-  final ReviewLogModel review;
-  final bool review_found;
-  GameDetailsPage(
-      {super.key,
-      required this.game,
-      required this.reviews,
-      required this.review_found,
-      required this.review});
+  final String game_id;
+  GameDetailsPage({super.key, required this.game_id});
 
   @override
-  State<StatefulWidget> createState() =>
-      _GameDetailsPageState(game, reviews, review_found, review);
+  State<StatefulWidget> createState() => _GameDetailsPageState(game_id);
 }
 
 class _GameDetailsPageState extends State<GameDetailsPage> {
-  late final GameModel game;
-  late final List<ReviewLogModel> reviews;
-  late final bool review_found;
-  late final ReviewLogModel review;
-  _GameDetailsPageState(
-      this.game, this.reviews, this.review_found, this.review);
+  late final String game_id;
+  _GameDetailsPageState(this.game_id);
+
   String _userid = "";
+  UserModel user = UserModel(id: "");
+  GameWithReviews gameR = GameWithReviews(game: GameModel(id: ""));
+
+  List<ReviewLogModel> reviews = [];
+  bool review_found = false;
+  ReviewLogModel review = ReviewLogModel(id: "");
+  int game_index = -1;
 
   @override
   void initState() {
     getUser();
     super.initState();
+    getList();
   }
 
   void getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
 
     setState(() {
       _userid = user.id!;
+    });
+  }
+
+  void getList() async {
+    GameWithReviews _game =
+        (await SearchService().gameFound(game_id: game_id))!;
+    List<ReviewLogModel> _reviews =
+        await ReviewVoteService().reviewLogGet(ctx: context, gameId: game_id) ??
+            [];
+
+    setState(() {
+      gameR = _game;
+      reviews = _reviews;
+      if (reviews != null) {
+        review = reviews.firstWhere(
+          (element) => element.user!.id! == _userid,
+          orElse: () => ReviewLogModel(id: ""),
+        );
+        review_found = review.id == "" ? false : true;
+      }
+
+      if (user.toPlayList != null) {
+        game_index =
+            user.toPlayList!.indexWhere((element) => element == gameR.game!.id);
+      }
+    });
+  }
+
+  FutureOr onGoBack(dynamic value) {
+    GameWithReviews _game = GameWithReviews();
+    SearchService()
+        .gameFound(game_id: game_id)
+        .then((value) => {_game = value!});
+    List<ReviewLogModel> _reviews = [];
+    ReviewVoteService()
+        .reviewLogGet(ctx: context, gameId: game_id)
+        .then((value) => _reviews = value!);
+
+    setState(() {
+      gameR = _game;
+      reviews = _reviews;
+      if (reviews != null) {
+        review = reviews.firstWhere(
+          (element) => element.user!.id! == _userid,
+          orElse: () => ReviewLogModel(id: ""),
+        );
+        review_found = review.id == "" ? false : true;
+      }
+
+      if (user.toPlayList != null) {
+        game_index =
+            user.toPlayList!.indexWhere((element) => element == gameR.game!.id);
+      }
     });
   }
 
@@ -72,10 +125,12 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                         height: double.infinity,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(9.0),
-                          child: Image.memory(
-                            base64Decode((game.cover) ?? ''),
-                            fit: BoxFit.fill,
-                          ),
+                          child: gameR.game!.cover != null
+                              ? Image.memory(
+                                  base64Decode((gameR.game!.cover)!),
+                                  fit: BoxFit.fill,
+                                )
+                              : SizedBox(),
                         ),
                       ),
                     ),
@@ -91,7 +146,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                           Expanded(
                             flex: 2,
                             child: Text(
-                              (game.name ?? 'Unknown'),
+                              (gameR.game!.name ?? 'Unknown'),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -104,7 +159,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                             child: SingleChildScrollView(
                               scrollDirection: Axis.vertical,
                               child: Text(
-                                (game.summary ?? ''),
+                                (gameR.game!.summary ?? ''),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 13.5,
@@ -128,7 +183,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                         size: 27,
                       ),
                       Text(
-                        (game.voteCount.toString()),
+                        (gameR.game!.voteCount.toString()),
                         style: const TextStyle(
                           fontSize: 11,
                           color: Colors.green,
@@ -147,7 +202,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                         size: 25,
                       ),
                       Text(
-                        (game.voteCount.toString()),
+                        (gameR.game!.voteCount.toString()),
                         style: const TextStyle(
                           fontSize: 11,
                           color: Colors.blue,
@@ -170,18 +225,29 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                       children: [
                         ClipRRect(
                             child: GestureDetector(
-                          onTap: () => {
+                          onTap: () {
+                            UserModelLogs found_log = user.logs!.firstWhere(
+                                (element) => element!.gameId == gameR.game!.id,
+                                orElse: () => UserModelLogs(gameId: ""))!;
+                            bool log_found = user.logs != null
+                                ? (user.logs != []
+                                    ? (found_log.gameId == "" ? false : true)
+                                    : false)
+                                : false;
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => LogPage(
-                                        game: game,
-                                        review_logged: review_found,
-                                        review: review)))
+                                          game: gameR.game!,
+                                          review_logged: review_found,
+                                          review: review,
+                                          log_found: log_found,
+                                          found_log: found_log,
+                                        ))).then((value) => {getList()});
                           },
                           child: Container(
                             height: 35,
-                            width: 150,
+                            width: 210,
                             decoration: const BoxDecoration(
                               color: Color(0xffE9A6A6),
                               borderRadius:
@@ -191,14 +257,56 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(
-                                  Icons.library_add_outlined,
+                                Icon(
+                                  (review_found ||
+                                          (user.logs != null
+                                              ? (user.logs != []
+                                                  ? (user.logs!
+                                                              .firstWhere(
+                                                                  (element) =>
+                                                                      element!
+                                                                          .gameId ==
+                                                                      gameR
+                                                                          .game!
+                                                                          .id,
+                                                                  orElse: () =>
+                                                                      UserModelLogs(
+                                                                          gameId:
+                                                                              ""))!
+                                                              .gameId ==
+                                                          ""
+                                                      ? false
+                                                      : true)
+                                                  : false)
+                                              : false))
+                                      ? Icons.edit_outlined
+                                      : Icons.library_add_outlined,
                                   color: Color(0xFF1F1D36),
                                   size: 20,
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  review_found
+                                  (review_found ||
+                                          (user.logs != null
+                                              ? (user.logs != []
+                                                  ? (user.logs!
+                                                              .firstWhere(
+                                                                  (element) =>
+                                                                      element!
+                                                                          .gameId ==
+                                                                      gameR
+                                                                          .game!
+                                                                          .id,
+                                                                  orElse: () =>
+                                                                      UserModelLogs(
+                                                                          gameId:
+                                                                              ""))!
+                                                              .gameId ==
+                                                          ""
+                                                      ? false
+                                                      : true)
+                                                  : false)
+                                              : false))
                                       ? 'Edit Log or Review'
                                       : 'Log or Review',
                                   style: const TextStyle(
@@ -215,28 +323,53 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                         ),
                         ClipRRect(
                           child: GestureDetector(
-                            onTap: () => {},
+                            onTap: () async {
+                              if (game_index == -1) {
+                                if (user.toPlayList != null) {
+                                  user.toPlayList!.add(gameR.game!.id);
+                                } else {
+                                  user.toPlayList = [gameR.game!.id];
+                                }
+                                setState(() {
+                                  game_index = user.toPlayList!.indexWhere(
+                                      (element) => element == gameR.game!.id);
+                                });
+                              } else {
+                                user.toPlayList!.remove(gameR.game!.id);
+                                setState(() {
+                                  game_index = user.toPlayList!.indexWhere(
+                                      (element) => element == gameR.game!.id);
+                                });
+                              }
+                              UserService().updateUser(user_to_update: user);
+                            },
                             child: Container(
                               height: 35,
-                              width: 150,
-                              decoration: const BoxDecoration(
-                                color: Color(0xffE9A6A6),
+                              width: 210,
+                              decoration: BoxDecoration(
+                                color: game_index == -1
+                                    ? const Color(0xffE9A6A6)
+                                    : Color.fromARGB(255, 209, 44, 44),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15)),
                               ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Icon(
-                                    Icons.playlist_add,
+                                    game_index == -1
+                                        ? Icons.playlist_add
+                                        : Icons.playlist_remove,
                                     color: Color(0xFF1F1D36),
                                     size: 20,
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
-                                    'Add To Play List',
-                                    style: TextStyle(
+                                    game_index == -1
+                                        ? 'Add To Play List'
+                                        : 'Remove From Play List',
+                                    style: const TextStyle(
                                         fontSize: 12.0,
                                         fontWeight: FontWeight.bold,
                                         color: Color(0xFF1F1D36)),
@@ -258,7 +391,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                     child: Column(
                       children: [
                         Text(
-                          (game.vote.toString()),
+                          (gameR.game!.vote.toString()),
                           style: const TextStyle(
                             fontSize: 35,
                             color: Color(0xFFE9A6A6),
@@ -272,7 +405,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                           onRatingUpdate: (rating) {},
                           direction: Axis.horizontal,
                           minRating: 0,
-                          initialRating: (game.vote!),
+                          initialRating: (gameR.game!.vote) ?? 0,
                           itemCount: 5,
                           allowHalfRating: true,
                           itemPadding:
@@ -315,10 +448,11 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                           height: 80,
                           child: Center(
                             child: Text(
-                              (game.firstReleaseDate != null &&
-                                      game.firstReleaseDate != 0)
+                              (gameR.game!.firstReleaseDate != null &&
+                                      gameR.game!.firstReleaseDate != 0)
                                   ? DateTime.fromMillisecondsSinceEpoch(
-                                          (game.firstReleaseDate!) * 1000)
+                                          (gameR.game!.firstReleaseDate!) *
+                                              1000)
                                       .toString()
                                       .split(' ')
                                       .first
@@ -357,9 +491,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                           height: 80,
                           child: Center(
                             child: Text(
-                              (game.platforms != null &&
-                                      game.platforms!.length != 0)
-                                  ? (game.platforms!.join(', '))
+                              (gameR.game!.platforms != null &&
+                                      gameR.game!.platforms!.length != 0)
+                                  ? (gameR.game!.platforms!.join(', '))
                                   : 'Unknown',
                               style: const TextStyle(
                                 color: Colors.white,
@@ -395,7 +529,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                           height: 80,
                           child: Center(
                             child: Text(
-                              (game.publisher ?? 'Unknown'),
+                              (gameR.game!.publisher ?? 'Unknown'),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 13,
@@ -430,8 +564,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                           height: 80,
                           child: Center(
                             child: Text(
-                              (game.genres != null && game.genres!.length != 0)
-                                  ? (game.genres!.join(', '))
+                              (gameR.game!.genres != null &&
+                                      gameR.game!.genres!.length != 0)
+                                  ? (gameR.game!.genres!.join(', '))
                                   : 'Unknown',
                               style: const TextStyle(
                                 color: Colors.white,

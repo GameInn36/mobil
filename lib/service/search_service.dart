@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:gameinn/model/game_with_reviews.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/game_model.dart';
@@ -11,6 +12,7 @@ class SearchService {
       'https://api-gateway-ixdm6djuha-uc.a.run.app/game/?studio=';
   String searchmember_url =
       'https://api-gateway-ixdm6djuha-uc.a.run.app/user/?username=';
+  String game_found = 'https://api-gateway-ixdm6djuha-uc.a.run.app/game/';
 
   final dio = Dio();
   String token = "";
@@ -100,4 +102,27 @@ class SearchService {
       }
     } on DioError catch (e) {}
   }
+
+  Future<GameWithReviews?> gameFound({
+    required String game_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+
+    try {
+      var response = await dio.get(
+        "$game_found$game_id/page",
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      if (response != null && response.statusCode == 200) {
+        return GameWithReviews.fromJson(response.data);
+      }
+    } on DioError catch (e) {}
+  }
+
 }
