@@ -357,6 +357,8 @@ class _LogPageState extends State<LogPage> {
                             gameId: game.id!,
                             finished: selectedItem == 'Finished',
                             userId: _userid);
+
+                        Navigator.pop(context);
                       } else {
                         log("Error");
                       }
@@ -389,6 +391,8 @@ class _LogPageState extends State<LogPage> {
 
                         _user.logs![log_index] = new_log;
                         UserService().updateUser(user_to_update: _user);
+
+                        Navigator.pop(context);
                       } else {
                         log('Error');
                       }
@@ -491,7 +495,8 @@ class _LogPageState extends State<LogPage> {
                             if (review_logged)
                               {
                                 ReviewVoteService().reviewDelete(
-                                    ctx: context, review_id: review.id!)
+                                    ctx: context, review_id: review.id!),
+                                Navigator.pop(context)
                               }
                           },
                           child: Container(
@@ -529,12 +534,6 @@ class _LogPageState extends State<LogPage> {
                                   gameId: game.id!,
                                   context: _context.text,
                                   vote: _rating.toInt()))!;
-                          // if (added_review.id != "") {
-                          //   game.vote =
-                          //       (game.vote! * game.voteCount!.toDouble() +
-                          //               added_review.vote!.toDouble()) /
-                          //           (game.voteCount! + 1);
-                          // }
                         } else {
                           ReviewVoteService().reviewVoteUpdate(
                               ctx: context,
@@ -544,6 +543,7 @@ class _LogPageState extends State<LogPage> {
                               vote: _rating.toInt(),
                               review_id: review.id!);
                         }
+                        Navigator.pop(context);
                       } else {
                         log("Review empty error.");
                       }

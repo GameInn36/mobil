@@ -109,33 +109,11 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                         leading: Image.memory(base64Decode((game?.cover)!)),
                         trailing: Icon(Icons.arrow_forward_rounded),
                         onTap: () async {
-                          bool review_found = false;
-                          ReviewLogModel review = ReviewLogModel(id: "");
-                          List<ReviewLogModel>? reviews =
-                              await ReviewVoteService().reviewLogGet(
-                                  ctx: context, gameId: game!.id!);
-                          if (reviews != null) {
-                            review = reviews.firstWhere(
-                              (element) => element.user!.id! == _userid,
-                              orElse: () => ReviewLogModel(id: ""),
-                            );
-                            review_found = review.id == "" ? false : true;
-                          }
-
-                          int game_index = -1;
-                          if (_user.toPlayList != null) {
-                            game_index = _user.toPlayList!
-                                .indexWhere((element) => element == game.id);
-                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => GameDetailsPage(
-                                      game: game,
-                                      reviews: reviews != null ? reviews : [],
-                                      review_found: review_found,
-                                      review: review,
-                                      game_index: game_index)));
+                                      game_id: game!.id!,)));
                         },
                       ),
                     );
