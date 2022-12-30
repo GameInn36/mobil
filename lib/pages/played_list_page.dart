@@ -2,20 +2,22 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/game_model.dart';
+import 'package:gameinn/model/log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/game_details.page.dart';
+import 'package:gameinn/service/log_service.dart';
 import 'package:gameinn/service/search_service.dart';
 import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ToPlayListPage extends StatefulWidget {
-  const ToPlayListPage({Key? key}) : super(key: key);
+class PlayedListPage extends StatefulWidget {
+  const PlayedListPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ToPlayListPageState();
+  State<StatefulWidget> createState() => _PlayedListPageState();
 }
 
-class _ToPlayListPageState extends State<ToPlayListPage> {
+class _PlayedListPageState extends State<PlayedListPage> {
   List<GameModel?> games = [];
   String _userid = "";
   UserModel _user = UserModel(id: "");
@@ -30,8 +32,11 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
 
-    List<GameModel> tempList =
-        (await UserService().toPlayList(user_id: user.id!))!;
+    List<GameModel> tempList = [];
+    (await LogService().LogGet(userId: user.id!))!
+        .where((element) => element.gameLog!.finished == true).forEach((element) {
+          tempList.add(element.game!);
+        });
 
     setState(() {
       _userid = user.id!;
@@ -68,7 +73,7 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
                         const Expanded(
                           flex: 2,
                           child: Text(
-                            'To Play List',
+                            'Played Games',
                             style: TextStyle(
                               fontSize: 20.0,
                               color: Colors.white,

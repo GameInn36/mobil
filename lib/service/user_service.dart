@@ -276,4 +276,28 @@ class UserService {
       log(e.message);
     }
   }
+
+  Future<List<GameModel>?> PlayedGames({
+    required String user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+    try {
+      var response = await dio.get(
+        "$get_update_user_url$user_id/playedGames",
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      if (response != null && response.statusCode == 200) {
+        var result = (response.data as List).map((x) => GameModel.fromJson(x)).toList();
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
+    }
+  }
 }

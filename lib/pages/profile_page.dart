@@ -6,6 +6,7 @@ import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/diary_page.dart';
 import 'package:gameinn/pages/followers_page.dart';
 import 'package:gameinn/pages/following_page.dart';
+import 'package:gameinn/pages/played_list_page.dart';
 import 'package:gameinn/pages/user_reviews_page.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -213,6 +214,11 @@ class _ShowProfileState extends State<ProfilePage> {
                     fontSize: 15.0,
                   ),
                 ),
+                onTap: (() => {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => PlayedListPage(),
+                  )),
+                }),
               ),
               ListTile(
                 leading: Text(
