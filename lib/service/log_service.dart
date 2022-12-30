@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gameinn/model/log_model.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/review_model.dart';
 import 'package:gameinn/model/user_model.dart';
@@ -53,6 +54,31 @@ class LogService {
       }
     } on DioError catch (e) {
       showCustomLoginError(ctx, 'Error', 'Cannot write log.');
+    }
+  }
+
+  Future<List<LogModel>?> LogGet(
+      {
+      required String userId}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = (prefs.getString('token') ?? "");
+
+    try {
+      var response = await dio.get(
+        "$log_add_url$userId/logs",
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      if (response != null && response.statusCode == 200) {
+        var result =
+            (response.data as List).map((x) => LogModel.fromJson(x)).toList();
+        return result;
+      }
+    } on DioError catch (e) {
     }
   }
 

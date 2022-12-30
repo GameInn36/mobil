@@ -37,6 +37,8 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setString('token', '${value.jwtToken}');
         String a = jsonEncode((value.user)!.toJson());
         prefs.setString('user', a);
+        log("user id: ${value.user!.id!}");
+        log("token: ${value.jwtToken}");
 
         Navigator.pushNamedAndRemoveUntil(
             context, '/home', ModalRoute.withName('/home'));

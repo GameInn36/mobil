@@ -30,6 +30,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
   GameWithReviews gameR = GameWithReviews(game: GameModel(id: ""));
 
   List<ReviewLogModel> reviews = [];
+  List<ReviewLogModel> friendsReviews = [];
   bool review_found = false;
   ReviewLogModel review = ReviewLogModel(id: "");
   int game_index = -1;
@@ -53,14 +54,24 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
   void getList() async {
     GameWithReviews _game =
         (await SearchService().gameFound(game_id: game_id))!;
-    List<ReviewLogModel> _reviews =
-        await ReviewVoteService().reviewLogGet(ctx: context, gameId: game_id) ??
-            [];
+    List<ReviewLogModel> _reviews = (await ReviewVoteService()
+            .reviewLogGet(ctx: context, gameId: game_id) ??
+        []);
+    _reviews.sort((a, b) => b.likeCount!.compareTo(a.likeCount!));
+    List<ReviewLogModel?> _friendsReviews = _game.followedFriendsReviews ?? [];
 
     setState(() {
       gameR = _game;
-      reviews = _reviews;
-      if (reviews != null) {
+
+      for (int i = 0; i < (_reviews.length <= 3 ? _reviews.length : 3); i++) {
+        reviews.add(_reviews[i]);
+      }
+
+      for (int i = 0; i < (_friendsReviews.length <= 3 ? _friendsReviews.length : 3); i++) {
+        friendsReviews.add(_friendsReviews[i]!);
+      }
+      
+      if (reviews.isNotEmpty) {
         review = reviews.firstWhere(
           (element) => element.user!.id! == _userid,
           orElse: () => ReviewLogModel(id: ""),
@@ -144,25 +155,28 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            flex: 2,
-                            child: Text(
-                              (gameR.game!.name ?? 'Unknown'),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                            flex: 3,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Text(
+                                (gameR.game!.name ?? 'Unknown'),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                           Expanded(
-                            flex: 7,
+                            flex: 6,
                             child: SingleChildScrollView(
                               scrollDirection: Axis.vertical,
                               child: Text(
                                 (gameR.game!.summary ?? ''),
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 13.5,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
@@ -579,6 +593,340 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              const Text(
+                "Most Popular Reviews",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(
+                width: 250.0,
+                child: Divider(
+                  thickness: 1.0,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(
+                height: 160*(reviews.length.toDouble()),
+                child: ListView.builder(
+                    itemCount:
+                        reviews != null ? reviews.length : 0,
+                    itemBuilder: (context, index) {
+                      ReviewLogModel? review_log = reviews[index];
+                      return ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(29.0),
+                            topRight: Radius.circular(10.0),
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0)),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 140.0,
+                              color: const Color(0xFFE9A6A6).withOpacity(0.05),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 6,
+                                    child: Container(
+                                      alignment: Alignment.topLeft,
+                                      child: AspectRatio(
+                                        aspectRatio: 1,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: (review_log
+                                                          .user?.profileImage) !=
+                                                      null
+                                                  ? Image.memory(base64Decode(
+                                                          (review_log.user
+                                                              ?.profileImage)!))
+                                                      .image
+                                                  : const NetworkImage(
+                                                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                                    ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    flex: 1,
+                                    child: const SizedBox(),
+                                  ),
+                                  Expanded(
+                                    flex: 25,
+                                    child: Container(
+                                      padding: const EdgeInsets.only(left: 5),
+                                      child: Container(
+                                        padding: const EdgeInsets.only(left: 5.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              flex: 2,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    (gameR.game!.name ?? "None"),
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12.0),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                                flex: 2,
+                                                child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        "Review by ",
+                                                        style: TextStyle(
+                                                            color: Colors.white
+                                                                .withOpacity(0.5),
+                                                            fontSize: 13.0),
+                                                      ),
+                                                      Text(
+                                                        (review_log
+                                                                .user!.username ??
+                                                            "None"),
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Color(0xFFE9A6A6),
+                                                            fontSize: 13.0),
+                                                      )
+                                                    ])),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    (review_log.context ?? "None"),
+                                                    style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 13.5),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              flex: 3,
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.favorite_border,
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                  ),
+                                                  Text(
+                                                    " 2",
+                                                    style: TextStyle(
+                                                        color: Colors.white
+                                                            .withOpacity(0.5)),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 20,),
+                          ],
+                        ),
+                      );
+                    }),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              const Text(
+                "Friends' Reviews",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(
+                width: 250.0,
+                child: Divider(
+                  thickness: 1.0,
+                  color: Colors.grey,
+                ),
+              ),
+              Column(
+                children: [
+                  SizedBox(
+                    height: 160*(friendsReviews.length.toDouble()),
+                    child: ListView.builder(
+                        itemCount:
+                            friendsReviews != null ? friendsReviews.length : 0,
+                        itemBuilder: (context, index) {
+                          ReviewLogModel? review_log = friendsReviews[index];
+                          return ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(29.0),
+                                topRight: Radius.circular(10.0),
+                                bottomLeft: Radius.circular(10.0),
+                                bottomRight: Radius.circular(10.0)),
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 140.0,
+                                  color: const Color(0xFFE9A6A6).withOpacity(0.05),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 6,
+                                        child: Container(
+                                          alignment: Alignment.topLeft,
+                                          child: AspectRatio(
+                                            aspectRatio: 1,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                  fit: BoxFit.fill,
+                                                  image: (review_log
+                                                              .user?.profileImage) !=
+                                                          null
+                                                      ? Image.memory(base64Decode(
+                                                              (review_log.user
+                                                                  ?.profileImage)!))
+                                                          .image
+                                                      : const NetworkImage(
+                                                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                                        ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const Expanded(
+                                        flex: 1,
+                                        child: const SizedBox(),
+                                      ),
+                                      Expanded(
+                                        flex: 25,
+                                        child: Container(
+                                          padding: const EdgeInsets.only(left: 5),
+                                          child: Container(
+                                            padding: const EdgeInsets.only(left: 5.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        (gameR.game!.name ?? "None"),
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 12.0),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                    flex: 2,
+                                                    child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.center,
+                                                        children: [
+                                                          Text(
+                                                            "Review by ",
+                                                            style: TextStyle(
+                                                                color: Colors.white
+                                                                    .withOpacity(0.5),
+                                                                fontSize: 13.0),
+                                                          ),
+                                                          Text(
+                                                            (review_log
+                                                                    .user!.username ??
+                                                                "None"),
+                                                            style: const TextStyle(
+                                                                color:
+                                                                    Color(0xFFE9A6A6),
+                                                                fontSize: 13.0),
+                                                          )
+                                                        ])),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        (review_log.context ?? "None"),
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 13.5),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.favorite_border,
+                                                        color: Colors.white
+                                                            .withOpacity(0.5),
+                                                      ),
+                                                      Text(
+                                                        " 2",
+                                                        style: TextStyle(
+                                                            color: Colors.white
+                                                                .withOpacity(0.5)),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 20,),
+                              ],
+                            ),
+                          );
+                        }),
+                  ),
+                ],
               ),
             ],
           ),

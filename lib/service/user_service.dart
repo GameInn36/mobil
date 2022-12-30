@@ -227,11 +227,9 @@ class UserService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = (prefs.getString('token') ?? "");
     try {
-      Map<String, dynamic> user_password_added = user_to_update.toJson();
-      user_password_added['password'] = 'Ayse124!';
       var response = await dio.put(
         "$get_update_user_url${user_to_update.id}",
-        data: user_password_added,
+        data: user_to_update.toJson(),
         options: Options(
             headers: {"authorization": "Bearer $token"},
             followRedirects: false,
@@ -246,6 +244,54 @@ class UserService {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String a = jsonEncode((result).toJson());
         prefs.setString('user', a);
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
+    }
+  }
+
+  Future<List<GameModel>?> toPlayList({
+    required String user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+    try {
+      var response = await dio.get(
+        "$get_update_user_url$user_id/toPlayList",
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      if (response != null && response.statusCode == 200) {
+        var result = (response.data as List).map((x) => GameModel.fromJson(x)).toList();
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
+    }
+  }
+
+  Future<List<GameModel>?> PlayedGames({
+    required String user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+    try {
+      var response = await dio.get(
+        "$get_update_user_url$user_id/playedGames",
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      if (response != null && response.statusCode == 200) {
+        var result = (response.data as List).map((x) => GameModel.fromJson(x)).toList();
         return result;
       }
     } on DioError catch (e) {
