@@ -425,16 +425,29 @@ class _DisplayReviewsState extends State<HomeReviews> {
 
   void like(String review_id) async {
     setState(() {
-      reviewVoteService.dislikeReview(review_id: review_id).then((value) {
+      reviewVoteService.likeReview(review_id: review_id).then((value) {
         if (value != null) {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
         } else {}
       });
 
-      int review_index =
-          userReviews.indexWhere((element) => element!.review!.id == review_id);
-      userReviews[review_index]!.review!.likeCount =
-          userReviews[review_index]!.review!.likeCount! + 1;
+      int review_index = friendReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        friendReviews[review_index]!.review!.likeCount =
+            friendReviews[review_index]!.review!.likeCount! + 1;
+      }
+
+      review_index = mostPopularReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        mostPopularReviews[review_index]!.review!.likeCount =
+            mostPopularReviews[review_index]!.review!.likeCount! + 1;
+      }
+
+      getList();
     });
   }
 
@@ -446,10 +459,23 @@ class _DisplayReviewsState extends State<HomeReviews> {
         } else {}
       });
 
-      int review_index =
-          userReviews.indexWhere((element) => element!.review!.id == review_id);
-      userReviews[review_index]!.review!.likeCount =
-          userReviews[review_index]!.review!.likeCount! - 1;
+      int review_index = friendReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        friendReviews[review_index]!.review!.likeCount =
+            friendReviews[review_index]!.review!.likeCount! - 1;
+      }
+
+      review_index = mostPopularReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        mostPopularReviews[review_index]!.review!.likeCount =
+            mostPopularReviews[review_index]!.review!.likeCount! - 1;
+      }
+
+      getList();
     });
   }
 
