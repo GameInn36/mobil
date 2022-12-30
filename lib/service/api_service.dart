@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:gameinn/model/error_model.dart';
 import 'package:gameinn/widgets/show_custom_loginerror_dialog.dart';
 
 import '../model/login_model.dart';

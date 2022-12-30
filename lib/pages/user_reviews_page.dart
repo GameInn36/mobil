@@ -94,9 +94,16 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
 
   void like(String review_id) async {
     setState(() {
-      reviewVoteService.likeReview(review_id: review_id).then((value) {
-        //userReviews = (await reviewVoteService.getUserReviews(user_id: user.id!))!;
+      reviewVoteService.dislikeReview(review_id: review_id).then((value) {
+        if (value != null) {
+          //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
+        } else {}
       });
+
+      int review_index =
+          userReviews.indexWhere((element) => element!.review!.id == review_id);
+      userReviews[review_index]!.review!.likeCount =
+          userReviews[review_index]!.review!.likeCount! + 1;
     });
   }
 
@@ -107,6 +114,11 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
         } else {}
       });
+
+      int review_index =
+          userReviews.indexWhere((element) => element!.review!.id == review_id);
+      userReviews[review_index]!.review!.likeCount =
+          userReviews[review_index]!.review!.likeCount! - 1;
     });
   }
 
@@ -124,7 +136,6 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                   itemCount: userReviews.length,
                   itemBuilder: (context, index) {
                     ReviewWithGame? review = userReviews[index];
-                    int likeCount = (review?.review?.likeCount)!;
                     return Column(
                       children: [
                         Container(
@@ -248,22 +259,19 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                             liked[(review
                                                                 ?.review
                                                                 ?.id)!] = true;
-                                                            likeCount =
-                                                                likeCount + 1;
                                                           } else {
                                                             dislike((review
                                                                 ?.review?.id)!);
                                                             liked[(review
                                                                 ?.review
                                                                 ?.id)!] = false;
-                                                            likeCount =
-                                                                likeCount - 1;
                                                           }
                                                         });
                                                       },
                                                     ),
                                                     Text(
-                                                      likeCount.toString(),
+                                                      (review!.review!.likeCount
+                                                          .toString()),
                                                       style: TextStyle(
                                                           color: Colors.white
                                                               .withOpacity(

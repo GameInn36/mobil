@@ -4,21 +4,22 @@
 class GameModel {
 /*
 {
-  "id": "639f851add21996db197cb73",
-  "name": "World of Warcraft",
-  "cover": null,
-  "summary": "Best MMORPG Game ever",
+  "id": "63a82a745bafb01e2936252f",
+  "name": "Kingdom Hearts III",
+  "cover": "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",
+  "summary": "Kingdom Hearts III is the third main installment in the Kingdom Hearts series developed and published by Square Enix. It was initially released January 2019 for the PlayStation 4 and the Xbox One. An expansion, Kingdom Hearts III Re Mind was released in January 2020.\n\nThe story takes place after the events of Kingdom Hearts 3D: Dream Drop Distance. It features an older Sora as the main protagonist, who sets forth on a new adventure to search for seven guardians of light in an attempt to stop Xehanort from bringing about a second Keyblade War. Sora is joined by Donald Duck, Goofy, Mickey Mouse, Riku, Kairi, and others. Along the way, Sora travels to many worlds from Disney and Pixar intellectual properties, and cross paths with the real Organization XIII.\n\nKingdom Hearts III features hack and slash combat reminiscent of Kingdom Hearts II, with elements from later handheld entries, allowing the player to control Sora in a party with Donald, Goofy, and up to two other Disney characters from the various worlds he visits. A major addition compared is the Formchange mechanic, which allows his currently equipped Keyblade to grant him special abilities and change shape. Sora can equip up to three Keyblades at a time, and cycle between them to use his abilities. Another addition is the Attractions mechanic, which occasionally allows Sora to summon and pilot a vehicle inspired by Disney theme park attractions. At certain points throughout the game, the player will be able to control other characters.",
   "genres": [
-    "MMORPG"
+    "Role-playing (RPG)"
   ],
-  "publisher": "Blizzard Entertainment",
+  "publisher": "Q-Games Ltd.",
   "platforms": [
-    "ps3"
+    "PC"
   ],
-  "vote": 0,
-  "voteCount": 0,
-  "first_release_date": 0
-}
+  "vote": 2.5,
+  "voteCount": 2,
+  "first_release_date": 1548374400,
+  "logCount": 2
+} 
 */
 
   String? id;
@@ -31,6 +32,7 @@ class GameModel {
   double? vote;
   int? voteCount;
   int? firstReleaseDate;
+  int? logCount;
 
   GameModel({
     this.id,
@@ -43,6 +45,7 @@ class GameModel {
     this.vote,
     this.voteCount,
     this.firstReleaseDate,
+    this.logCount,
   });
   GameModel.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
@@ -69,6 +72,7 @@ class GameModel {
     vote = json['vote']?.toDouble();
     voteCount = json['voteCount']?.toInt();
     firstReleaseDate = json['first_release_date']?.toInt();
+    logCount = json['logCount']?.toInt();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -96,6 +100,7 @@ class GameModel {
     data['vote'] = vote;
     data['voteCount'] = voteCount;
     data['first_release_date'] = firstReleaseDate;
+    data['logCount'] = logCount;
     return data;
   }
 }

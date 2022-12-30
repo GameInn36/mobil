@@ -182,7 +182,7 @@ class ReviewVoteService {
     var url_updated = like_dislike_review_url + review_id + "/like";
     try {
       var response = await dio.post(
-        review_vote_url,
+        url_updated,
         data: jsonEncode({}),
         options: Options(
             headers: {"authorization": "Bearer $token"},
@@ -206,7 +206,7 @@ class ReviewVoteService {
     var url_updated = like_dislike_review_url + review_id + "/unlike";
     try {
       var response = await dio.post(
-        review_vote_url,
+        url_updated,
         options: Options(
             headers: {"authorization": "Bearer $token"},
             followRedirects: false,
@@ -216,7 +216,7 @@ class ReviewVoteService {
       );
       url_updated = like_dislike_review_url;
       if (response != null && response.statusCode == 200) {
-        log("LIKED!!!");
+        log("DISLIKED!!!");
       }
     } on DioError catch (e) {
       log("***PROBLEM***");
