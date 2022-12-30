@@ -227,11 +227,9 @@ class UserService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = (prefs.getString('token') ?? "");
     try {
-      Map<String, dynamic> user_password_added = user_to_update.toJson();
-      user_password_added['password'] = 'Ayse124!';
       var response = await dio.put(
         "$get_update_user_url${user_to_update.id}",
-        data: user_password_added,
+        data: user_to_update.toJson(),
         options: Options(
             headers: {"authorization": "Bearer $token"},
             followRedirects: false,
