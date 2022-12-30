@@ -293,7 +293,7 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                             BorderRadius.circular(10.0),
                                         child: InkWell(
                                           child: Image.memory(base64Decode(
-                                              (review?.game?.cover)!)),
+                                              (review.game?.cover)!)),
                                           onTap: () async {
                                             bool review_found = false;
                                             ReviewLogModel review_log =
@@ -302,8 +302,8 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                 await ReviewVoteService()
                                                     .reviewLogGet(
                                                         ctx: context,
-                                                        gameId: (review
-                                                            ?.game?.id)!);
+                                                        gameId:
+                                                            (review.game?.id)!);
                                             if (reviews != null) {
                                               review_log = reviews.firstWhere(
                                                 (element) =>
@@ -321,7 +321,7 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                 MaterialPageRoute(
                                                     builder: (context) =>
                                                         GameDetailsPage(
-                                                          game: (review?.game)!,
+                                                          game: (review.game)!,
                                                           reviews:
                                                               reviews != null
                                                                   ? reviews
