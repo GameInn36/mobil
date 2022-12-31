@@ -1,11 +1,15 @@
 import 'dart:convert';
 
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/game_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/game_details.page.dart';
+import 'package:gameinn/pages/selected_filter_controller.dart';
 import 'package:gameinn/service/search_service.dart';
 import 'package:gameinn/service/user_service.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ToPlayListPage extends StatefulWidget {
@@ -17,8 +21,27 @@ class ToPlayListPage extends StatefulWidget {
 
 class _ToPlayListPageState extends State<ToPlayListPage> {
   List<GameModel?> games = [];
+  List<GameModel?> defaultGames = [];
   String _userid = "";
   UserModel _user = UserModel(id: "");
+  List<String> items = [
+    'Filter By Platform',
+    'Sort Alphabetically',
+    'Sort By Average Vote',
+    'Sort By Release Date',
+    'Default'
+  ];
+  String? selectedItem;
+
+  List<String> platforms = [
+    'PC',
+    'Playstation 4',
+    'Xbox One',
+    'Android',
+    'iOS',
+    'Playstation 5',
+    'Xbox Series X|S'
+  ];
 
   @override
   void initState() {
@@ -37,7 +60,59 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
       _userid = user.id!;
       _user = user;
       games = tempList;
+      defaultGames = games;
     });
+  }
+
+  void sortAlphabetically() {
+    setState(() {
+      games.sort(
+          ((a, b) => a!.name!.toLowerCase().compareTo(b!.name!.toLowerCase())));
+    });
+  }
+
+  void sortByAverageVote() {
+    setState(() {
+      games.sort(((b, a) => a!.vote!.compareTo((b!.vote!))));
+    });
+  }
+
+  void sortByReleaseDate() {
+    setState(() {
+      games.sort(
+          ((b, a) => a!.firstReleaseDate!.compareTo((b!.firstReleaseDate!))));
+    });
+  }
+
+  void getdefaultGames() {
+    setState(() {
+      games = defaultGames;
+    });
+  }
+
+  var controller = Get.put(SelectedFiltercontroller());
+
+  void openFilterDialog(context) async {
+    await FilterListDialog.display(context,
+        listData: platforms,
+        selectedListData: controller.getSelectedList(),
+        headlineText: 'Filter Games By Platform',
+        choiceChipLabel: (item) => item,
+        validateSelectedItem: ((list, val) => list!.contains(val)),
+        onItemSearch: (list, text) {
+          return list.toLowerCase().contains(text.toLowerCase());
+        },
+        onApplyButtonClick: (list) {
+          controller.setSelectedList(List<String>.from(list!));
+          setState(() {
+            games = games
+                .where((x) =>
+                    list.every((element) => x!.platforms!.contains(element)))
+                .toList();
+          });
+
+          Navigator.of(context).pop();
+        });
   }
 
   @override
@@ -67,22 +142,51 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
                         ),
                         const Expanded(
                           flex: 2,
-                          child: Text(
-                            'To Play List',
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                          child: Center(
+                            child: Text(
+                              'To Play List',
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                         Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Container(
-                            alignment: Alignment.centerRight,
-                            child: const Icon(
-                              Icons.filter_alt,
-                              color: Colors.white,
+                            margin: EdgeInsets.only(right: 5.0),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                icon: Icon(
+                                  Icons.filter_alt_outlined,
+                                  color: Colors.white,
+                                ),
+                                items: items
+                                    .map((item) => DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Text(item,
+                                              style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 10.0,
+                                              )),
+                                        ))
+                                    .toList(),
+                                onChanged: (item) => setState(() {
+                                  if (item == 'Sort Alphabetically') {
+                                    sortAlphabetically();
+                                  } else if (item == 'Sort By Average Vote') {
+                                    sortByAverageVote();
+                                  } else if (item == 'Sort By Release Date') {
+                                    sortByReleaseDate();
+                                  } else if (item == 'Filter By Platform') {
+                                    openFilterDialog(context);
+                                  } else if (item == 'Default') {
+                                    getdefaultGames();
+                                  }
+                                }),
+                              ),
                             ),
                           ),
                         )

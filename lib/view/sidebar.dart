@@ -4,6 +4,7 @@ import 'package:gameinn/pages/profile_page.dart';
 import 'package:gameinn/pages/reviews_page.dart';
 import 'package:gameinn/pages/settings_page.dart';
 import 'package:gameinn/pages/to_play_list_page.dart';
+import 'package:gameinn/pages/user_reviews_page.dart';
 
 class SidebarDrawerWidget extends StatelessWidget {
   final String username;
@@ -171,7 +172,9 @@ class SidebarDrawerWidget extends StatelessWidget {
         break;
       case 3:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ReviewsPage(),
+          builder: (context) => UserReviewsPage(
+            user_id: user_id,
+          ),
         ));
         break;
       case 4:

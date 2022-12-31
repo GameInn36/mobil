@@ -1,17 +1,23 @@
-import 'dart:developer';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/display_games_model.dart';
+import 'package:gameinn/model/display_reviews_model.dart';
+import 'package:gameinn/model/review_model.dart';
 import 'package:gameinn/pages/followers_page.dart';
 import 'package:gameinn/pages/game_details.page.dart';
 import 'package:gameinn/model/game_model.dart';
+import 'package:gameinn/pages/profile_page.dart';
 import 'package:gameinn/pages/search_page.dart';
+import 'package:gameinn/service/game_service.dart';
 import 'package:gameinn/service/review_vote_service.dart';
 import 'package:gameinn/service/search_service.dart';
+import 'package:gameinn/service/user_service.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:gameinn/pages/auth_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/navigator_key.dart';
 import 'model/review_log_model.dart';
+import 'model/review_with_game_model.dart';
 import 'model/user_model.dart';
 
 void main() {
@@ -122,10 +128,12 @@ class HomeGames extends StatefulWidget {
 
 class _DisplayGamesState extends State<HomeGames> {
   final searchservice = SearchService();
+  final gameservice = GameService();
 
   List<GameModel?> games = [];
   String _userid = "";
   UserModel _user = UserModel(id: "");
+  DisplayGamesModel? displayGames = DisplayGamesModel();
 
   @override
   void initState() {
@@ -144,16 +152,17 @@ class _DisplayGamesState extends State<HomeGames> {
     });
   }
 
-  void getList() {
-    List<GameModel> tempList = [];
-    searchservice.gameSearch(searched_name: "d").then((value) {
-      if (value != null) {
-        tempList = value;
-      }
+  void getList() async {
+    //List<GameModel> tempList = [];
+    displayGames = await gameservice.displayGamesPage();
 
-      setState(() {
-        games = tempList;
-      });
+    //searchservice.gameSearch(searched_name: "d").then((value) {
+    //if (value != null) {
+    //tempList = value;
+    //}
+
+    setState(() {
+      this.displayGames = displayGames;
     });
   }
 
@@ -185,16 +194,17 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: games.length, //buradan games gelmeli
+                      itemCount: displayGames?.newsFromFriends?.length,
                       itemBuilder: (context, index) {
-                        GameModel? game = games[index];
+                        GameModel? game =
+                            displayGames?.newsFromFriends?[index]!.game;
                         return InkWell(
                           onTap: () async {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => GameDetailsPage(
-                                          game_id: game!.id!,
+                                          game_id: (game?.id)!,
                                         )));
                           },
                           child: SizedBox(
@@ -204,10 +214,12 @@ class _DisplayGamesState extends State<HomeGames> {
                               padding: const EdgeInsets.only(right: 6.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
-                                child: Image.memory(
-                                  base64Decode((game?.cover)!),
-                                  fit: BoxFit.fill,
-                                ),
+                                child: game?.cover != null
+                                    ? Image.memory(
+                                        base64Decode((game?.cover)!),
+                                        fit: BoxFit.fill,
+                                      )
+                                    : SizedBox(),
                               ),
                             ),
                           ),
@@ -239,17 +251,20 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: games.length, //buradan games gelmeli
+                      itemCount: displayGames
+                          ?.mostPopularGames?.length, //buradan games gelmeli
                       itemBuilder: (context, index) {
-                        GameModel? game = games[index];
+                        GameModel? game =
+                            displayGames?.mostPopularGames?[index];
                         return InkWell(
                           onTap: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => GameDetailsPage(
-                                      game_id: game!.id!,)));
-                        },
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GameDetailsPage(
+                                          game_id: (game?.id)!,
+                                        )));
+                          },
                           child: SizedBox(
                             height: 140.0,
                             width: 100.0,
@@ -257,10 +272,12 @@ class _DisplayGamesState extends State<HomeGames> {
                               padding: const EdgeInsets.only(right: 6.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
-                                child: Image.memory(
-                                  base64Decode((game?.cover)!),
-                                  fit: BoxFit.fill,
-                                ),
+                                child: game?.cover != null
+                                    ? Image.memory(
+                                        base64Decode((game?.cover)!),
+                                        fit: BoxFit.fill,
+                                      )
+                                    : SizedBox(),
                               ),
                             ),
                           ),
@@ -292,17 +309,19 @@ class _DisplayGamesState extends State<HomeGames> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 15.0, horizontal: 0.0),
                       scrollDirection: Axis.horizontal,
-                      itemCount: games.length, //buradan games gelmeli
+                      itemCount: displayGames
+                          ?.newGames?.length, //buradan games gelmeli
                       itemBuilder: (context, index) {
-                        GameModel? game = games[index];
+                        GameModel? game = displayGames?.newGames?[index];
                         return InkWell(
                           onTap: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => GameDetailsPage(
-                                      game_id: game!.id!,)));
-                        },
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GameDetailsPage(
+                                          game_id: (game?.id)!,
+                                        )));
+                          },
                           child: SizedBox(
                             height: 140.0,
                             width: 100.0,
@@ -310,10 +329,12 @@ class _DisplayGamesState extends State<HomeGames> {
                               padding: const EdgeInsets.only(right: 6.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
-                                child: Image.memory(
-                                  base64Decode((game?.cover)!),
-                                  fit: BoxFit.fill,
-                                ),
+                                child: game?.cover != null
+                                    ? Image.memory(
+                                        base64Decode((game?.cover)!),
+                                        fit: BoxFit.fill,
+                                      )
+                                    : SizedBox(),
                               ),
                             ),
                           ),
@@ -329,8 +350,134 @@ class _DisplayGamesState extends State<HomeGames> {
   }
 }
 
-class HomeReviews extends StatelessWidget {
+class HomeReviews extends StatefulWidget {
   const HomeReviews({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _DisplayReviewsState();
+}
+
+class _DisplayReviewsState extends State<HomeReviews> {
+  late UserModel user;
+  late UserModel authorizedUser;
+  final reviewVoteService = ReviewVoteService();
+  final userservice = UserService();
+
+  List<ReviewWithGame?> userReviews = [];
+
+  DisplayReviewsModel? displayReviews = DisplayReviewsModel();
+
+  List<ReviewsTabReviewModel?> friendReviews = [];
+  List<ReviewsTabReviewModel?> mostPopularReviews = [];
+
+  Map<String, bool> liked = {};
+
+  String username = "";
+
+  String user_id = "";
+
+  @override
+  void initState() {
+    super.initState();
+
+    getList();
+  }
+
+  void getList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    displayReviews = await reviewVoteService.displayReviewsTab();
+
+    friendReviews = (displayReviews?.friendReviews)!;
+    mostPopularReviews = (displayReviews?.mostPopularReviews)!;
+
+    if (friendReviews != null) {
+      for (int i = 0; i < friendReviews.length; i++) {
+        if ((friendReviews[i]?.review?.likedUsers)!.contains(user.id)) {
+          liked[(friendReviews[i]?.review?.id)!] =
+              true; //if not already exist, add
+        } else {
+          liked[(friendReviews[i]?.review?.id)!] = false;
+        }
+      }
+    }
+
+    if (mostPopularReviews != null) {
+      for (int i = 0; i < mostPopularReviews.length; i++) {
+        if ((mostPopularReviews[i]?.review?.likedUsers)!.contains(user.id)) {
+          liked[(mostPopularReviews[i]?.review?.id)!] =
+              true; //if not already exist, add
+        } else {
+          liked[(mostPopularReviews[i]?.review?.id)!] = false;
+        }
+      }
+    }
+
+    setState(() {
+      this.user = user;
+      this.displayReviews = displayReviews;
+      this.friendReviews = friendReviews;
+      this.mostPopularReviews = mostPopularReviews;
+      this.liked = liked;
+    });
+  }
+
+  void like(String review_id) async {
+    setState(() {
+      reviewVoteService.likeReview(review_id: review_id).then((value) {
+        if (value != null) {
+          //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
+        } else {}
+      });
+
+      int review_index = friendReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        friendReviews[review_index]!.review!.likeCount =
+            friendReviews[review_index]!.review!.likeCount! + 1;
+      }
+
+      review_index = mostPopularReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        mostPopularReviews[review_index]!.review!.likeCount =
+            mostPopularReviews[review_index]!.review!.likeCount! + 1;
+      }
+
+      getList();
+    });
+  }
+
+  void dislike(String review_id) {
+    setState(() {
+      reviewVoteService.dislikeReview(review_id: review_id).then((value) {
+        if (value != null) {
+          //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
+        } else {}
+      });
+
+      int review_index = friendReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        friendReviews[review_index]!.review!.likeCount =
+            friendReviews[review_index]!.review!.likeCount! - 1;
+      }
+
+      review_index = mostPopularReviews
+          .indexWhere((element) => element!.review!.id == review_id);
+
+      if (review_index != -1) {
+        mostPopularReviews[review_index]!.review!.likeCount =
+            mostPopularReviews[review_index]!.review!.likeCount! - 1;
+      }
+
+      getList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -356,11 +503,249 @@ class HomeReviews extends StatelessWidget {
                     ),
                   ),
                   Container(
+                    width: 335,
+                    height: friendReviews.length * 160,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 0.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: mostPopularReviews,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: friendReviews.length,
+                            itemBuilder: (context, index) {
+                              ReviewModel? review =
+                                  friendReviews[index]?.review;
+
+                              UserModel? user = friendReviews[index]?.user;
+
+                              GameModel? game = friendReviews[index]?.game;
+                              return Column(children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                    right: 13,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(29.0),
+                                        topRight: Radius.circular(10.0),
+                                        bottomLeft: Radius.circular(10.0),
+                                        bottomRight: Radius.circular(10.0)),
+                                    child: Container(
+                                      height: 140.0,
+                                      color: const Color(0xFFE9A6A6)
+                                          .withOpacity(0.05),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 6,
+                                            child: Container(
+                                              alignment: Alignment.topLeft,
+                                              child: AspectRatio(
+                                                aspectRatio: 1,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.fill,
+                                                      image: (user?.profileImage) !=
+                                                              null
+                                                          ? Image.memory(
+                                                                  base64Decode((user
+                                                                      ?.profileImage)!))
+                                                              .image
+                                                          : NetworkImage(
+                                                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 25,
+                                            child: Container(
+                                              padding: const EdgeInsets.only(
+                                                  left: 5),
+                                              child: Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 5.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            (game?.name)!,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 12.0),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                        flex: 2,
+                                                        child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                "Review by ",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white
+                                                                        .withOpacity(
+                                                                            0.5),
+                                                                    fontSize:
+                                                                        13.0),
+                                                              ),
+                                                              InkWell(
+                                                                child: Text(
+                                                                  (user
+                                                                      ?.username)!,
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFE9A6A6),
+                                                                      fontSize:
+                                                                          13.0),
+                                                                ),
+                                                                onTap: () {
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              ProfilePage(user_id: (user?.id)!)));
+                                                                },
+                                                              ),
+                                                            ])),
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            (review?.context)!,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 13.5),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                        flex: 3,
+                                                        child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            IconButton(
+                                                              icon: (liked[(review
+                                                                      ?.id)])!
+                                                                  ? Icon(
+                                                                      Icons
+                                                                          .favorite,
+                                                                      size:
+                                                                          30.0,
+                                                                      color: Colors
+                                                                          .red)
+                                                                  : Icon(
+                                                                      Icons
+                                                                          .favorite_outline_outlined,
+                                                                      size:
+                                                                          30.0,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if ((liked[(review
+                                                                          ?.id)]) ==
+                                                                      false) {
+                                                                    like((review
+                                                                        ?.id)!);
+                                                                    liked[(review
+                                                                            ?.id)!] =
+                                                                        true;
+                                                                  } else {
+                                                                    dislike((review
+                                                                        ?.id)!);
+                                                                    liked[(review
+                                                                            ?.id)!] =
+                                                                        false;
+                                                                  }
+                                                                });
+                                                              },
+                                                            ),
+                                                            Text(
+                                                              (review!.likeCount
+                                                                  .toString()),
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.5)),
+                                                            )
+                                                          ],
+                                                        )),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 9,
+                                            child: SizedBox(
+                                              height: double.infinity,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                child: InkWell(
+                                                  child: Image.memory(
+                                                      base64Decode(
+                                                          (game?.cover)!)),
+                                                  onTap: () async {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                GameDetailsPage(
+                                                                  game_id:
+                                                                      game!.id!,
+                                                                )));
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 12.0,
+                                ),
+                              ]);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -383,11 +768,249 @@ class HomeReviews extends StatelessWidget {
                     ),
                   ),
                   Container(
+                    width: 335,
+                    height: mostPopularReviews.length * 160,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 0.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: mostPopularReviews,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: friendReviews.length,
+                            itemBuilder: (context, index) {
+                              ReviewModel? review =
+                                  mostPopularReviews[index]?.review;
+
+                              UserModel? user = mostPopularReviews[index]?.user;
+
+                              GameModel? game = mostPopularReviews[index]?.game;
+                              return Column(children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                    right: 13,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(29.0),
+                                        topRight: Radius.circular(10.0),
+                                        bottomLeft: Radius.circular(10.0),
+                                        bottomRight: Radius.circular(10.0)),
+                                    child: Container(
+                                      height: 140.0,
+                                      color: const Color(0xFFE9A6A6)
+                                          .withOpacity(0.05),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            flex: 6,
+                                            child: Container(
+                                              alignment: Alignment.topLeft,
+                                              child: AspectRatio(
+                                                aspectRatio: 1,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    image: DecorationImage(
+                                                      fit: BoxFit.fill,
+                                                      image: (user?.profileImage) !=
+                                                              null
+                                                          ? Image.memory(
+                                                                  base64Decode((user
+                                                                      ?.profileImage)!))
+                                                              .image
+                                                          : NetworkImage(
+                                                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 25,
+                                            child: Container(
+                                              padding: const EdgeInsets.only(
+                                                  left: 5),
+                                              child: Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 5.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Text(
+                                                            (game?.name)!,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 12.0),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                        flex: 2,
+                                                        child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Text(
+                                                                "Review by ",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white
+                                                                        .withOpacity(
+                                                                            0.5),
+                                                                    fontSize:
+                                                                        13.0),
+                                                              ),
+                                                              InkWell(
+                                                                child: Text(
+                                                                  (user
+                                                                      ?.username)!,
+                                                                  style: TextStyle(
+                                                                      color: Color(
+                                                                          0xFFE9A6A6),
+                                                                      fontSize:
+                                                                          13.0),
+                                                                ),
+                                                                onTap: () {
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              ProfilePage(user_id: (user?.id)!)));
+                                                                },
+                                                              ),
+                                                            ])),
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            (review?.context)!,
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 13.5),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                        flex: 3,
+                                                        child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            IconButton(
+                                                              icon: (liked[(review
+                                                                      ?.id)])!
+                                                                  ? Icon(
+                                                                      Icons
+                                                                          .favorite,
+                                                                      size:
+                                                                          30.0,
+                                                                      color: Colors
+                                                                          .red)
+                                                                  : Icon(
+                                                                      Icons
+                                                                          .favorite_outline_outlined,
+                                                                      size:
+                                                                          30.0,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  if ((liked[(review
+                                                                          ?.id)]) ==
+                                                                      false) {
+                                                                    like((review
+                                                                        ?.id)!);
+                                                                    liked[(review
+                                                                            ?.id)!] =
+                                                                        true;
+                                                                  } else {
+                                                                    dislike((review
+                                                                        ?.id)!);
+                                                                    liked[(review
+                                                                            ?.id)!] =
+                                                                        false;
+                                                                  }
+                                                                });
+                                                              },
+                                                            ),
+                                                            Text(
+                                                              (review!.likeCount
+                                                                  .toString()),
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.5)),
+                                                            )
+                                                          ],
+                                                        )),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 9,
+                                            child: SizedBox(
+                                              height: double.infinity,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                child: InkWell(
+                                                  child: Image.memory(
+                                                      base64Decode(
+                                                          (game?.cover)!)),
+                                                  onTap: () async {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                GameDetailsPage(
+                                                                  game_id:
+                                                                      game!.id!,
+                                                                )));
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 12.0,
+                                ),
+                              ]);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -397,496 +1020,3 @@ class HomeReviews extends StatelessWidget {
         ));
   }
 }
-
-List<Widget> mostPopularGames = <Widget>[
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-  const SizedBox(
-    width: 6.0,
-  ),
-  SizedBox(
-    height: 140.0,
-    width: 100.0,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
-        fit: BoxFit.fill,
-      ),
-    ),
-  ),
-];
-
-List<Widget> mostPopularReviews = <Widget>[
-  Container(
-    margin: const EdgeInsets.only(
-      right: 13,
-    ),
-    child: ClipRRect(
-      borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(29.0),
-          topRight: Radius.circular(10.0),
-          bottomLeft: Radius.circular(10.0),
-          bottomRight: Radius.circular(10.0)),
-      child: Container(
-        height: 140.0,
-        color: const Color(0xFFE9A6A6).withOpacity(0.05),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 6,
-              child: Container(
-                alignment: Alignment.topLeft,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: NetworkImage(
-                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAePHGk4zQacrlExygB4QUQlmSmCR9Qxd1Sw&usqp=CAU",
-                            ))),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 25,
-              child: Container(
-                padding: const EdgeInsets.only(left: 5),
-                child: Container(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              "Forgotton Anne",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          flex: 2,
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Review by ",
-                                  style: TextStyle(
-                                      color: Colors.white.withOpacity(0.5),
-                                      fontSize: 13.0),
-                                ),
-                                const Text(
-                                  "Faruk",
-                                  style: TextStyle(
-                                      color: Color(0xFFE9A6A6), fontSize: 13.0),
-                                )
-                              ])),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Amazing. Best game ever.",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 13.5),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          flex: 3,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.favorite_border,
-                                color: Colors.white.withOpacity(0.5),
-                              ),
-                              Text(
-                                " 2",
-                                style: TextStyle(
-                                    color: Colors.white.withOpacity(0.5)),
-                              )
-                            ],
-                          )),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 9,
-              child: SizedBox(
-                height: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image.network(
-                    'https://static.tvtropes.org/pmwiki/pub/images/fasplash_2018_sec_portrait_xbox_0.jpg',
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-  const SizedBox(
-    height: 12.0,
-  ),
-  Container(
-    margin: const EdgeInsets.only(
-      right: 13,
-    ),
-    child: ClipRRect(
-      borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(29.0),
-          topRight: Radius.circular(10.0),
-          bottomLeft: Radius.circular(10.0),
-          bottomRight: Radius.circular(10.0)),
-      child: Container(
-        height: 140.0,
-        color: const Color(0xFFE9A6A6).withOpacity(0.05),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 6,
-              child: Container(
-                alignment: Alignment.topLeft,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: NetworkImage(
-                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
-                            ))),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 25,
-              child: Container(
-                padding: const EdgeInsets.only(left: 5),
-                child: Container(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              "Valorant",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          flex: 2,
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Review by ",
-                                  style: TextStyle(
-                                      color: Colors.white.withOpacity(0.5),
-                                      fontSize: 13.0),
-                                ),
-                                const Text(
-                                  "Ayşe",
-                                  style: TextStyle(
-                                      color: Color(0xFFE9A6A6), fontSize: 13.0),
-                                )
-                              ])),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Catchy!",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 13.5),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          flex: 3,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.favorite_border,
-                                color: Colors.white.withOpacity(0.5),
-                              ),
-                              Text(
-                                " 2",
-                                style: TextStyle(
-                                    color: Colors.white.withOpacity(0.5)),
-                              )
-                            ],
-                          )),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 9,
-              child: SizedBox(
-                height: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image.network(
-                    'https://assets-prd.ignimgs.com/2021/12/21/valorant-1640045685890.jpg',
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-  const SizedBox(
-    height: 12.0,
-  ),
-  Container(
-    margin: const EdgeInsets.only(
-      right: 13,
-    ),
-    child: ClipRRect(
-      borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(29.0),
-          topRight: Radius.circular(10.0),
-          bottomLeft: Radius.circular(10.0),
-          bottomRight: Radius.circular(10.0)),
-      child: Container(
-        height: 140.0,
-        color: const Color(0xFFE9A6A6).withOpacity(0.05),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 6,
-              child: Container(
-                alignment: Alignment.topLeft,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: NetworkImage(
-                              "https://newprofilepic2.photo-cdn.net//assets/images/article/profile.jpg",
-                            ))),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 25,
-              child: Container(
-                padding: const EdgeInsets.only(left: 5),
-                child: Container(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              "CS GO",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 12.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          flex: 2,
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Review by ",
-                                  style: TextStyle(
-                                      color: Colors.white.withOpacity(0.5),
-                                      fontSize: 13.0),
-                                ),
-                                const Text(
-                                  "Doğa",
-                                  style: TextStyle(
-                                      color: Color(0xFFE9A6A6), fontSize: 13.0),
-                                )
-                              ])),
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Hard to play...",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 13.5),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                          flex: 3,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.favorite_border,
-                                color: Colors.white.withOpacity(0.5),
-                              ),
-                              Text(
-                                " 2",
-                                style: TextStyle(
-                                    color: Colors.white.withOpacity(0.5)),
-                              )
-                            ],
-                          )),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 9,
-              child: SizedBox(
-                height: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image.network(
-                    'https://static.wikia.nocookie.net/cswikia/images/0/0c/Csgo-payback-icon.png/revision/latest/smart/width/250/height/250?cb=20141112151119',
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-];
