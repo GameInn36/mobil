@@ -21,13 +21,15 @@ class ToPlayListPage extends StatefulWidget {
 
 class _ToPlayListPageState extends State<ToPlayListPage> {
   List<GameModel?> games = [];
+  List<GameModel?> defaultGames = [];
   String _userid = "";
   UserModel _user = UserModel(id: "");
   List<String> items = [
     'Filter By Platform',
     'Sort Alphabetically',
     'Sort By Average Vote',
-    'Sort By Release Date'
+    'Sort By Release Date',
+    'Default'
   ];
   String? selectedItem;
 
@@ -58,6 +60,7 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
       _userid = user.id!;
       _user = user;
       games = tempList;
+      defaultGames = games;
     });
   }
 
@@ -81,6 +84,12 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
     });
   }
 
+  void getdefaultGames() {
+    setState(() {
+      games = defaultGames;
+    });
+  }
+
   var controller = Get.put(SelectedFiltercontroller());
 
   void openFilterDialog(context) async {
@@ -95,10 +104,13 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
         },
         onApplyButtonClick: (list) {
           controller.setSelectedList(List<String>.from(list!));
-          games = games
-              .where((x) =>
-                  list.every((element) => x!.platforms!.contains(element)))
-              .toList();
+          setState(() {
+            games = games
+                .where((x) =>
+                    list.every((element) => x!.platforms!.contains(element)))
+                .toList();
+          });
+
           Navigator.of(context).pop();
         });
   }
@@ -170,6 +182,8 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
                                     sortByReleaseDate();
                                   } else if (item == 'Filter By Platform') {
                                     openFilterDialog(context);
+                                  } else if (item == 'Default') {
+                                    getdefaultGames();
                                   }
                                 }),
                               ),
