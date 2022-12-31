@@ -30,9 +30,12 @@ class _ShowProfileState extends State<ProfilePage> {
   _ShowProfileState(this.user_id);
   final userservice = UserService();
   late UserModel user;
+  bool following = false;
 
   String name = " ";
   List<GameModel?> favoriteGames = [];
+
+  late UserModel authorizedUser = UserModel();
 
   final urlImage =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
@@ -47,12 +50,42 @@ class _ShowProfileState extends State<ProfilePage> {
   void getUserDetails() async {
     user = (await userservice.getUser(user_id: user_id))!;
 
+    authorizedUser = (await userservice.getAuthorizedUser())!;
+
     favoriteGames = (await userservice.getFavoriteGames(user_id: user.id))!;
-    log(favoriteGames.length.toString());
+
+    if (authorizedUser.following!.contains(user_id)) {
+      following = true;
+    } else {
+      following = false;
+    }
+
     setState(() {
       this.user = user;
+      this.authorizedUser = authorizedUser;
       this.name = user.username.toString();
       this.favoriteGames = favoriteGames;
+      this.following = following;
+    });
+  }
+
+  void follow(String user_id) {
+    setState(() {
+      userservice.followMember(user_id_to_follow: user_id).then((value) {
+        if (value != null) {
+          //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
+        } else {}
+      });
+    });
+  }
+
+  void unfollow(String user_id) {
+    setState(() {
+      userservice.unfollowMember(user_id_to_unfollow: user_id).then((value) {
+        if (value != null) {
+          //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
+        } else {}
+      });
     });
   }
 
@@ -71,17 +104,53 @@ class _ShowProfileState extends State<ProfilePage> {
               Container(
                 alignment: Alignment.center,
                 height: 90,
-                child: Container(
-                  width: 90,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: NetworkImage(
-                        urlImage,
+                child: Row(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(left: 65.0, right: 3.0),
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: Center(
+                        child: GestureDetector(
+                          child: Text(
+                            user_id != authorizedUser.id
+                                ? (following ? 'Unfollow' : 'Follow')
+                                : " ",
+                            style: const TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                          ),
+                          onTap: () {
+                            setState(() {
+                              if (following == false) {
+                                follow((user_id));
+                                following = true;
+                              } else {
+                                unfollow(user_id);
+                                following = false;
+                              }
+                            });
+                          },
+                        ),
                       ),
                     ),
-                  ),
+                    Container(
+                      width: 90,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: NetworkImage(
+                            urlImage,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -144,7 +213,8 @@ class _ShowProfileState extends State<ProfilePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => GameDetailsPage(
-                                            game_id: game!.id!,)));
+                                              game_id: game!.id!,
+                                            )));
                               },
                               child: SizedBox(
                                 height: 140.0,
@@ -215,10 +285,10 @@ class _ShowProfileState extends State<ProfilePage> {
                   ),
                 ),
                 onTap: (() => {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PlayedListPage(),
-                  )),
-                }),
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PlayedListPage(),
+                      )),
+                    }),
               ),
               ListTile(
                 leading: Text(
