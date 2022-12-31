@@ -30,6 +30,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
   GameWithReviews gameR = GameWithReviews(game: GameModel(id: ""));
 
   List<ReviewLogModel> reviews = [];
+  List<ReviewLogModel> mostPopularReviews = [];
   List<ReviewLogModel> friendsReviews = [];
   bool review_found = false;
   ReviewLogModel review = ReviewLogModel(id: "");
@@ -62,15 +63,18 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
 
     setState(() {
       gameR = _game;
+      reviews = _reviews;
 
       for (int i = 0; i < (_reviews.length <= 3 ? _reviews.length : 3); i++) {
-        reviews.add(_reviews[i]);
+        mostPopularReviews.add(_reviews[i]);
       }
 
-      for (int i = 0; i < (_friendsReviews.length <= 3 ? _friendsReviews.length : 3); i++) {
+      for (int i = 0;
+          i < (_friendsReviews.length <= 3 ? _friendsReviews.length : 3);
+          i++) {
         friendsReviews.add(_friendsReviews[i]!);
       }
-      
+
       if (reviews.isNotEmpty) {
         review = reviews.firstWhere(
           (element) => element.user!.id! == _userid,
@@ -612,12 +616,11 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                 ),
               ),
               SizedBox(
-                height: 160*(reviews.length.toDouble()),
+                height: 160 * (mostPopularReviews.length.toDouble()),
                 child: ListView.builder(
-                    itemCount:
-                        reviews != null ? reviews.length : 0,
+                    itemCount: mostPopularReviews != null ? mostPopularReviews.length : 0,
                     itemBuilder: (context, index) {
-                      ReviewLogModel? review_log = reviews[index];
+                      ReviewLogModel? review_log = mostPopularReviews[index];
                       return ClipRRect(
                         borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(29.0),
@@ -642,8 +645,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                             shape: BoxShape.circle,
                                             image: DecorationImage(
                                               fit: BoxFit.fill,
-                                              image: (review_log
-                                                          .user?.profileImage) !=
+                                              image: (review_log.user
+                                                          ?.profileImage) !=
                                                       null
                                                   ? Image.memory(base64Decode(
                                                           (review_log.user
@@ -667,7 +670,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                     child: Container(
                                       padding: const EdgeInsets.only(left: 5),
                                       child: Container(
-                                        padding: const EdgeInsets.only(left: 5.0),
+                                        padding:
+                                            const EdgeInsets.only(left: 5.0),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -679,7 +683,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                     MainAxisAlignment.center,
                                                 children: [
                                                   Text(
-                                                    (gameR.game!.name ?? "None"),
+                                                    (gameR.game!.name ??
+                                                        "None"),
                                                     style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 12.0),
@@ -691,22 +696,24 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                 flex: 2,
                                                 child: Row(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment.center,
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Text(
                                                         "Review by ",
                                                         style: TextStyle(
                                                             color: Colors.white
-                                                                .withOpacity(0.5),
+                                                                .withOpacity(
+                                                                    0.5),
                                                             fontSize: 13.0),
                                                       ),
                                                       Text(
-                                                        (review_log
-                                                                .user!.username ??
+                                                        (review_log.user!
+                                                                .username ??
                                                             "None"),
                                                         style: const TextStyle(
-                                                            color:
-                                                                Color(0xFFE9A6A6),
+                                                            color: Color(
+                                                                0xFFE9A6A6),
                                                             fontSize: 13.0),
                                                       )
                                                     ])),
@@ -717,7 +724,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                     MainAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    (review_log.context ?? "None"),
+                                                    (review_log.context ??
+                                                        "None"),
                                                     style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 13.5),
@@ -753,7 +761,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 20,),
+                            SizedBox(
+                              height: 20,
+                            ),
                           ],
                         ),
                       );
@@ -779,7 +789,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
               Column(
                 children: [
                   SizedBox(
-                    height: 160*(friendsReviews.length.toDouble()),
+                    height: 160 * (friendsReviews.length.toDouble()),
                     child: ListView.builder(
                         itemCount:
                             friendsReviews != null ? friendsReviews.length : 0,
@@ -795,7 +805,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                               children: [
                                 Container(
                                   height: 140.0,
-                                  color: const Color(0xFFE9A6A6).withOpacity(0.05),
+                                  color:
+                                      const Color(0xFFE9A6A6).withOpacity(0.05),
                                   child: Row(
                                     children: [
                                       Expanded(
@@ -809,8 +820,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                 shape: BoxShape.circle,
                                                 image: DecorationImage(
                                                   fit: BoxFit.fill,
-                                                  image: (review_log
-                                                              .user?.profileImage) !=
+                                                  image: (review_log.user
+                                                              ?.profileImage) !=
                                                           null
                                                       ? Image.memory(base64Decode(
                                                               (review_log.user
@@ -832,9 +843,11 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                       Expanded(
                                         flex: 25,
                                         child: Container(
-                                          padding: const EdgeInsets.only(left: 5),
+                                          padding:
+                                              const EdgeInsets.only(left: 5),
                                           child: Container(
-                                            padding: const EdgeInsets.only(left: 5.0),
+                                            padding: const EdgeInsets.only(
+                                                left: 5.0),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -843,10 +856,12 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                   flex: 2,
                                                   child: Column(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.center,
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Text(
-                                                        (gameR.game!.name ?? "None"),
+                                                        (gameR.game!.name ??
+                                                            "None"),
                                                         style: const TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 12.0),
@@ -858,22 +873,25 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                     flex: 2,
                                                     child: Row(
                                                         crossAxisAlignment:
-                                                            CrossAxisAlignment.center,
+                                                            CrossAxisAlignment
+                                                                .center,
                                                         children: [
                                                           Text(
                                                             "Review by ",
                                                             style: TextStyle(
-                                                                color: Colors.white
-                                                                    .withOpacity(0.5),
+                                                                color: Colors
+                                                                    .white
+                                                                    .withOpacity(
+                                                                        0.5),
                                                                 fontSize: 13.0),
                                                           ),
                                                           Text(
-                                                            (review_log
-                                                                    .user!.username ??
+                                                            (review_log.user!
+                                                                    .username ??
                                                                 "None"),
                                                             style: const TextStyle(
-                                                                color:
-                                                                    Color(0xFFE9A6A6),
+                                                                color: Color(
+                                                                    0xFFE9A6A6),
                                                                 fontSize: 13.0),
                                                           )
                                                         ])),
@@ -884,7 +902,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                         MainAxisAlignment.start,
                                                     children: [
                                                       Text(
-                                                        (review_log.context ?? "None"),
+                                                        (review_log.context ??
+                                                            "None"),
                                                         style: const TextStyle(
                                                             color: Colors.white,
                                                             fontSize: 13.5),
@@ -896,7 +915,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                   flex: 3,
                                                   child: Row(
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment.center,
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Icon(
                                                         Icons.favorite_border,
@@ -907,7 +927,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                         " 2",
                                                         style: TextStyle(
                                                             color: Colors.white
-                                                                .withOpacity(0.5)),
+                                                                .withOpacity(
+                                                                    0.5)),
                                                       )
                                                     ],
                                                   ),
@@ -920,7 +941,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 20,),
+                                SizedBox(
+                                  height: 20,
+                                ),
                               ],
                             ),
                           );
