@@ -54,6 +54,7 @@ class _LogPageState extends State<LogPage> {
   List<String> items = ['Unfinished', 'Finished', 'Still Playing'];
   String? selectedItem;
   bool ifStillPlaying = false;
+  bool loading = true;
 
   final format = DateFormat('yyyy-MM-dd');
 
@@ -71,12 +72,16 @@ class _LogPageState extends State<LogPage> {
     setState(() {
       _userid = user.id!;
       _user = user;
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Center(
+      child: CircularProgressIndicator(),
+    )
+    : Scaffold(
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),

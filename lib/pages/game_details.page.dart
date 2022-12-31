@@ -35,6 +35,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
   bool review_found = false;
   ReviewLogModel review = ReviewLogModel(id: "");
   int game_index = -1;
+  bool loading = true;
 
   @override
   void initState() {
@@ -87,6 +88,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
         game_index =
             user.toPlayList!.indexWhere((element) => element == gameR.game!.id);
       }
+      loading = false;
     });
   }
 
@@ -120,7 +122,10 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Center(
+      child: CircularProgressIndicator(),
+    )
+    : Scaffold(
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 15),
@@ -261,7 +266,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                           review: review,
                                           log_found: log_found,
                                           found_log: found_log,
-                                        ))).then((value) => {getList()});
+                                        )));
                           },
                           child: Container(
                             height: 35,
@@ -618,7 +623,9 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
               SizedBox(
                 height: 160 * (mostPopularReviews.length.toDouble()),
                 child: ListView.builder(
-                    itemCount: mostPopularReviews != null ? mostPopularReviews.length : 0,
+                    itemCount: mostPopularReviews != null
+                        ? mostPopularReviews.length
+                        : 0,
                     itemBuilder: (context, index) {
                       ReviewLogModel? review_log = mostPopularReviews[index];
                       return ClipRRect(
