@@ -1,11 +1,15 @@
 import 'dart:convert';
 
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/game_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/game_details.page.dart';
+import 'package:gameinn/pages/selected_filter_controller.dart';
 import 'package:gameinn/service/search_service.dart';
 import 'package:gameinn/service/user_service.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ToPlayListPage extends StatefulWidget {
@@ -26,6 +30,16 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
     'Sort By Release Date'
   ];
   String? selectedItem;
+
+  List<String> platforms = [
+    'PC',
+    'Playstation 4',
+    'Xbox One',
+    'Android',
+    'iOS',
+    'Playstation 5',
+    'Xbox Series X|S'
+  ];
 
   @override
   void initState() {
@@ -65,6 +79,28 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
       games.sort(
           ((b, a) => a!.firstReleaseDate!.compareTo((b!.firstReleaseDate!))));
     });
+  }
+
+  var controller = Get.put(SelectedFiltercontroller());
+
+  void openFilterDialog(context) async {
+    await FilterListDialog.display(context,
+        listData: platforms,
+        selectedListData: controller.getSelectedList(),
+        headlineText: 'Filter Games By Platform',
+        choiceChipLabel: (item) => item,
+        validateSelectedItem: ((list, val) => list!.contains(val)),
+        onItemSearch: (list, text) {
+          return list.toLowerCase().contains(text.toLowerCase());
+        },
+        onApplyButtonClick: (list) {
+          controller.setSelectedList(List<String>.from(list!));
+          games = games
+              .where((x) =>
+                  list.every((element) => x!.platforms!.contains(element)))
+              .toList();
+          Navigator.of(context).pop();
+        });
   }
 
   @override
@@ -132,6 +168,8 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
                                     sortByAverageVote();
                                   } else if (item == 'Sort By Release Date') {
                                     sortByReleaseDate();
+                                  } else if (item == 'Filter By Platform') {
+                                    openFilterDialog(context);
                                   }
                                 }),
                               ),
