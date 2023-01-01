@@ -88,11 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
         : DefaultTabController(
             length: 2,
             child: Scaffold(
-              drawer: SidebarDrawerWidget(
-                username: _username,
-                user_id: user_id,
-                user_email: _user_email,
-              ),
+              drawer: SidebarDrawerWidget(),
               appBar: AppBar(
                 centerTitle: true,
                 title: Text(

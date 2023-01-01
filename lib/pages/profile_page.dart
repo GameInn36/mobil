@@ -125,9 +125,11 @@ class _ShowProfileState extends State<ProfilePage> {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.fill,
-                      image: NetworkImage(
-                        urlImage,
-                      ),
+                      image: (user.profileImage) != null
+                        ? Image.memory(base64Decode((user.profileImage)!)).image
+                        : const NetworkImage(
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                          ),
                     ),
                   ),
                 ),

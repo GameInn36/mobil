@@ -1,8 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/user_model.dart';
+import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -25,73 +31,71 @@ class _SettingsPageState extends State<SettingsPage> {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      height: 180,
+      height: 230,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.fitHeight,
-                  image: NetworkImage(
-                    urlImage,
-                  ),
-                ),
-              ),
+          Center(
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: loading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: (_user.profileImage) != null
+                              ? Image.memory(
+                                      base64Decode((_user.profileImage)!))
+                                  .image
+                              : NetworkImage(
+                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                ),
+                        ),
+                      ),
+                    ),
             ),
           ),
-          Row(
+          Container(
+            margin: EdgeInsets.only(
+              left: MediaQuery.of(context).size.width * 0.5,
+            ),
+            child: IconButton(
+              alignment: Alignment.centerLeft,
+              icon: Icon(
+                Icons.camera_alt,
+                color: Colors.white.withOpacity(0.5),
+                size: 21,
+              ),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: ((builder) => photoSellect()),
+                );
+              },
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                flex: 7,
-                child: SizedBox(),
+              Text(
+                name,
+                style: TextStyle(
+                    color: const Color(0xFFAC32F6).withOpacity(0.8),
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold),
               ),
-              Expanded(
-                flex: 1,
-                child: SizedBox(
-                  height: 27,
-                  width: 27,
-                  child: IconButton(
-                    alignment: Alignment.centerLeft,
-                    icon: Icon(
-                      Icons.camera_alt,
-                      color: Colors.white.withOpacity(0.5),
-                      size: 21,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 5,
-                child: SizedBox(),
+              const SizedBox(height: 4),
+              Text(
+                email,
+                style: TextStyle(color: Colors.white.withOpacity(0.5)),
               ),
             ],
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                      color: const Color(0xFFAC32F6).withOpacity(0.8),
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  email,
-                  style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                ),
-              ],
-            ),
           )
         ],
       ),
@@ -151,7 +155,97 @@ class _SettingsPageState extends State<SettingsPage> {
     return Container(
       height: 150,
       width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 15,
+          ),
+          const Text(
+            'Sellect Your Profile Picture',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  const Text(
+                    'Gallery',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.image),
+                    onPressed: () {
+                      pickImage();
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(
+                width: 70,
+              ),
+              Column(
+                children: [
+                  const Text(
+                    'Camera',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.camera),
+                    onPressed: () {
+                      takePhoto();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          )
+        ],
+      ),
     );
+  }
+
+  Future pickImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+
+    File imageFile = File(image.path);
+    Uint8List imagebytes = await imageFile.readAsBytes(); //convert to bytes
+    String base64string = base64.encode(imagebytes);
+    _user.profileImage = base64string;
+
+    UserModel? returned_user =
+        await UserService().updateUser(user_to_update: _user);
+
+    if (returned_user != null) {
+      Navigator.pop(context);
+      getUser();
+    }
+  }
+
+  Future takePhoto() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image == null) return;
+
+    File imageFile = File(image.path);
+    Uint8List imagebytes = await imageFile.readAsBytes(); //convert to bytes
+    String base64string = base64.encode(imagebytes);
+    _user.profileImage = base64string;
+
+    UserModel? returned_user =
+        await UserService().updateUser(user_to_update: _user);
+
+    if (returned_user != null) {
+      Navigator.pop(context);
+      getUser();
+    }
   }
 
   @override
@@ -165,6 +259,7 @@ class _SettingsPageState extends State<SettingsPage> {
     UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
 
     setState(() {
+      loading = true;
       _userid = user.id!;
       _user = user;
       loading = false;
@@ -189,9 +284,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     urlImage: urlImage,
                     name: _user.username!,
                     email: _user.email!,
-                  ),
-                  const SizedBox(
-                    height: 30,
                   ),
                   buildMenuItem(
                     text: 'Change Password',

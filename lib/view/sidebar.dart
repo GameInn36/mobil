@@ -1,24 +1,51 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/diary_page.dart';
 import 'package:gameinn/pages/profile_page.dart';
 import 'package:gameinn/pages/settings_page.dart';
 import 'package:gameinn/pages/to_play_list_page.dart';
 import 'package:gameinn/pages/user_reviews_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SidebarDrawerWidget extends StatelessWidget {
-  final String username;
-  final String user_id;
-  final String user_email;
-  const SidebarDrawerWidget(
-      {Key? key, required this.username, required this.user_id, required this.user_email})
-      : super(key: key);
+class SidebarDrawerWidget extends StatefulWidget {
+  SidebarDrawerWidget({
+    super.key,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _SidebarDrawerWidgetState();
+}
+
+class _SidebarDrawerWidgetState extends State<SidebarDrawerWidget> {
+  String? _userid;
+  UserModel? _user;
+  bool loading = true;
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
+  void getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+
+    setState(() {
+      _userid = user.id!;
+      _user = user;
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final urlImage =
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
 
-    return Drawer(
+    return loading ? const Center(child: CircularProgressIndicator(),) : Drawer(
       backgroundColor: const Color(0xFF1F1D36),
       width: MediaQuery.of(context).size.width * 0.65,
       child: SafeArea(
@@ -28,8 +55,8 @@ class SidebarDrawerWidget extends StatelessWidget {
             const SizedBox(height: 30),
             buildHeader(
               urlImage: urlImage,
-              name: username,
-              email: user_email,
+              name: _user!.username!,
+              email: _user!.email!,
             ),
             const SizedBox(
               height: 20,
@@ -85,41 +112,43 @@ class SidebarDrawerWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 3,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.fitHeight,
-                  image: NetworkImage(
-                    urlImage,
+          Center(
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: (_user?.profileImage) != null
+                        ? Image.memory(base64Decode((_user?.profileImage)!)).image
+                        : NetworkImage(
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                          ),
                   ),
                 ),
               ),
             ),
           ),
           const SizedBox(height: 10),
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                      color: const Color(0xFFAC32F6).withOpacity(0.8),
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  email,
-                  style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                ),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                name,
+                style: TextStyle(
+                    color: const Color(0xFFAC32F6).withOpacity(0.8),
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                email,
+                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+              ),
+            ],
           )
         ],
       ),
@@ -154,23 +183,27 @@ class SidebarDrawerWidget extends StatelessWidget {
     switch (index) {
       case 0:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ProfilePage(user_id: user_id),
+          builder: (context) => ProfilePage(user_id: _userid!),
         ));
         break;
       case 1:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => DiaryPage(user_id: user_id,),
+          builder: (context) => DiaryPage(
+            user_id: _userid!,
+          ),
         ));
         break;
       case 2:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ToPlayListPage(user_id: user_id,),
+          builder: (context) => ToPlayListPage(
+            user_id: _userid!,
+          ),
         ));
         break;
       case 3:
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => UserReviewsPage(
-            user_id: user_id,
+            user_id: _userid!,
           ),
         ));
         break;
