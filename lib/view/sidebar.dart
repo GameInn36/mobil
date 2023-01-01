@@ -8,19 +8,19 @@ import 'package:gameinn/pages/user_reviews_page.dart';
 class SidebarDrawerWidget extends StatelessWidget {
   final String username;
   final String user_id;
+  final String user_email;
   const SidebarDrawerWidget(
-      {Key? key, required this.username, required this.user_id})
+      {Key? key, required this.username, required this.user_id, required this.user_email})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final email = '@a.zynep';
     final urlImage =
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
 
     return Drawer(
       backgroundColor: const Color(0xFF1F1D36),
-      width: MediaQuery.of(context).size.width * 0.5,
+      width: MediaQuery.of(context).size.width * 0.65,
       child: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -29,10 +29,10 @@ class SidebarDrawerWidget extends StatelessWidget {
             buildHeader(
               urlImage: urlImage,
               name: username,
-              email: email,
+              email: user_email,
             ),
             const SizedBox(
-              height: 30,
+              height: 20,
             ),
             buildMenuItem(
               text: 'Profile',
@@ -81,29 +81,27 @@ class SidebarDrawerWidget extends StatelessWidget {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      height: 70,
-      child: Row(
+      height: 160,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 1,
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(
-                      urlImage,
-                    ),
+            flex: 3,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  fit: BoxFit.fitHeight,
+                  image: NetworkImage(
+                    urlImage,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(height: 10),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
