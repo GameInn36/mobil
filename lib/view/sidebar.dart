@@ -94,6 +94,13 @@ class _SidebarDrawerWidgetState extends State<SidebarDrawerWidget> {
               icon: Icons.logout,
               color: const Color(0xFFAC32F6),
               opacity: 0.8,
+              onClicked: () async {
+                SharedPreferences preferences = await SharedPreferences.getInstance();
+                await preferences.clear();
+
+                Navigator.pushNamedAndRemoveUntil(
+                  context, '/', ModalRoute.withName('/'));
+              }
             ),
           ],
         ),

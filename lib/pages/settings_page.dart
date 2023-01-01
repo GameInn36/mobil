@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/user_model.dart';
+import 'package:gameinn/pages/change_password_page.dart';
 import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
@@ -139,9 +140,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
     switch (index) {
       case 0:
-        // Navigator.of(context).push(MaterialPageRoute(
-        //   builder: (context) => ProfilePage(user_id: user_id),
-        // ));
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PasswordPage(),
+        ));
         break;
       case 1:
         // Navigator.of(context).push(MaterialPageRoute(

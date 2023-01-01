@@ -67,25 +67,32 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
     _reviews.sort((a, b) => b.likeCount!.compareTo(a.likeCount!));
     List<ReviewLogModel?> _friendsReviews = _game.followedFriendsReviews ?? [];
 
-    // if (friendsReviews != null) {
-    //   for (int i = 0; i < friendsReviews.length; i++) {
-    //     if ((friendsReviews[i].likedUsers)!.contains(_userid)) {
-    //       liked[(friendsReviews[i].id)!] = true; //if not already exist, add
-    //     } else {
-    //       liked[(friendsReviews[i].id)!] = false;
-    //     }
-    //   }
-    // }
+    if (_friendsReviews != []) {
+      for (int i = 0; i < _friendsReviews.length; i++) {
+        if (_friendsReviews[i]!.likedUsers != null) {
+          if ((_friendsReviews[i]!.likedUsers)!.contains(_userid)) {
+            liked[(_friendsReviews[i]!.id)!] = true; //if not already exist, add
+          } else {
+            liked[(_friendsReviews[i]!.id)!] = false;
+          }
+        }
+      }
+    }
 
-    // if (mostPopularReviews != null) {
-    //   for (int i = 0; i < mostPopularReviews.length; i++) {
-    //     if ((mostPopularReviews[i].likedUsers)!.contains(_userid)) {
-    //       liked[(mostPopularReviews[i].id)!] = true; //if not already exist, add
-    //     } else {
-    //       liked[(mostPopularReviews[i].id)!] = false;
-    //     }
-    //   }
-    // }
+    if (_reviews != []) {
+      for (int i = 0; i < _reviews.length; i++) {
+        if (_reviews[i].likedUsers != null) {
+          if ((_reviews[i].likedUsers)!.contains(_userid)) {
+            liked[(_reviews[i].id)!] = true; //if not already exist, add
+          } else {
+            liked[(_reviews[i].id)!] = false;
+          }
+        }
+      }
+    }
+
+    mostPopularReviews = [];
+    friendsReviews = [];
 
     setState(() {
       review_found = false;
@@ -674,20 +681,24 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                     const SizedBox(
                       height: 30,
                     ),
-                    const Text(
-                      "Most Popular Reviews",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 250.0,
-                      child: Divider(
-                        thickness: 1.0,
-                        color: Colors.grey,
-                      ),
-                    ),
+                    mostPopularReviews.isEmpty
+                        ? const SizedBox()
+                        : const Text(
+                            "Most Popular Reviews",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                    mostPopularReviews.isEmpty
+                        ? const SizedBox()
+                        : const SizedBox(
+                            width: 250.0,
+                            child: Divider(
+                              thickness: 1.0,
+                              color: Colors.grey,
+                            ),
+                          ),
                     SizedBox(
                       height: 160 * (mostPopularReviews.length.toDouble()),
                       child: ListView.builder(
@@ -792,23 +803,25 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                                       13.0),
                                                             ),
                                                             InkWell(
-                                                                child: Text(
-                                                                  (_user
-                                                                      .username)!,
-                                                                  style: TextStyle(
-                                                                      color: Color(
-                                                                          0xFFE9A6A6),
-                                                                      fontSize:
-                                                                          13.0),
-                                                                ),
-                                                                onTap: () {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              ProfilePage(user_id: (_user.id)!)));
-                                                                },
+                                                              child: Text(
+                                                                (review_log
+                                                                    .user!
+                                                                    .username)!,
+                                                                style: TextStyle(
+                                                                    color: Color(
+                                                                        0xFFE9A6A6),
+                                                                    fontSize:
+                                                                        13.0),
                                                               ),
+                                                              onTap: () {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                ProfilePage(user_id: (_user.id)!)));
+                                                              },
+                                                            ),
                                                           ])),
                                                   Expanded(
                                                     flex: 3,
@@ -839,7 +852,8 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                       children: [
                                                         IconButton(
                                                           icon: (liked[
-                                                                  (review.id)])!
+                                                                  (review_log
+                                                                      .id)])!
                                                               ? Icon(
                                                                   Icons
                                                                       .favorite,
@@ -856,18 +870,19 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                           onPressed: () {
                                                             setState(() {
                                                               loading = true;
-                                                              if ((liked[(review
+                                                              if ((liked[(review_log
                                                                       .id)]) ==
                                                                   false) {
-                                                                like((review
+                                                                like((review_log
                                                                     .id)!);
-                                                                liked[(review
+                                                                liked[(review_log
                                                                         .id)!] =
                                                                     true;
                                                               } else {
-                                                                dislike((review
-                                                                    .id)!);
-                                                                liked[(review
+                                                                dislike(
+                                                                    (review_log
+                                                                        .id)!);
+                                                                liked[(review_log
                                                                         .id)!] =
                                                                     false;
                                                               }
@@ -905,20 +920,24 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                     const SizedBox(
                       height: 30,
                     ),
-                    const Text(
-                      "Friends' Reviews",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 250.0,
-                      child: Divider(
-                        thickness: 1.0,
-                        color: Colors.grey,
-                      ),
-                    ),
+                    friendsReviews.isEmpty
+                        ? const SizedBox()
+                        : const Text(
+                            "Friends' Reviews",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                    friendsReviews.isEmpty
+                        ? const SizedBox()
+                        : const SizedBox(
+                            width: 250.0,
+                            child: Divider(
+                              thickness: 1.0,
+                              color: Colors.grey,
+                            ),
+                          ),
                     Column(
                       children: [
                         SizedBox(
@@ -1028,23 +1047,24 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                                           13.0),
                                                                 ),
                                                                 InkWell(
-                                                                child: Text(
-                                                                  (_user
-                                                                      .username)!,
-                                                                  style: TextStyle(
-                                                                      color: Color(
-                                                                          0xFFE9A6A6),
-                                                                      fontSize:
-                                                                          13.0),
+                                                                  child: Text(
+                                                                    (review_log
+                                                                        .user!
+                                                                        .username)!,
+                                                                    style: TextStyle(
+                                                                        color: Color(
+                                                                            0xFFE9A6A6),
+                                                                        fontSize:
+                                                                            13.0),
+                                                                  ),
+                                                                  onTap: () {
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                ProfilePage(user_id: (_user.id)!)));
+                                                                  },
                                                                 ),
-                                                                onTap: () {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              ProfilePage(user_id: (_user.id)!)));
-                                                                },
-                                                              ),
                                                               ])),
                                                       Expanded(
                                                         flex: 3,
@@ -1074,43 +1094,49 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                                   .center,
                                                           children: [
                                                             IconButton(
-                                                          icon: (liked[
-                                                                  (review.id)])!
-                                                              ? Icon(
-                                                                  Icons
-                                                                      .favorite,
-                                                                  size: 30.0,
-                                                                  color: Colors
-                                                                      .red)
-                                                              : Icon(
-                                                                  Icons
-                                                                      .favorite_outline_outlined,
-                                                                  size: 30.0,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              loading = true;
-                                                              if ((liked[(review
-                                                                      .id)]) ==
-                                                                  false) {
-                                                                like((review
-                                                                    .id)!);
-                                                                liked[(review
-                                                                        .id)!] =
-                                                                    true;
-                                                              } else {
-                                                                dislike((review
-                                                                    .id)!);
-                                                                liked[(review
-                                                                        .id)!] =
-                                                                    false;
-                                                              }
-                                                              loading = false;
-                                                            });
-                                                          },
-                                                        ),
+                                                              icon: (liked[
+                                                                      (review_log
+                                                                          .id)])!
+                                                                  ? Icon(
+                                                                      Icons
+                                                                          .favorite,
+                                                                      size:
+                                                                          30.0,
+                                                                      color: Colors
+                                                                          .red)
+                                                                  : Icon(
+                                                                      Icons
+                                                                          .favorite_outline_outlined,
+                                                                      size:
+                                                                          30.0,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    ),
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  loading =
+                                                                      true;
+                                                                  if ((liked[(review_log
+                                                                          .id)]) ==
+                                                                      false) {
+                                                                    like((review_log
+                                                                        .id)!);
+                                                                    liked[(review_log
+                                                                            .id)!] =
+                                                                        true;
+                                                                  } else {
+                                                                    dislike(
+                                                                        (review_log
+                                                                            .id)!);
+                                                                    liked[(review_log
+                                                                            .id)!] =
+                                                                        false;
+                                                                  }
+                                                                  loading =
+                                                                      false;
+                                                                });
+                                                              },
+                                                            ),
                                                             Text(
                                                               " ${review_log.likeCount}",
                                                               style: TextStyle(
@@ -1130,7 +1156,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 20,
                                       ),
                                     ],

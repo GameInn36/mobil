@@ -155,13 +155,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 5.0,
-                ),
-                const Text(
-                  'Forgot Password?',
-                  style: TextStyle(fontSize: 10, color: Color(0xffE9A6A6)),
-                ),
-                const SizedBox(
                   height: 30.0,
                 ),
                 Padding(

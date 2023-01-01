@@ -32,6 +32,7 @@ class ReviewLogModel {
   int? likeCount;
   int? createdAt;
   int? updatedAt;
+  List<String?>? likedUsers;
 
   ReviewLogModel({
     this.id,
@@ -42,6 +43,7 @@ class ReviewLogModel {
     this.likeCount,
     this.createdAt,
     this.updatedAt,
+    this.likedUsers,
   });
   ReviewLogModel.fromJson(Map<String, dynamic> json) {
     id = json['id']?.toString();
@@ -52,6 +54,14 @@ class ReviewLogModel {
     likeCount = json['likeCount']?.toInt();
     createdAt = json['createdAt']?.toInt();
     updatedAt = json['updatedAt']?.toInt();
+    if (json['likedUsers'] != null) {
+      final v = json['likedUsers'];
+      final arr0 = <String>[];
+      v.forEach((v) {
+      arr0.add(v.toString());
+      });
+      likedUsers = arr0;
+    }
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -65,6 +75,14 @@ class ReviewLogModel {
     data['likeCount'] = likeCount;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
+    if (likedUsers != null) {
+      final v = likedUsers;
+      final arr0 = [];
+      v!.forEach((v) {
+      arr0.add(v);
+      });
+          data['likedUsers'] = arr0;
+    }
     return data;
   }
 }

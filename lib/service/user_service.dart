@@ -252,6 +252,40 @@ class UserService {
     }
   }
 
+  Future<UserModel?> changePassword({
+    required String password,
+    required String user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+    Map<String, dynamic> json = {
+      "password": password,
+    };
+
+    try {
+      var response = await dio.put(
+        "$get_update_user_url$user_id/password",
+        data: json,
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      if (response != null && response.statusCode == 200) {
+        var result = UserModel.fromJson(response.data);
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String a = jsonEncode((result).toJson());
+        prefs.setString('user', a);
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
+    }
+  }
+
   Future<List<GameModel>?> toPlayList({
     required String user_id,
   }) async {

@@ -410,10 +410,10 @@ class _DisplayReviewsState extends State<HomeReviews> {
 
     displayReviews = await reviewVoteService.displayReviewsTab();
 
-    friendReviews = (displayReviews?.friendReviews)!;
-    mostPopularReviews = (displayReviews?.mostPopularReviews)!;
+    friendReviews = (displayReviews?.friendReviews) ?? [];
+    mostPopularReviews = (displayReviews?.mostPopularReviews) ?? [];
 
-    if (friendReviews != null) {
+    if (friendReviews != []) {
       for (int i = 0; i < friendReviews.length; i++) {
         if ((friendReviews[i]?.review?.likedUsers)!.contains(user.id)) {
           liked[(friendReviews[i]?.review?.id)!] =
@@ -424,7 +424,7 @@ class _DisplayReviewsState extends State<HomeReviews> {
       }
     }
 
-    if (mostPopularReviews != null) {
+    if (mostPopularReviews != []) {
       for (int i = 0; i < mostPopularReviews.length; i++) {
         if ((mostPopularReviews[i]?.review?.likedUsers)!.contains(user.id)) {
           liked[(mostPopularReviews[i]?.review?.id)!] =
@@ -518,7 +518,7 @@ class _DisplayReviewsState extends State<HomeReviews> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  (!loading && friendReviews.isEmpty) ? SizedBox() : const Text(
                     'Recent Friends\' Reviews',
                     style: TextStyle(
                       fontSize: 16.0,
@@ -754,9 +754,16 @@ class _DisplayReviewsState extends State<HomeReviews> {
                                                           BorderRadius.circular(
                                                               10.0),
                                                       child: InkWell(
-                                                        child: Image.memory(
-                                                            base64Decode((game
-                                                                ?.cover)!)),
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                              image: Image.memory(
+                                                                  base64Decode((game
+                                                                      ?.cover)!)).image,
+                                                                      fit: BoxFit.fill
+                                                            ),
+                                                          ),
+                                                        ),
                                                         onTap: () async {
                                                           Navigator.push(
                                                               context,
@@ -798,7 +805,7 @@ class _DisplayReviewsState extends State<HomeReviews> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  (!loading && mostPopularReviews.isEmpty) ? SizedBox() : const Text(
                     'Most Popular Reviews',
                     style: TextStyle(
                       fontSize: 16.0,
@@ -809,7 +816,7 @@ class _DisplayReviewsState extends State<HomeReviews> {
                   Container(
                     height: mostPopularReviews.isEmpty
                         ? 150
-                        : mostPopularReviews.length * 160,
+                        : mostPopularReviews.length * 70,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 0.0),
                     child: loading
@@ -1034,9 +1041,16 @@ class _DisplayReviewsState extends State<HomeReviews> {
                                                           BorderRadius.circular(
                                                               10.0),
                                                       child: InkWell(
-                                                        child: Image.memory(
-                                                            base64Decode((game
-                                                                ?.cover)!)),
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                              image: Image.memory(
+                                                                  base64Decode((game
+                                                                      ?.cover)!)).image,
+                                                                      fit: BoxFit.fill
+                                                            ),
+                                                          ),
+                                                        ),
                                                         onTap: () async {
                                                           Navigator.push(
                                                               context,
