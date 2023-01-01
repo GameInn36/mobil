@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:gameinn/model/review_log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/service/review_vote_service.dart';
+import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'game_details.page.dart';
@@ -13,7 +14,8 @@ import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
 
 class DiaryPage extends StatelessWidget {
-  const DiaryPage({Key? key}) : super(key: key);
+  final String user_id;
+  const DiaryPage({Key? key, required this.user_id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,24 +28,29 @@ class DiaryPage extends StatelessWidget {
               fontWeight: FontWeight.bold, color: Colors.white, fontSize: 23.0),
         ),
       ),
-      body: ShowDiaryPage(),
+      body: ShowDiaryPage(user_id: user_id,),
     );
   }
 }
 
 class ShowDiaryPage extends StatefulWidget {
-  ShowDiaryPage({Key? key}) : super(key: key);
+  final String user_id;
+  ShowDiaryPage({Key? key, required this.user_id}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ShowDiaryState();
+  State<StatefulWidget> createState() => _ShowDiaryState(user_id);
 }
 
 class _ShowDiaryState extends State<ShowDiaryPage> {
+  late final user_id;
+  _ShowDiaryState(this.user_id);
+  
   final searchservice = SearchService();
 
   List<GameModel?> games = [];
   String _userid = "";
   UserModel _user = UserModel(id: "");
+  bool loading = true;
 
   @override
   void initState() {
@@ -54,8 +61,7 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
   }
 
   void getUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    UserModel user = (await UserService().getUser(user_id: user_id))!;
 
     setState(() {
       _userid = user.id!;
@@ -72,13 +78,14 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
 
       setState(() {
         games = tempList;
+      loading = false;
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Center(child: CircularProgressIndicator(),) : Scaffold(
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -113,7 +120,8 @@ class _ShowDiaryState extends State<ShowDiaryPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => GameDetailsPage(
-                                      game_id: game!.id!,)));
+                                        game_id: game!.id!,
+                                      )));
                         },
                       ),
                     );

@@ -12,7 +12,8 @@ import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
 
 class FollowersPage extends StatelessWidget {
-  const FollowersPage({Key? key}) : super(key: key);
+  final String user_id;
+  const FollowersPage({Key? key, required this.user_id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +26,27 @@ class FollowersPage extends StatelessWidget {
               fontWeight: FontWeight.bold, color: Colors.white, fontSize: 23.0),
         ),
       ),
-      body: ShowFollowersPage(),
+      body: ShowFollowersPage(user_id: user_id,),
     );
   }
 }
 
 class ShowFollowersPage extends StatefulWidget {
-  ShowFollowersPage({Key? key}) : super(key: key);
+  final String user_id;
+  ShowFollowersPage({Key? key, required this.user_id}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ShowFollowersState();
+  State<StatefulWidget> createState() => _ShowFollowersState(user_id);
 }
 
 class _ShowFollowersState extends State<ShowFollowersPage> {
+  late final user_id;
+  _ShowFollowersState(this.user_id);
+
   final searchservice = SearchService();
   final userservice = UserService();
 
-  bool _isLoading = false;
+  bool loading = true;
 
   List<UserModel?> followers = [];
   late UserModel user;
@@ -56,7 +61,7 @@ class _ShowFollowersState extends State<ShowFollowersPage> {
   }
 
   void getList() async {
-    user = (await userservice.getAuthorizedUser())!;
+    user = (await UserService().getUser(user_id: user_id))!;
 
     if (user.following != null) {
       for (int i = 0; i < (user.following)!.length; i++) {
@@ -82,24 +87,29 @@ class _ShowFollowersState extends State<ShowFollowersPage> {
       this.followers = followers;
       this.user_followings = user_followings;
       this.followed = followed;
+      loading = false;
     });
   }
 
   void follow(String user_id) async {
     setState(() {
+      loading = true;
       userservice.followMember(user_id_to_follow: user_id);
+      loading = false;
     });
   }
 
   void unfollow(String user_id) async {
     setState(() {
+      loading = true;
       userservice.unfollowMember(user_id_to_unfollow: user_id);
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Center(child: CircularProgressIndicator(),) : Scaffold(
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -148,6 +158,7 @@ class _ShowFollowersState extends State<ShowFollowersPage> {
                                   ),
                             onPressed: () {
                               setState(() {
+                                loading = true;
                                 if ((followed[follower?.id]) == false) {
                                   follow((follower?.id)!);
                                   followed[(follower?.id)!] = true;
@@ -155,6 +166,7 @@ class _ShowFollowersState extends State<ShowFollowersPage> {
                                   unfollow((follower?.id)!);
                                   followed[(follower?.id)!] = false;
                                 }
+                                loading = false;
                               });
                             },
                           )),

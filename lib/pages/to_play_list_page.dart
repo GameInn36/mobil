@@ -13,13 +13,16 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ToPlayListPage extends StatefulWidget {
-  const ToPlayListPage({Key? key}) : super(key: key);
+  final String user_id;
+  const ToPlayListPage({Key? key, required this.user_id}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ToPlayListPageState();
+  State<StatefulWidget> createState() => _ToPlayListPageState(user_id);
 }
 
 class _ToPlayListPageState extends State<ToPlayListPage> {
+  late final user_id;
+  _ToPlayListPageState(this.user_id);
   List<GameModel?> games = [];
   List<GameModel?> defaultGames = [];
   String _userid = "";
@@ -42,6 +45,7 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
     'Playstation 5',
     'Xbox Series X|S'
   ];
+  bool loading = true;
 
   @override
   void initState() {
@@ -50,8 +54,7 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
   }
 
   void getUser() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
+    UserModel user = (await UserService().getUser(user_id: user_id))!;
 
     List<GameModel> tempList =
         (await UserService().toPlayList(user_id: user.id!))!;
@@ -61,32 +64,41 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
       _user = user;
       games = tempList;
       defaultGames = games;
+      loading = false;
     });
   }
 
   void sortAlphabetically() {
     setState(() {
+      loading = true;
       games.sort(
           ((a, b) => a!.name!.toLowerCase().compareTo(b!.name!.toLowerCase())));
+      loading = false;
     });
   }
 
   void sortByAverageVote() {
     setState(() {
+      loading = true;
       games.sort(((b, a) => a!.vote!.compareTo((b!.vote!))));
+      loading = false;
     });
   }
 
   void sortByReleaseDate() {
     setState(() {
+      loading = true;
       games.sort(
           ((b, a) => a!.firstReleaseDate!.compareTo((b!.firstReleaseDate!))));
+      loading = false;
     });
   }
 
   void getdefaultGames() {
     setState(() {
+      loading = true;
       games = defaultGames;
+      loading = false;
     });
   }
 
@@ -105,10 +117,12 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
         onApplyButtonClick: (list) {
           controller.setSelectedList(List<String>.from(list!));
           setState(() {
+            loading = true;
             games = games
                 .where((x) =>
                     list.every((element) => x!.platforms!.contains(element)))
                 .toList();
+            loading = false;
           });
 
           Navigator.of(context).pop();
@@ -174,6 +188,7 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
                                         ))
                                     .toList(),
                                 onChanged: (item) => setState(() {
+                                  loading = true;
                                   if (item == 'Sort Alphabetically') {
                                     sortAlphabetically();
                                   } else if (item == 'Sort By Average Vote') {
@@ -185,6 +200,7 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
                                   } else if (item == 'Default') {
                                     getdefaultGames();
                                   }
+                                  loading = false;
                                 }),
                               ),
                             ),
@@ -203,7 +219,7 @@ class _ToPlayListPageState extends State<ToPlayListPage> {
                   thickness: 1.2,
                 ),
               ),
-              Container(
+              loading ? const Center(child: CircularProgressIndicator(),) : Container(
                 padding: const EdgeInsets.symmetric(horizontal: 13),
                 child: GridView.builder(
                   shrinkWrap: true,

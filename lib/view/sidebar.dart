@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gameinn/pages/diary_page.dart';
 import 'package:gameinn/pages/profile_page.dart';
-import 'package:gameinn/pages/reviews_page.dart';
 import 'package:gameinn/pages/settings_page.dart';
 import 'package:gameinn/pages/to_play_list_page.dart';
 import 'package:gameinn/pages/user_reviews_page.dart';
@@ -162,12 +161,12 @@ class SidebarDrawerWidget extends StatelessWidget {
         break;
       case 1:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => DiaryPage(),
+          builder: (context) => DiaryPage(user_id: user_id,),
         ));
         break;
       case 2:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ToPlayListPage(),
+          builder: (context) => ToPlayListPage(user_id: user_id,),
         ));
         break;
       case 3:

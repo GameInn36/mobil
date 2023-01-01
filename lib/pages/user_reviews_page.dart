@@ -56,6 +56,7 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
   Map<String, bool> liked = {};
 
   String username = "";
+  bool loading = true;
 
   @override
   void initState() {
@@ -89,11 +90,13 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
       this.userReviews = userReviews;
       this.username = user.username!;
       this.liked = liked;
+      loading = false;
     });
   }
 
   void like(String review_id) async {
     setState(() {
+      loading = true;
       reviewVoteService.dislikeReview(review_id: review_id).then((value) {
         if (value != null) {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
@@ -104,11 +107,13 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
           userReviews.indexWhere((element) => element!.review!.id == review_id);
       userReviews[review_index]!.review!.likeCount =
           userReviews[review_index]!.review!.likeCount! + 1;
+      loading = false;
     });
   }
 
   void dislike(String review_id) {
     setState(() {
+      loading = true;
       reviewVoteService.dislikeReview(review_id: review_id).then((value) {
         if (value != null) {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
@@ -119,12 +124,13 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
           userReviews.indexWhere((element) => element!.review!.id == review_id);
       userReviews[review_index]!.review!.likeCount =
           userReviews[review_index]!.review!.likeCount! - 1;
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Center(child: CircularProgressIndicator(),) : Scaffold(
       body: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -250,6 +256,7 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                             ),
                                                       onPressed: () {
                                                         setState(() {
+                                                          loading = true;
                                                           if ((liked[(review
                                                                   ?.review
                                                                   ?.id)]) ==
@@ -266,6 +273,7 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                                                 ?.review
                                                                 ?.id)!] = false;
                                                           }
+                                                          loading = false;
                                                         });
                                                       },
                                                     ),
@@ -295,12 +303,15 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                           child: Image.memory(base64Decode(
                                               (review.game?.cover)!)),
                                           onTap: () async {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => GameDetailsPage(
-                                      game_id: review.game!.id!,)));
-                        },
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        GameDetailsPage(
+                                                          game_id:
+                                                              review.game!.id!,
+                                                        )));
+                                          },
                                         ), //check adding navigation
                                       ),
                                     ),

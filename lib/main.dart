@@ -58,6 +58,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _username = "";
   String user_id = "";
+  bool loading = true;
 
   @override
   void initState() {
@@ -72,50 +73,56 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _username = user.username.toString();
       user_id = user.id.toString();
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        drawer: SidebarDrawerWidget(
-          username: _username,
-          user_id: user_id,
-        ),
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            widget.title,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 23.0),
-          ),
-          bottom: const TabBar(
-            tabs: [Tab(text: 'Games'), Tab(text: 'Reviews')],
-            indicatorColor: Color(0xFFAC32F6),
-            indicatorWeight: 3.0,
-            labelStyle: TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
+    return loading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              drawer: SidebarDrawerWidget(
+                username: _username,
+                user_id: user_id,
+              ),
+              appBar: AppBar(
+                centerTitle: true,
+                title: Text(
+                  widget.title,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 23.0),
+                ),
+                bottom: const TabBar(
+                  tabs: [Tab(text: 'Games'), Tab(text: 'Reviews')],
+                  indicatorColor: Color(0xFFAC32F6),
+                  indicatorWeight: 3.0,
+                  labelStyle: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                actions: [
+                  // Navigate to the Search Screen
+                  IconButton(
+                      padding: EdgeInsets.only(right: 10.0),
+                      onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (_) => const SearchPage())),
+                      icon: const Icon(Icons.search))
+                ],
+              ),
+              body: const TabBarView(
+                children: [HomeGames(), HomeReviews()],
+              ),
             ),
-          ),
-          actions: [
-            // Navigate to the Search Screen
-            IconButton(
-                padding: EdgeInsets.only(right: 10.0),
-                onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const SearchPage())),
-                icon: const Icon(Icons.search))
-          ],
-        ),
-        body: const TabBarView(
-          children: [HomeGames(), HomeReviews()],
-        ),
-      ),
-    );
+          );
   }
 }
 
@@ -134,6 +141,7 @@ class _DisplayGamesState extends State<HomeGames> {
   String _userid = "";
   UserModel _user = UserModel(id: "");
   DisplayGamesModel? displayGames = DisplayGamesModel();
+  bool loading = true;
 
   @override
   void initState() {
@@ -163,6 +171,7 @@ class _DisplayGamesState extends State<HomeGames> {
 
     setState(() {
       this.displayGames = displayGames;
+      loading = false;
     });
   }
 
@@ -190,41 +199,45 @@ class _DisplayGamesState extends State<HomeGames> {
                 ),
                 SizedBox(
                   height: 170.0,
-                  child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 0.0),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: displayGames?.newsFromFriends?.length,
-                      itemBuilder: (context, index) {
-                        GameModel? game =
-                            displayGames?.newsFromFriends?[index]!.game;
-                        return InkWell(
-                          onTap: () async {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => GameDetailsPage(
-                                          game_id: (game?.id)!,
-                                        )));
-                          },
-                          child: SizedBox(
-                            height: 140.0,
-                            width: 100.0,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 6.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5.0),
-                                child: game?.cover != null
-                                    ? Image.memory(
-                                        base64Decode((game?.cover)!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : SizedBox(),
+                  child: loading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 0.0),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: displayGames?.newsFromFriends?.length,
+                          itemBuilder: (context, index) {
+                            GameModel? game =
+                                displayGames?.newsFromFriends?[index]!.game;
+                            return InkWell(
+                              onTap: () async {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => GameDetailsPage(
+                                              game_id: (game?.id)!,
+                                            )));
+                              },
+                              child: SizedBox(
+                                height: 140.0,
+                                width: 100.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 6.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    child: game?.cover != null
+                                        ? Image.memory(
+                                            base64Decode((game?.cover)!),
+                                            fit: BoxFit.fill,
+                                          )
+                                        : SizedBox(),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }),
+                            );
+                          }),
                 ),
               ],
             ),
@@ -247,42 +260,46 @@ class _DisplayGamesState extends State<HomeGames> {
                 ),
                 SizedBox(
                   height: 170.0,
-                  child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 0.0),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: displayGames
-                          ?.mostPopularGames?.length, //buradan games gelmeli
-                      itemBuilder: (context, index) {
-                        GameModel? game =
-                            displayGames?.mostPopularGames?[index];
-                        return InkWell(
-                          onTap: () async {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => GameDetailsPage(
-                                          game_id: (game?.id)!,
-                                        )));
-                          },
-                          child: SizedBox(
-                            height: 140.0,
-                            width: 100.0,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 6.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5.0),
-                                child: game?.cover != null
-                                    ? Image.memory(
-                                        base64Decode((game?.cover)!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : SizedBox(),
+                  child: loading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 0.0),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: displayGames?.mostPopularGames
+                              ?.length, //buradan games gelmeli
+                          itemBuilder: (context, index) {
+                            GameModel? game =
+                                displayGames?.mostPopularGames?[index];
+                            return InkWell(
+                              onTap: () async {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => GameDetailsPage(
+                                              game_id: (game?.id)!,
+                                            )));
+                              },
+                              child: SizedBox(
+                                height: 140.0,
+                                width: 100.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 6.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    child: game?.cover != null
+                                        ? Image.memory(
+                                            base64Decode((game?.cover)!),
+                                            fit: BoxFit.fill,
+                                          )
+                                        : SizedBox(),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }),
+                            );
+                          }),
                 ),
               ],
             ),
@@ -305,41 +322,45 @@ class _DisplayGamesState extends State<HomeGames> {
                 ),
                 SizedBox(
                   height: 170.0,
-                  child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 0.0),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: displayGames
-                          ?.newGames?.length, //buradan games gelmeli
-                      itemBuilder: (context, index) {
-                        GameModel? game = displayGames?.newGames?[index];
-                        return InkWell(
-                          onTap: () async {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => GameDetailsPage(
-                                          game_id: (game?.id)!,
-                                        )));
-                          },
-                          child: SizedBox(
-                            height: 140.0,
-                            width: 100.0,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 6.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5.0),
-                                child: game?.cover != null
-                                    ? Image.memory(
-                                        base64Decode((game?.cover)!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : SizedBox(),
+                  child: loading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 0.0),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: displayGames
+                              ?.newGames?.length, //buradan games gelmeli
+                          itemBuilder: (context, index) {
+                            GameModel? game = displayGames?.newGames?[index];
+                            return InkWell(
+                              onTap: () async {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => GameDetailsPage(
+                                              game_id: (game?.id)!,
+                                            )));
+                              },
+                              child: SizedBox(
+                                height: 140.0,
+                                width: 100.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 6.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    child: game?.cover != null
+                                        ? Image.memory(
+                                            base64Decode((game?.cover)!),
+                                            fit: BoxFit.fill,
+                                          )
+                                        : SizedBox(),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }),
+                            );
+                          }),
                 ),
               ],
             ),
@@ -362,6 +383,7 @@ class _DisplayReviewsState extends State<HomeReviews> {
   late UserModel authorizedUser;
   final reviewVoteService = ReviewVoteService();
   final userservice = UserService();
+  bool loading = true;
 
   List<ReviewWithGame?> userReviews = [];
 
@@ -420,11 +442,13 @@ class _DisplayReviewsState extends State<HomeReviews> {
       this.friendReviews = friendReviews;
       this.mostPopularReviews = mostPopularReviews;
       this.liked = liked;
+      loading = false;
     });
   }
 
   void like(String review_id) async {
     setState(() {
+      loading = true;
       reviewVoteService.likeReview(review_id: review_id).then((value) {
         if (value != null) {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
@@ -453,6 +477,7 @@ class _DisplayReviewsState extends State<HomeReviews> {
 
   void dislike(String review_id) {
     setState(() {
+      loading = true;
       reviewVoteService.dislikeReview(review_id: review_id).then((value) {
         if (value != null) {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
@@ -503,11 +528,10 @@ class _DisplayReviewsState extends State<HomeReviews> {
                     ),
                   ),
                   Container(
-                    width: 335,
-                    height: friendReviews.length * 160,
+                    height: friendReviews.isEmpty ? 150 : friendReviews.length * 160,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 0.0),
-                    child: Column(
+                    child: loading ? const Center(child: CircularProgressIndicator(),) : Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -768,11 +792,10 @@ class _DisplayReviewsState extends State<HomeReviews> {
                     ),
                   ),
                   Container(
-                    width: 335,
-                    height: mostPopularReviews.length * 160,
+                    height: mostPopularReviews.isEmpty ? 150 : mostPopularReviews.length * 160,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 0.0),
-                    child: Column(
+                    child: loading ? const Center(child: CircularProgressIndicator(),) : Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

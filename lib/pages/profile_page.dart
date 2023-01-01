@@ -7,6 +7,7 @@ import 'package:gameinn/pages/diary_page.dart';
 import 'package:gameinn/pages/followers_page.dart';
 import 'package:gameinn/pages/following_page.dart';
 import 'package:gameinn/pages/played_list_page.dart';
+import 'package:gameinn/pages/to_play_list_page.dart';
 import 'package:gameinn/pages/user_reviews_page.dart';
 import 'package:gameinn/view/sidebar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,6 +32,7 @@ class _ShowProfileState extends State<ProfilePage> {
   final userservice = UserService();
   late UserModel user;
   bool following = false;
+  bool loading = true;
 
   String name = " ";
   List<GameModel?> favoriteGames = [];
@@ -66,32 +68,37 @@ class _ShowProfileState extends State<ProfilePage> {
       this.name = user.username.toString();
       this.favoriteGames = favoriteGames;
       this.following = following;
+      loading = false;
     });
   }
 
   void follow(String user_id) {
     setState(() {
+      loading = true;
       userservice.followMember(user_id_to_follow: user_id).then((value) {
         if (value != null) {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
         } else {}
       });
+      loading = false;
     });
   }
 
   void unfollow(String user_id) {
     setState(() {
+      loading = true;
       userservice.unfollowMember(user_id_to_unfollow: user_id).then((value) {
         if (value != null) {
           //set preferences daki user güncel değil, bu sayfa için gerekmeyebilir.
         } else {}
       });
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Center(child: CircularProgressIndicator(),) :Scaffold(
       body: SafeArea(
         child: Container(
           alignment: Alignment.center,
@@ -104,53 +111,17 @@ class _ShowProfileState extends State<ProfilePage> {
               Container(
                 alignment: Alignment.center,
                 height: 90,
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 65.0, right: 3.0),
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                      ),
-                      child: Center(
-                        child: GestureDetector(
-                          child: Text(
-                            user_id != authorizedUser.id
-                                ? (following ? 'Unfollow' : 'Follow')
-                                : " ",
-                            style: const TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                          ),
-                          onTap: () {
-                            setState(() {
-                              if (following == false) {
-                                follow((user_id));
-                                following = true;
-                              } else {
-                                unfollow(user_id);
-                                following = false;
-                              }
-                            });
-                          },
-                        ),
+                child: Container(
+                  width: 90,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: NetworkImage(
+                        urlImage,
                       ),
                     ),
-                    Container(
-                      width: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: NetworkImage(
-                            urlImage,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(
@@ -165,6 +136,47 @@ class _ShowProfileState extends State<ProfilePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
+              user_id != authorizedUser.id ? const SizedBox(
+                height: 10,
+              ) : const SizedBox(),
+              user_id != authorizedUser.id ? 
+              Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 50.0),
+                    height: 30,
+                    width: 90,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: GestureDetector(
+                      child: Center(
+                        child: Text(
+                          (following ? 'Unfollow' : 'Follow'),
+                          style: const TextStyle(
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                        ),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          loading = true;
+                          if (following == false) {
+                            follow((user_id));
+                            following = true;
+                          } else {
+                            unfollow(user_id);
+                            following = false;
+                          }
+                          loading = false;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ) : const SizedBox(height: 10,),
               const SizedBox(
                 height: 20,
               ),
@@ -286,7 +298,7 @@ class _ShowProfileState extends State<ProfilePage> {
                 ),
                 onTap: (() => {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PlayedListPage(),
+                        builder: (context) => PlayedListPage(user_id: user_id,),
                       )),
                     }),
               ),
@@ -300,7 +312,7 @@ class _ShowProfileState extends State<ProfilePage> {
                 ),
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DiaryPage()));
+                      MaterialPageRoute(builder: (context) => DiaryPage(user_id: user_id,)));
                 },
               ),
               ListTile(
@@ -313,7 +325,7 @@ class _ShowProfileState extends State<ProfilePage> {
                 ),
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FollowersPage()));
+                      MaterialPageRoute(builder: (context) => FollowersPage(user_id: user_id,)));
                 },
               ),
               ListTile(
@@ -326,7 +338,7 @@ class _ShowProfileState extends State<ProfilePage> {
                 ),
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FollowingPage()));
+                      MaterialPageRoute(builder: (context) => FollowingPage(user_id: user_id,)));
                 },
               ),
               ListTile(
@@ -354,6 +366,14 @@ class _ShowProfileState extends State<ProfilePage> {
                     fontSize: 15.0,
                   ),
                 ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ToPlayListPage(
+                                user_id: user_id,
+                              )));
+                },
               ),
             ],
           ),

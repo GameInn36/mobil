@@ -12,7 +12,8 @@ import '../model/game_model.dart';
 import 'package:gameinn/service/search_service.dart';
 
 class FollowingPage extends StatelessWidget {
-  const FollowingPage({Key? key}) : super(key: key);
+  final String user_id;
+  const FollowingPage({Key? key, required this.user_id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,23 +26,28 @@ class FollowingPage extends StatelessWidget {
               fontWeight: FontWeight.bold, color: Colors.white, fontSize: 23.0),
         ),
       ),
-      body: ShowFollowingPage(),
+      body: ShowFollowingPage(user_id: user_id,),
     );
   }
 }
 
 class ShowFollowingPage extends StatefulWidget {
-  ShowFollowingPage({Key? key}) : super(key: key);
+  final String user_id;
+  ShowFollowingPage({Key? key, required this.user_id}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ShowFollowingState();
+  State<StatefulWidget> createState() => _ShowFollowingState(user_id);
 }
 
 class _ShowFollowingState extends State<ShowFollowingPage> {
+  late final user_id;
+  _ShowFollowingState(this.user_id);
+
   final userservice = UserService();
 
   List<UserModel?> followings = [];
   late UserModel user;
+  bool loading = true;
 
   @override
   void initState() {
@@ -51,19 +57,20 @@ class _ShowFollowingState extends State<ShowFollowingPage> {
   }
 
   void getList() async {
-    user = (await userservice.getAuthorizedUser())!;
+    user = (await UserService().getUser(user_id: user_id))!;
 
     followings = (await userservice.getFollowings(user_id: user.id))!;
 
     setState(() {
       this.user = user;
       this.followings = followings;
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Center(child: CircularProgressIndicator(),) : Scaffold(
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
