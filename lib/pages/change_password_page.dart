@@ -84,6 +84,7 @@ class _PasswordPageState extends State<PasswordPage> {
                           color: Colors.white,
                           fontSize: 15,
                         ),
+                        obscureText: true,
                         controller: _oldPassword,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
@@ -111,6 +112,7 @@ class _PasswordPageState extends State<PasswordPage> {
                           color: Colors.white,
                           fontSize: 15,
                         ),
+                        obscureText: true,
                         controller: _newPassword,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
@@ -138,6 +140,7 @@ class _PasswordPageState extends State<PasswordPage> {
                           color: Colors.white,
                           fontSize: 15,
                         ),
+                        obscureText: true,
                         controller: _newPasswordAgain,
                         decoration: const InputDecoration(
                           border: InputBorder.none,

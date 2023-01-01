@@ -150,12 +150,9 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                             right: 5,
                           ),
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(29.0),
-                                topRight: Radius.circular(10.0),
-                                bottomLeft: Radius.circular(10.0),
-                                bottomRight: Radius.circular(10.0)),
+                            borderRadius: BorderRadius.circular(10),
                             child: Container(
+                              padding: EdgeInsets.only(left: 10),
                               height: 140.0,
                               color: const Color(0xFFE9A6A6).withOpacity(0.05),
                               child: Row(
@@ -300,8 +297,16 @@ class _ShowUserReviewsState extends State<ShowUserReviewsPage> {
                                         borderRadius:
                                             BorderRadius.circular(10.0),
                                         child: InkWell(
-                                          child: Image.memory(base64Decode(
-                                              (review.game?.cover)!)),
+                                          child: Container(
+                                                          decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                              image: Image.memory(
+                                                                  base64Decode((review.game
+                                                                      ?.cover)!)).image,
+                                                                      fit: BoxFit.fill
+                                                            ),
+                                                          ),
+                                                        ),
                                           onTap: () async {
                                             Navigator.push(
                                                 context,

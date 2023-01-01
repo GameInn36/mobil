@@ -819,7 +819,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                                     MaterialPageRoute(
                                                                         builder:
                                                                             (context) =>
-                                                                                ProfilePage(user_id: (_user.id)!)));
+                                                                                ProfilePage(user_id: (review_log.user!.id)!)));
                                                               },
                                                             ),
                                                           ])),
@@ -1051,7 +1051,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                                     (review_log
                                                                         .user!
                                                                         .username)!,
-                                                                    style: TextStyle(
+                                                                    style: const TextStyle(
                                                                         color: Color(
                                                                             0xFFE9A6A6),
                                                                         fontSize:
@@ -1062,7 +1062,7 @@ class _GameDetailsPageState extends State<GameDetailsPage> {
                                                                         context,
                                                                         MaterialPageRoute(
                                                                             builder: (context) =>
-                                                                                ProfilePage(user_id: (_user.id)!)));
+                                                                                ProfilePage(user_id: (review_log.user!.id)!)));
                                                                   },
                                                                 ),
                                                               ])),

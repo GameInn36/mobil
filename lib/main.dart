@@ -816,7 +816,7 @@ class _DisplayReviewsState extends State<HomeReviews> {
                   Container(
                     height: mostPopularReviews.isEmpty
                         ? 150
-                        : mostPopularReviews.length * 70,
+                        : mostPopularReviews.length * 160,
                     padding: const EdgeInsets.symmetric(
                         vertical: 15.0, horizontal: 0.0),
                     child: loading

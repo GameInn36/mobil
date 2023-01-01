@@ -220,6 +220,7 @@ class _SearchStudioState extends State<SearchStudio> {
               height: 50.0,
             ),
             TextField(
+              style: TextStyle(color: Colors.white),
               onChanged: (value) => updateList(value),
               decoration: InputDecoration(
                 filled: true,
@@ -379,6 +380,7 @@ class _SearchMemberState extends State<SearchMember> {
               height: 50.0,
             ),
             TextField(
+              style: TextStyle(color: Colors.white),
               onChanged: (value) => updateList(value),
               decoration: InputDecoration(
                 filled: true,

@@ -75,8 +75,8 @@ class _ShowProfileState extends State<ProfilePage> {
       this.name = user.username.toString();
       this.favoriteGames = favoriteGames;
       this.following = following;
-      loading = false;
       this.logs = logs;
+      loading = false;
     });
   }
 
