@@ -9,7 +9,7 @@ class SearchService {
   String searchgame_url =
       'https://api-gateway-ixdm6djuha-uc.a.run.app/game/?name=';
   String searchstudio_url =
-      'https://api-gateway-ixdm6djuha-uc.a.run.app/game/?studio=';
+      'https://api-gateway-ixdm6djuha-uc.a.run.app/game/?publisher=';
   String searchmember_url =
       'https://api-gateway-ixdm6djuha-uc.a.run.app/user/?username=';
   String game_found = 'https://api-gateway-ixdm6djuha-uc.a.run.app/game/';
@@ -124,5 +124,4 @@ class SearchService {
       }
     } on DioError catch (e) {}
   }
-
 }

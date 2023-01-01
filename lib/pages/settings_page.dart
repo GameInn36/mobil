@@ -7,9 +7,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/change_password_page.dart';
+import 'package:gameinn/pages/favorite_game_add_page.dart';
 import 'package:gameinn/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../model/game_model.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -26,6 +29,9 @@ class _SettingsPageState extends State<SettingsPage> {
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
 
   TextEditingController _updateBioController = TextEditingController();
+
+  List<GameModel?> favoriteGames = [];
+  final userservice = UserService();
 
   Widget buildHeader({
     required String urlImage,
@@ -155,6 +161,283 @@ class _SettingsPageState extends State<SettingsPage> {
       case 2:
         openUpdateBioDialog();
     }
+  }
+
+  Widget buildFavoritesItem({
+    required String text,
+    required IconData icon,
+    Color color = Colors.white,
+    double opacity = 0.5,
+    VoidCallback? onClicked,
+  }) {
+    return Column(
+      children: [
+        ListTile(
+          visualDensity: const VisualDensity(vertical: -3),
+          horizontalTitleGap: 0,
+          leading: Icon(
+            icon,
+            color: color.withOpacity(opacity),
+          ),
+          title: Text(
+            text,
+            style: TextStyle(color: color.withOpacity(opacity)),
+          ),
+          onTap: onClicked,
+        ),
+        Row(
+          children: [
+            Container(
+              height: 130.0,
+              width: 80.0,
+              child: favoriteGames[0]?.id == null
+                  ? IconButton(
+                      icon: Icon(Icons.add_circle_outlined),
+                      iconSize: 30.0,
+                      color: const Color(0xFF1F1D36),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    FavoriteGameAddPage())).then((value) {
+                          getUser();
+                        });
+                      },
+                    )
+                  : Column(
+                      children: [
+                        Expanded(
+                          flex: 17,
+                          child: Image.memory(
+                              base64Decode((favoriteGames[0]?.cover)!),
+                              fit: BoxFit.fill),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            child: Center(
+                                child: Container(
+                              width: 80.0,
+                              color: const Color(0xFFAC32F6).withOpacity(0.8),
+                              child: Center(
+                                child: Text(
+                                  ('Delete'),
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            )),
+                            onTap: () {
+                              setState(() {
+                                _user.favoriteGames
+                                    ?.remove(_user.favoriteGames?.elementAt(0));
+                                userUpdate();
+                              });
+
+                              ;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+              color: Colors.grey,
+            ),
+            SizedBox(
+              width: 5.0,
+            ),
+            Container(
+              height: 130.0,
+              width: 80.0,
+              child: favoriteGames[1]?.id == null
+                  ? IconButton(
+                      icon: Icon(Icons.add_circle_outlined),
+                      iconSize: 30.0,
+                      color: const Color(0xFF1F1D36),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    FavoriteGameAddPage())).then((value) {
+                          getUser();
+                        });
+                      },
+                    )
+                  : Column(
+                      children: [
+                        Expanded(
+                          flex: 17,
+                          child: Image.memory(
+                              base64Decode((favoriteGames[1]?.cover)!),
+                              fit: BoxFit.fill),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            child: Center(
+                                child: Container(
+                              width: 80.0,
+                              color: const Color(0xFFAC32F6).withOpacity(0.8),
+                              child: Center(
+                                child: Text(
+                                  ('Delete'),
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            )),
+                            onTap: () {
+                              setState(() {
+                                _user.favoriteGames
+                                    ?.remove(_user.favoriteGames?.elementAt(1));
+                                userUpdate();
+                              });
+
+                              ;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+              color: Colors.grey,
+            ),
+            SizedBox(
+              width: 5.0,
+            ),
+            Container(
+              height: 130.0,
+              width: 80.0,
+              child: favoriteGames[2]?.id == null
+                  ? IconButton(
+                      icon: Icon(Icons.add_circle_outlined),
+                      iconSize: 30.0,
+                      color: const Color(0xFF1F1D36),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    FavoriteGameAddPage())).then((value) {
+                          getUser();
+                        });
+                      },
+                    )
+                  : Column(
+                      children: [
+                        Expanded(
+                          flex: 17,
+                          child: Image.memory(
+                              base64Decode((favoriteGames[2]?.cover)!),
+                              fit: BoxFit.fill),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            child: Center(
+                                child: Container(
+                              width: 80.0,
+                              color: const Color(0xFFAC32F6).withOpacity(0.8),
+                              child: Center(
+                                child: Text(
+                                  ('Delete'),
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            )),
+                            onTap: () {
+                              setState(() {
+                                _user.favoriteGames
+                                    ?.remove(_user.favoriteGames?.elementAt(2));
+                                userUpdate();
+                              });
+
+                              ;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+              color: Colors.grey,
+            ),
+            SizedBox(
+              width: 5.0,
+            ),
+            Container(
+              height: 130.0,
+              width: 80.0,
+              child: favoriteGames[3]?.id == null
+                  ? IconButton(
+                      icon: Icon(Icons.add_circle_outlined),
+                      iconSize: 30.0,
+                      color: const Color(0xFF1F1D36),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    FavoriteGameAddPage())).then((value) {
+                          getUser();
+                        });
+                      },
+                    )
+                  : Column(
+                      children: [
+                        Expanded(
+                          flex: 17,
+                          child: Image.memory(
+                              base64Decode((favoriteGames[3]?.cover)!),
+                              fit: BoxFit.fill),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            child: Center(
+                                child: Container(
+                              width: 80.0,
+                              color: const Color(0xFFAC32F6).withOpacity(0.8),
+                              child: Center(
+                                child: Text(
+                                  ('Delete'),
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            )),
+                            onTap: () {
+                              setState(() {
+                                _user.favoriteGames
+                                    ?.remove(_user.favoriteGames?.elementAt(3));
+                                userUpdate();
+                              });
+
+                              ;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+              color: Colors.grey,
+            ),
+          ],
+        ),
+        SizedBox(
+          child: Divider(
+            color: Colors.white.withOpacity(0.5),
+            thickness: 0.8,
+          ),
+        )
+      ],
+    );
   }
 
   Widget photoSellect() {
@@ -303,12 +586,29 @@ class _SettingsPageState extends State<SettingsPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     UserModel user = UserModel.fromJson(jsonDecode((prefs.getString('user'))!));
 
+    favoriteGames =
+        (await userservice.getFavoriteGames(user_id: user.id)) ?? [];
+
+    int length = favoriteGames.length;
+    if (favoriteGames.length < 4) {
+      for (int i = 0; i < 4 - length; i++) {
+        favoriteGames.add(GameModel());
+      }
+    }
+
     setState(() {
       loading = true;
       _userid = user.id!;
       _user = user;
       loading = false;
+      favoriteGames = favoriteGames;
     });
+  }
+
+  void userUpdate() async {
+    UserModel? returned_user =
+        await UserService().updateUser(user_to_update: _user);
+    getUser();
   }
 
   @override
@@ -335,7 +635,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     icon: Icons.key_outlined,
                     onClicked: () => selectedItem(context, 0),
                   ),
-                  buildMenuItem(
+                  buildFavoritesItem(
                     text: 'Add To Favorite Games',
                     icon: Icons.playlist_add,
                     onClicked: () => selectedItem(context, 1),

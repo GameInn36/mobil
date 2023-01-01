@@ -210,7 +210,7 @@ class _ShowProfileState extends State<ProfilePage> {
                         child: Container(
                           padding: EdgeInsets.all(20.0),
                           child: Text(
-                            (user.bio)!,
+                            (user.bio) ?? " ",
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                           height: 100.0,
