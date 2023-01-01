@@ -25,6 +25,8 @@ class _SettingsPageState extends State<SettingsPage> {
   String urlImage =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU";
 
+  TextEditingController _updateBioController = TextEditingController();
+
   Widget buildHeader({
     required String urlImage,
     required String name,
@@ -136,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void selectedItem(BuildContext context, int index) {
-    Navigator.of(context).pop();
+    //Navigator.of(context).pop();
 
     switch (index) {
       case 0:
@@ -149,6 +151,9 @@ class _SettingsPageState extends State<SettingsPage> {
         //   builder: (context) => DiaryPage(user_id: user_id,),
         // ));
         break;
+
+      case 2:
+        openUpdateBioDialog();
     }
   }
 
@@ -249,6 +254,45 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future openUpdateBioDialog() => showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1F1D36),
+          title: Text("Edit Biography",
+              style: TextStyle(
+                color: Colors.grey,
+              )),
+          content: TextField(
+            cursorColor: Colors.grey,
+            controller: _updateBioController,
+            style: TextStyle(color: Colors.grey),
+            autofocus: true,
+            decoration: InputDecoration(
+                hintText: 'Edit your bio...',
+                hintStyle: TextStyle(color: Colors.grey)),
+          ),
+          actions: [
+            TextButton(
+              child: Icon(
+                Icons.check,
+                size: 20.0,
+                color: Colors.grey,
+              ),
+              onPressed: () async {
+                _user.bio = _updateBioController.text;
+                UserModel? returned_user =
+                    await UserService().updateUser(user_to_update: _user);
+
+                if (returned_user != null) {
+                  Navigator.pop(context);
+                  getUser();
+                }
+              },
+            ),
+          ],
+        ),
+      );
+
   @override
   void initState() {
     getUser();
@@ -295,6 +339,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     text: 'Add To Favorite Games',
                     icon: Icons.playlist_add,
                     onClicked: () => selectedItem(context, 1),
+                  ),
+                  buildMenuItem(
+                    text: 'Edit Biography',
+                    icon: Icons.edit_outlined,
+                    onClicked: () => selectedItem(context, 2),
                   ),
                 ],
               ),

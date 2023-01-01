@@ -106,318 +106,356 @@ class _ShowProfileState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? const Center(child: CircularProgressIndicator(),) :Scaffold(
-      body: SafeArea(
-        child: Container(
-          alignment: Alignment.center,
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            children: [
-              const SizedBox(
-                height: 35,
-              ),
-              Container(
+    return loading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Scaffold(
+            body: SafeArea(
+              child: Container(
                 alignment: Alignment.center,
-                height: 90,
-                child: Container(
-                  width: 90,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: (user.profileImage) != null
-                        ? Image.memory(base64Decode((user.profileImage)!)).image
-                        : const NetworkImage(
-                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                child: ListView(
+                  scrollDirection: Axis.vertical,
+                  children: [
+                    const SizedBox(
+                      height: 35,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      height: 90,
+                      child: Container(
+                        width: 90,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: (user.profileImage) != null
+                                ? Image.memory(
+                                        base64Decode((user.profileImage)!))
+                                    .image
+                                : const NetworkImage(
+                                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQT60MyBMkcLfLBsjr8HyLmjKrCiPyFzyA-4Q&usqp=CAU",
+                                  ),
                           ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              user_id != authorizedUser.id ? const SizedBox(
-                height: 10,
-              ) : const SizedBox(),
-              user_id != authorizedUser.id ? 
-              Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 50.0),
-                    height: 30,
-                    width: 90,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      border: Border.all(color: Colors.grey),
+                    const SizedBox(
+                      height: 10,
                     ),
-                    child: GestureDetector(
-                      child: Center(
-                        child: Text(
-                          (following ? 'Unfollow' : 'Follow'),
-                          style: const TextStyle(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey),
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    user_id != authorizedUser.id
+                        ? const SizedBox(
+                            height: 10,
+                          )
+                        : const SizedBox(),
+                    user_id != authorizedUser.id
+                        ? Row(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 50.0),
+                                height: 30,
+                                width: 90,
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(color: Colors.grey),
+                                ),
+                                child: GestureDetector(
+                                  child: Center(
+                                    child: Text(
+                                      (following ? 'Unfollow' : 'Follow'),
+                                      style: const TextStyle(
+                                          fontSize: 15.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      loading = true;
+                                      if (following == false) {
+                                        follow((user_id));
+                                        following = true;
+                                      } else {
+                                        unfollow(user_id);
+                                        following = false;
+                                      }
+                                      loading = false;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          )
+                        : const SizedBox(
+                            height: 10,
+                          ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 13),
+                      child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
+                        child: Container(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text(
+                            (user.bio)!,
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          ),
+                          height: 100.0,
+                          color: const Color(0xFFE9A6A6).withOpacity(0.05),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 35,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 13),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Favorites',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          SizedBox(
+                            height: 170.0,
+                            child: ListView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15.0, horizontal: 0.0),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: favoriteGames
+                                    .length, //buradan games gelmeli
+                                itemBuilder: (context, index) {
+                                  GameModel? game = favoriteGames[index];
+                                  return InkWell(
+                                    onTap: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GameDetailsPage(
+                                                    game_id: game!.id!,
+                                                  )));
+                                    },
+                                    child: SizedBox(
+                                      height: 140.0,
+                                      width: 100.0,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 6.0),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          child: Image.memory(
+                                            base64Decode((game?.cover)!),
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Divider(
+                        color: Colors.white.withOpacity(0.19),
+                        thickness: 1.2,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 13),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Recently Played',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          SizedBox(
+                            height: 170.0,
+                            child: ListView.builder(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15.0, horizontal: 0.0),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: logs.length, //buradan games gelmeli
+                                itemBuilder: (context, index) {
+                                  GameModel? game = logs[index]!.game;
+                                  return InkWell(
+                                    onTap: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GameDetailsPage(
+                                                    game_id: game!.id!,
+                                                  )));
+                                    },
+                                    child: SizedBox(
+                                      height: 140.0,
+                                      width: 100.0,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 6.0),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                          child: Image.memory(
+                                            base64Decode((game?.cover)!),
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Divider(
+                        color: Colors.white.withOpacity(0.19),
+                        thickness: 1.2,
+                      ),
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "Played Games",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      onTap: (() => {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => PlayedListPage(
+                                user_id: user_id,
+                              ),
+                            )),
+                          }),
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "Diary",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15.0,
                         ),
                       ),
                       onTap: () {
-                        setState(() {
-                          loading = true;
-                          if (following == false) {
-                            follow((user_id));
-                            following = true;
-                          } else {
-                            unfollow(user_id);
-                            following = false;
-                          }
-                          loading = false;
-                        });
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DiaryPage(
+                                      user_id: user_id,
+                                    )));
                       },
                     ),
-                  ),
-                ],
-              ) : const SizedBox(height: 10,),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 13),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  child: Container(
-                    height: 100.0,
-                    color: const Color(0xFFE9A6A6).withOpacity(0.05),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 35,
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 13),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Favorites',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
+                    ListTile(
+                      leading: Text(
+                        "Followers",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15.0,
+                        ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FollowersPage(
+                                      user_id: user_id,
+                                    )));
+                      },
                     ),
-                    const SizedBox(
-                      height: 15,
+                    ListTile(
+                      leading: Text(
+                        "Following",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FollowingPage(
+                                      user_id: user_id,
+                                    )));
+                      },
                     ),
-                    SizedBox(
-                      height: 170.0,
-                      child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 15.0, horizontal: 0.0),
-                          scrollDirection: Axis.horizontal,
-                          itemCount:
-                              favoriteGames.length, //buradan games gelmeli
-                          itemBuilder: (context, index) {
-                            GameModel? game = favoriteGames[index];
-                            return InkWell(
-                              onTap: () async {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => GameDetailsPage(
-                                              game_id: game!.id!,
-                                            )));
-                              },
-                              child: SizedBox(
-                                height: 140.0,
-                                width: 100.0,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 6.0),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                    child: Image.memory(
-                                      base64Decode((game?.cover)!),
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
+                    ListTile(
+                      leading: Text(
+                        "Reviews",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserReviewsPage(
+                                      user_id: user_id,
+                                    )));
+                      },
+                    ),
+                    ListTile(
+                      leading: Text(
+                        "To Play List",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ToPlayListPage(
+                                      user_id: user_id,
+                                    )));
+                      },
                     ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 50,
-                child: Divider(
-                  color: Colors.white.withOpacity(0.19),
-                  thickness: 1.2,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 13),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Recently Played',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    SizedBox(
-                      height: 170.0,
-                      child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 15.0, horizontal: 0.0),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: logs.length, //buradan games gelmeli
-                          itemBuilder: (context, index) {
-                            GameModel? game = logs[index]!.game;
-                            return InkWell(
-                              onTap: () async {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => GameDetailsPage(
-                                              game_id: game!.id!,
-                                            )));
-                              },
-                              child: SizedBox(
-                                height: 140.0,
-                                width: 100.0,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 6.0),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                    child: Image.memory(
-                                      base64Decode((game?.cover)!),
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 50,
-                child: Divider(
-                  color: Colors.white.withOpacity(0.19),
-                  thickness: 1.2,
-                ),
-              ),
-              ListTile(
-                leading: Text(
-                  "Played Games",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                ),
-                onTap: (() => {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => PlayedListPage(user_id: user_id,),
-                      )),
-                    }),
-              ),
-              ListTile(
-                leading: Text(
-                  "Diary",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => DiaryPage(user_id: user_id,)));
-                },
-              ),
-              ListTile(
-                leading: Text(
-                  "Followers",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FollowersPage(user_id: user_id,)));
-                },
-              ),
-              ListTile(
-                leading: Text(
-                  "Following",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FollowingPage(user_id: user_id,)));
-                },
-              ),
-              ListTile(
-                leading: Text(
-                  "Reviews",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => UserReviewsPage(
-                                user_id: user_id,
-                              )));
-                },
-              ),
-              ListTile(
-                leading: Text(
-                  "To Play List",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15.0,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ToPlayListPage(
-                                user_id: user_id,
-                              )));
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 }
 
