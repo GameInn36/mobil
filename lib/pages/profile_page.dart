@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:gameinn/model/log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:gameinn/pages/diary_page.dart';
 import 'package:gameinn/pages/followers_page.dart';
@@ -36,6 +37,7 @@ class _ShowProfileState extends State<ProfilePage> {
 
   String name = " ";
   List<GameModel?> favoriteGames = [];
+  List<LogModel?> logs = [];
 
   late UserModel authorizedUser = UserModel();
 
@@ -56,6 +58,11 @@ class _ShowProfileState extends State<ProfilePage> {
 
     favoriteGames = (await userservice.getFavoriteGames(user_id: user.id))!;
 
+    logs = (await userservice.getUserLogs(user_id: (user.id)!))!;
+
+    logs.sort(((a, b) =>
+        a!.gameLog!.createDate!.compareTo((b!.gameLog!.createDate)!)));
+
     if (authorizedUser.following!.contains(user_id)) {
       following = true;
     } else {
@@ -69,6 +76,7 @@ class _ShowProfileState extends State<ProfilePage> {
       this.favoriteGames = favoriteGames;
       this.following = following;
       loading = false;
+      this.logs = logs;
     });
   }
 
@@ -272,11 +280,39 @@ class _ShowProfileState extends State<ProfilePage> {
                       height: 15,
                     ),
                     SizedBox(
-                      height: 110,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: recentlyPlayedGames,
-                      ),
+                      height: 170.0,
+                      child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 0.0),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: logs.length, //buradan games gelmeli
+                          itemBuilder: (context, index) {
+                            GameModel? game = logs[index]!.game;
+                            return InkWell(
+                              onTap: () async {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => GameDetailsPage(
+                                              game_id: game!.id!,
+                                            )));
+                              },
+                              child: SizedBox(
+                                height: 140.0,
+                                width: 100.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 6.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    child: Image.memory(
+                                      base64Decode((game?.cover)!),
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
                     ),
                   ],
                 ),

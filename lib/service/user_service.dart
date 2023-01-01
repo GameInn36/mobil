@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:gameinn/model/log_model.dart';
 import 'package:gameinn/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -267,7 +268,8 @@ class UserService {
             }),
       );
       if (response != null && response.statusCode == 200) {
-        var result = (response.data as List).map((x) => GameModel.fromJson(x)).toList();
+        var result =
+            (response.data as List).map((x) => GameModel.fromJson(x)).toList();
         return result;
       }
     } on DioError catch (e) {
@@ -291,7 +293,33 @@ class UserService {
             }),
       );
       if (response != null && response.statusCode == 200) {
-        var result = (response.data as List).map((x) => GameModel.fromJson(x)).toList();
+        var result =
+            (response.data as List).map((x) => GameModel.fromJson(x)).toList();
+        return result;
+      }
+    } on DioError catch (e) {
+      log(e.message);
+    }
+  }
+
+  Future<List<LogModel>?> getUserLogs({
+    required String user_id,
+  }) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = (prefs.getString('token') ?? "");
+    try {
+      var response = await dio.get(
+        "$get_update_user_url$user_id/logs",
+        options: Options(
+            headers: {"authorization": "Bearer $token"},
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! <= 500;
+            }),
+      );
+      if (response != null && response.statusCode == 200) {
+        var result =
+            (response.data as List).map((x) => LogModel.fromJson(x)).toList();
         return result;
       }
     } on DioError catch (e) {
